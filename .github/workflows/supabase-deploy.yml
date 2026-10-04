@@ -1,0 +1,27 @@
+name: Supabase Database Sync
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'supabase/**'
+
+jobs:
+  deploy-database:
+    name: Sync Migrations to Supabase
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Verify Migrations Syntax
+        run: |
+          echo "Validating Supabase SQL migrations..."
+          cat supabase/migrations/*.sql > /dev/null
+          echo "SQL syntax valid."

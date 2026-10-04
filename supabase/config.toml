@@ -1,0 +1,58 @@
+# ============================================================================
+# FIDE PLATFORM: OFFICIAL SUPABASE PROJECT CONFIGURATION
+# ============================================================================
+project_id = "fide-security-eu"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "storage", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+shadow_port = 54320
+major_version = 15
+
+[db.pooler]
+enabled = false
+port = 54329
+pool_mode = "transaction"
+default_pool_size = 20
+max_client_conn = 100
+
+[realtime]
+enabled = true
+# Enable realtime broadcasting for attendance and document alerts
+ip_version = "v4"
+
+[studio]
+enabled = true
+port = 54323
+
+[auth]
+enabled = true
+site_url = "https://fide-work.eu"
+additional_redirect_urls = ["https://localhost:3000", "fide://*"]
+jwt_expiry = 3600
+enable_signup = true
+
+[auth.email]
+enable_signup = true
+double_confirm_changes = true
+enable_confirmations = false
+
+# Enable Passkeys / WebAuthn
+[auth.mfa]
+max_enrolled_factors = 10
+
+# Storage buckets configuration
+[storage]
+enabled = true
+file_size_limit = "50MiB"
+
+[storage.buckets.encrypted-documents]
+public = false
+file_size_limit = "25MiB"
+allowed_mime_types = ["application/octet-stream", "application/pdf"]
