@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Image } from 'react-native';
 import { Colors } from '../theme/colors';
 import { useApp } from '../context/AppContext';
 import { ShieldLogo, PasskeyIcon, EditIcon, GlobeIcon } from '../components/common/Icons';
@@ -32,7 +32,10 @@ export function LoginScreen({ onOpenProfile, onOpenLanguage }: LoginScreenProps)
       <View style={styles.header}>
         <View style={styles.topRow}>
           <View style={styles.brand}>
-            <ShieldLogo size={36} color={Colors.accentLight} />
+            <Image
+              source={require('../../assets/icon.png')}
+              style={{ width: 44, height: 44, borderRadius: 12 }}
+            />
             <Text style={styles.brandTitle}>Fide</Text>
           </View>
 
