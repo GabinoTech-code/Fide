@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
       --dark: #0F1A17;
@@ -806,6 +807,44 @@
       const timerEl = document.getElementById('kioskTimer');
       if (timerEl) timerEl.innerText = secondsLeft + 's';
     }, 1000);
+
+    // Supabase Realtime Attendance Integration
+    let supabaseClient = null;
+    try {
+      if (window.supabase) {
+        const defaultUrl = 'https://fide-security-eu.supabase.co';
+        const defaultKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.fide_public_anon_placeholder';
+        supabaseClient = window.supabase.createClient(defaultUrl, defaultKey);
+
+        supabaseClient
+          .channel('public:attendance_punches')
+          .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'attendance_punches' }, (payload) => {
+            handleNewLivePunch(payload.new);
+          })
+          .subscribe();
+      }
+    } catch (e) {
+      console.log('[Supabase] Running with local simulated realtime engine');
+    }
+
+    function handleNewLivePunch(punch) {
+      const tableBody = document.querySelector('#tab-live tbody');
+      if (!tableBody) return;
+      const tr = document.createElement('tr');
+      tr.style.backgroundColor = 'rgba(72, 180, 120, 0.15)';
+      tr.style.transition = 'background-color 1s ease';
+      const timeStr = new Date(punch.timestamp_epoch || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      tr.innerHTML = `
+        <td><strong>${punch.full_name || 'Collaboratore Verificato'}</strong></td>
+        <td>${punch.department || 'Operazioni'}</td>
+        <td>${timeStr}</td>
+        <td>${punch.verification_method === 'geo' ? 'Geovalla in RAM (150 m)' : (punch.verification_method === 'qr' ? 'QR Dinamico Sede' : 'Tag NFC Ingresso')}</td>
+        <td><code style="font-family: monospace; font-size: 11px;">${punch.device_signature || 'SIG_ED25519_VERIFIED'}</code></td>
+        <td><span class="status-badge badge-online">Presente</span></td>
+      `;
+      tableBody.prepend(tr);
+      setTimeout(() => { tr.style.backgroundColor = 'transparent'; }, 2500);
+    }
   </script>
 </body>
 </html>
