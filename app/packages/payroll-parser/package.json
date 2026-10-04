@@ -1,0 +1,17 @@
+{
+  "name": "@fide/payroll-parser",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Mass payroll PDF parsing and E2EE encryption pipeline for Fide",
+  "main": "src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@fide/shared": "*"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.0",
+    "typescript": "^5.3.3"
+  }
+}
