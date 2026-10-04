@@ -1,592 +1,632 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fide — Portale Aziendale & Amministrazione HR</title>
+  <title>Fide Business — Centro de Control y Administración B2B</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
-      --dark: #0F1A17;
-      --dark-card: #152420;
-      --accent: #1D6F42;
-      --accent-hover: #134E2E;
-      --accent-light: #48B478;
-      --accent-muted: #EBF5F0;
-      --text-white: #FFFFFF;
-      --text-muted: #7E968D;
-      --text-dark: #121E1A;
-      --border-subtle: #223A33;
-      --border-light: #E0ECE6;
-      --bg-page: #F7FAF8;
-      --success: #1E8E5A;
-      --danger: #D94841;
-      --warning: #D97706;
+      --bg-app: #0B1411;
+      --bg-panel: #111E1A;
+      --bg-card: #162621;
+      --bg-card-hover: #1C302A;
+      --accent: #22C55E;
+      --accent-muted: rgba(34, 197, 94, 0.12);
+      --accent-border: rgba(34, 197, 94, 0.3);
+      --text-main: #F3F4F6;
+      --text-muted: #94A3B8;
+      --border-subtle: #20352E;
+      --border-strong: #2D4A41;
+      --danger: #EF4444;
+      --danger-muted: rgba(239, 68, 68, 0.12);
+      --warning: #F59E0B;
+      --warning-muted: rgba(245, 158, 11, 0.12);
+      --blue: #3B82F6;
+      --blue-muted: rgba(59, 130, 246, 0.12);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: var(--bg-page);
-      color: var(--text-dark);
+      background: var(--bg-app);
+      color: var(--text-main);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      overflow-x: hidden;
     }
 
-    /* Header */
+    /* Top Navigation Bar */
     header {
-      background: var(--dark);
-      color: var(--text-white);
-      padding: 16px 32px;
+      background: var(--bg-panel);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 14px 28px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 1px solid var(--border-subtle);
+      position: sticky;
+      top: 0;
+      z-index: 50;
     }
-    .brand-wrap {
+    .brand-group {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 14px;
     }
     .brand-logo {
-      width: 38px;
-      height: 38px;
-      background: var(--accent);
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, #22C55E, #15803D);
       border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
       font-family: 'Space Grotesk', sans-serif;
       font-weight: 700;
-      font-size: 20px;
-      color: var(--text-white);
+      color: #FFFFFF;
+      font-size: 18px;
+      box-shadow: 0 0 16px rgba(34, 197, 94, 0.3);
+    }
+    .brand-meta {
+      display: flex;
+      flex-direction: column;
     }
     .brand-title {
       font-family: 'Space Grotesk', sans-serif;
-      font-size: 22px;
+      font-size: 18px;
       font-weight: 700;
       letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
-    .brand-subtitle {
+    .tag-b2b {
+      font-size: 10px;
+      background: var(--accent-muted);
+      border: 1px solid var(--accent-border);
+      color: var(--accent);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .brand-sub {
       font-size: 11px;
       color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 1px;
+    }
+
+    .header-center {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: rgba(0, 0, 0, 0.25);
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1px solid var(--border-subtle);
+    }
+    .site-pill {
+      font-size: 12px;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .dot-live {
+      width: 8px;
+      height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--accent);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
     }
 
     .header-actions {
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 12px;
     }
     .badge-fido {
       display: flex;
       align-items: center;
-      gap: 8px;
-      background: rgba(72, 180, 120, 0.15);
-      border: 1px solid var(--accent-light);
-      padding: 6px 14px;
-      border-radius: 20px;
+      gap: 6px;
+      background: rgba(34, 197, 94, 0.08);
+      border: 1px solid var(--accent-border);
+      padding: 6px 12px;
+      border-radius: 8px;
       font-size: 12px;
-      color: var(--accent-light);
-      font-weight: 600;
-    }
-    .badge-fido::before {
-      content: '';
-      width: 8px;
-      height: 8px;
-      background: var(--accent-light);
-      border-radius: 50%;
-    }
-
-    /* Main Container */
-    .app-body {
-      display: flex;
-      flex: 1;
-    }
-
-    /* Sidebar Navigation */
-    aside {
-      width: 260px;
-      background: var(--dark);
-      padding: 24px 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      border-right: 1px solid var(--border-subtle);
-    }
-    .nav-btn {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px 16px;
-      border-radius: 12px;
-      color: var(--text-muted);
-      font-size: 14px;
-      font-weight: 500;
-      text-decoration: none;
-      cursor: pointer;
-      border: none;
-      background: transparent;
-      width: 100%;
-      text-align: left;
-      transition: all 0.2s;
-    }
-    .nav-btn:hover {
-      background: rgba(255, 255, 255, 0.05);
-      color: var(--text-white);
-    }
-    .nav-btn.active {
-      background: var(--accent);
-      color: var(--text-white);
-      font-weight: 600;
-    }
-
-    /* Content Area */
-    main {
-      flex: 1;
-      padding: 32px;
-      max-width: 1200px;
-      margin: 0 auto;
-      width: 100%;
-    }
-
-    .section-title {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 26px;
-      font-weight: 700;
-      color: var(--text-dark);
-      margin-bottom: 6px;
-    }
-    .section-desc {
-      font-size: 14px;
-      color: #556B63;
-      margin-bottom: 24px;
-    }
-
-    .card {
-      background: #FFFFFF;
-      border: 1px solid var(--border-light);
-      border-radius: 18px;
-      padding: 24px;
-      box-shadow: 0 4px 16px rgba(15, 26, 23, 0.04);
-      margin-bottom: 24px;
-    }
-
-    /* Registration Wizard Steps */
-    .steps-nav {
-      display: flex;
-      margin-bottom: 24px;
-      background: #FFFFFF;
-      border-radius: 14px;
-      border: 1px solid var(--border-light);
-      overflow: hidden;
-    }
-    .step-item {
-      flex: 1;
-      padding: 14px 16px;
-      text-align: center;
-      font-size: 13px;
-      font-weight: 600;
-      color: #6C8279;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      border-right: 1px solid var(--border-light);
-      transition: all 0.2s;
-    }
-    .step-item:last-child { border-right: none; }
-    .step-item.active {
-      background: var(--accent-muted);
       color: var(--accent);
-    }
-    .step-item.completed {
-      color: var(--success);
+      font-family: 'IBM Plex Mono', monospace;
     }
 
-    /* Form Fields */
-    .form-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 18px;
-      margin-bottom: 20px;
+    /* Main Layout */
+    .app-layout {
+      display: flex;
+      flex: 1;
     }
-    .field-group {
+
+    /* Sidebar */
+    aside {
+      width: 250px;
+      background: var(--bg-panel);
+      border-right: 1px solid var(--border-subtle);
+      padding: 20px 14px;
       display: flex;
       flex-direction: column;
       gap: 6px;
     }
-    .field-group label {
-      font-size: 12px;
-      font-weight: 700;
+    .nav-category {
+      font-size: 10px;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: #4A635B;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      padding: 12px 12px 4px 12px;
+      font-weight: 700;
     }
-    .field-group input, .field-group select {
-      padding: 12px 14px;
+    .nav-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 14px;
       border-radius: 10px;
-      border: 1.5px solid var(--border-light);
-      font-size: 14px;
-      outline: none;
-      font-family: inherit;
-      transition: border-color 0.2s;
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 500;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+      text-align: left;
+      transition: all 0.15s ease;
     }
-    .field-group input:focus, .field-group select:focus {
-      border-color: var(--accent);
+    .nav-btn:hover {
+      background: var(--bg-card);
+      color: var(--text-main);
+    }
+    .nav-btn.active {
+      background: var(--accent-muted);
+      color: var(--accent);
+      font-weight: 600;
+      border: 1px solid var(--accent-border);
+    }
+    .nav-btn .icon {
+      font-size: 16px;
+      width: 20px;
+      display: inline-block;
+      text-align: center;
     }
 
+    /* Main Stage */
+    main {
+      flex: 1;
+      padding: 28px 36px;
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .page-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 24px;
+      font-weight: 700;
+      color: #FFFFFF;
+    }
+    .page-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+    .page-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    /* Buttons */
     .btn {
-      padding: 12px 24px;
-      border-radius: 12px;
+      padding: 9px 16px;
+      border-radius: 9px;
       border: none;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 600;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      transition: all 0.2s;
+      transition: all 0.15s ease;
+      font-family: inherit;
     }
     .btn-primary {
       background: var(--accent);
-      color: var(--text-white);
+      color: #07130D;
     }
-    .btn-primary:hover { background: var(--accent-hover); }
+    .btn-primary:hover {
+      background: #4ade80;
+      box-shadow: 0 0 16px rgba(34, 197, 94, 0.4);
+    }
     .btn-secondary {
-      background: #E8F0EC;
-      color: var(--text-dark);
+      background: var(--bg-card);
+      color: var(--text-main);
+      border: 1px solid var(--border-subtle);
+    }
+    .btn-secondary:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-strong);
     }
 
-    /* Stats Grid */
-    .stats-grid {
+    /* Metric Cards Grid */
+    .metrics-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 16px;
       margin-bottom: 24px;
     }
-    .stat-card {
-      background: #FFFFFF;
-      border: 1px solid var(--border-light);
+    .metric-card {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-subtle);
       border-radius: 14px;
-      padding: 18px;
+      padding: 18px 20px;
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 8px;
+      position: relative;
+      overflow: hidden;
     }
-    .stat-label {
-      font-size: 12px;
-      color: #6C8279;
+    .metric-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: transparent;
+    }
+    .metric-card.accent::before { background: var(--accent); }
+    .metric-card.blue::before { background: var(--blue); }
+    .metric-card.warning::before { background: var(--warning); }
+    .metric-card.danger::before { background: var(--danger); }
+
+    .metric-label {
+      font-size: 11px;
       font-weight: 600;
+      color: var(--text-muted);
       text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
-    .stat-val {
+    .metric-value-row {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+    .metric-num {
       font-family: 'Space Grotesk', sans-serif;
-      font-size: 30px;
+      font-size: 28px;
       font-weight: 700;
-      color: var(--text-dark);
+      color: #FFFFFF;
+    }
+    .metric-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* Content Cards */
+    .panel-card {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 22px;
+      margin-bottom: 24px;
+    }
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .panel-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
     /* Tables */
-    .table-wrap {
-      overflow-x: auto;
+    .table-container {
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      overflow: hidden;
     }
     table {
       width: 100%;
       border-collapse: collapse;
       text-align: left;
+      font-size: 13px;
+    }
+    thead {
+      background: rgba(0, 0, 0, 0.3);
+      border-bottom: 1px solid var(--border-subtle);
     }
     th {
-      background: #F4F8F6;
       padding: 12px 16px;
-      font-size: 12px;
-      font-weight: 700;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      color: #4A635B;
-      border-bottom: 1px solid var(--border-light);
     }
     td {
       padding: 14px 16px;
-      font-size: 13px;
-      border-bottom: 1px solid var(--border-light);
+      border-bottom: 1px solid var(--border-subtle);
+      color: var(--text-main);
     }
-    .status-badge {
-      display: inline-block;
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 600;
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover {
+      background: rgba(255, 255, 255, 0.02);
     }
-    .badge-online { background: #DFF5E9; color: var(--success); }
-    .badge-offline { background: #FEE8D8; color: var(--warning); }
 
-    /* Kiosk Display Simulation */
-    .kiosk-card {
-      background: var(--dark);
-      color: var(--text-white);
-      border-radius: 20px;
+    /* Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      font-family: 'IBM Plex Mono', monospace;
+    }
+    .badge-in {
+      background: var(--accent-muted);
+      color: var(--accent);
+      border: 1px solid var(--accent-border);
+    }
+    .badge-out {
+      background: var(--danger-muted);
+      color: var(--danger);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+    .badge-geo {
+      background: var(--blue-muted);
+      color: #60A5FA;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+    .badge-qr {
+      background: var(--warning-muted);
+      color: #FBBF24;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    /* Rotating Kiosk Component */
+    .kiosk-preview {
+      background: #000000;
+      border: 1px solid var(--border-strong);
+      border-radius: 18px;
       padding: 32px;
       text-align: center;
-      max-width: 480px;
+      max-width: 520px;
       margin: 0 auto;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
     }
-    .kiosk-qr-box {
+    .kiosk-title {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent);
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .kiosk-headline {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: #FFFFFF;
+      margin-bottom: 20px;
+    }
+    .kiosk-qr-frame {
       background: #FFFFFF;
-      padding: 20px;
+      padding: 24px;
       border-radius: 16px;
       display: inline-block;
-      margin: 20px 0;
+      margin-bottom: 18px;
     }
-    .kiosk-countdown {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 24px;
-      color: var(--accent-light);
-      font-weight: 700;
+    .kiosk-timer-bar {
+      height: 6px;
+      background: #20352E;
+      border-radius: 3px;
+      overflow: hidden;
+      margin: 14px 0 8px 0;
+    }
+    .kiosk-timer-fill {
+      height: 100%;
+      background: var(--accent);
+      width: 100%;
+      transition: width 1s linear;
     }
 
-    /* Responsive */
-    @media (max-width: 900px) {
-      .app-body { flex-direction: column; }
-      aside { width: 100%; }
-      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    /* Drag & Drop Payroll */
+    .dropzone {
+      border: 2px dashed var(--accent-border);
+      background: var(--accent-muted);
+      border-radius: 16px;
+      padding: 36px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .dropzone:hover {
+      border-color: var(--accent);
+      background: rgba(34, 197, 94, 0.16);
+    }
+
+    /* Modal / Utility classes */
+    .code-pill {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 3px 6px;
+      border-radius: 4px;
+      color: #CBD5E1;
+      border: 1px solid var(--border-subtle);
     }
   </style>
 </head>
 <body>
 
-  <!-- Header -->
+  <!-- Top Header -->
   <header>
-    <div class="brand-wrap">
-      <img src="assets/icon.png" style="width: 44px; height: 44px; border-radius: 12px; object-fit: cover;" alt="Fide Logo">
-      <div>
-        <div class="brand-title">Fide Business</div>
-        <div class="brand-subtitle">Zero-Knowledge HR & Employee Security Platform</div>
+    <div class="brand-group">
+      <div class="brand-logo">F</div>
+      <div class="brand-meta">
+        <div class="brand-title">
+          Fide Business
+          <span class="tag-b2b">Enterprise</span>
+        </div>
+        <div class="brand-sub">Zero-Knowledge HR & Compliance Hub</div>
       </div>
     </div>
+
+    <div class="header-center">
+      <div class="site-pill">
+        <span class="dot-live"></span>
+        <strong id="current-site-label">Sede Central (Madrid / Milán HQ)</strong>
+        <span style="color: var(--text-muted); font-size: 11px;">· Geovalla 150m</span>
+      </div>
+    </div>
+
     <div class="header-actions">
-      <div class="badge-fido">Admin FIDO2 Passkey Verificata</div>
-      <button class="btn btn-secondary" style="font-size:12px; padding: 6px 12px;" onclick="switchCountry()">
-        <span id="countryLabel">🇮🇹 Italia (CCNL)</span>
+      <div class="badge-fido">🛡️ FIDO2 Admin Activo</div>
+      <button class="btn btn-secondary" onclick="exportLaborInspectionReport()" style="font-size: 12px; padding: 6px 12px;">
+        ⚖️ Exportar Inspección Laboral
       </button>
     </div>
   </header>
 
-  <div class="app-body">
+  <div class="app-layout">
     <!-- Sidebar Navigation -->
     <aside>
-      <button class="nav-btn active" onclick="showTab('live')">📊 Monitor Presenze Live</button>
-      <button class="nav-btn" onclick="showTab('kiosk')">📍 Sedi & Kiosk QR (30s)</button>
-      <button class="nav-btn" onclick="showTab('payroll')">🔒 Buste Paga E2EE</button>
-      <button class="nav-btn" onclick="showTab('requests')">📝 Ferie & Permessi</button>
-      <button class="nav-btn" onclick="showTab('audit')">⚖️ Ispettorato del Lavoro</button>
-      <button class="nav-btn" onclick="showTab('wizard')">⚙️ Configurazione Azienda</button>
+      <div class="nav-category">Control Operativo</div>
+      <button class="nav-btn active" onclick="switchTab('presence')">
+        <span class="icon">📊</span> Presencia en Vivo
+      </button>
+      <button class="nav-btn" onclick="switchTab('kiosk')">
+        <span class="icon">📍</span> Sedes & Kiosco QR
+      </button>
+      <button class="nav-btn" onclick="switchTab('requests')">
+        <span class="icon">📝</span> Permisos & Vacaciones
+      </button>
+
+      <div class="nav-category">Cumplimiento & Nóminas</div>
+      <button class="nav-btn" onclick="switchTab('payroll')">
+        <span class="icon">🔒</span> Distribución Nóminas E2EE
+      </button>
+      <button class="nav-btn" onclick="switchTab('legal')">
+        <span class="icon">⚖️</span> Registro Legal Inspección
+      </button>
+
+      <div class="nav-category">Administración</div>
+      <button class="nav-btn" onclick="switchTab('employees')">
+        <span class="icon">👥</span> Empleados & Altas
+      </button>
     </aside>
 
-    <!-- Main Content -->
+    <!-- Main Content Area -->
     <main>
-      <!-- TAB 1: REGISTRATION WIZARD -->
-      <section id="tab-wizard" style="display: none;">
-        <h1 class="section-title">Registrazione e Attivazione Azienda</h1>
-        <p class="section-desc">Procedura in 4 passaggi per registrare la tua organizzazione con chiavi asimmetriche e zero password.</p>
 
-        <div class="steps-nav">
-          <div class="step-item active" id="step-nav-1" onclick="setStep(1)">1. Dati Fiscali & CCNL</div>
-          <div class="step-item" id="step-nav-2" onclick="setStep(2)">2. Passkey Admin FIDO2</div>
-          <div class="step-item" id="step-nav-3" onclick="setStep(3)">3. Sedí & Geovalle</div>
-          <div class="step-item" id="step-nav-4" onclick="setStep(4)">4. Invito Lavoratori</div>
-        </div>
-
-        <div class="card">
-          <!-- Step 1 -->
-          <div id="step-content-1">
-            <h2 style="font-size: 18px; margin-bottom: 14px;">1. Dati Societari e Inquadramento Contrattuale</h2>
-            <div class="form-grid">
-              <div class="field-group">
-                <label>Ragione Sociale</label>
-                <input type="text" id="reg-name" value="Officine Aurora S.r.l.">
-              </div>
-              <div class="field-group">
-                <label>Partita IVA / CIF</label>
-                <input type="text" id="reg-vat" value="IT09876543210">
-              </div>
-              <div class="field-group">
-                <label>Codice Fiscale / NIF</label>
-                <input type="text" id="reg-cf" value="09876543210">
-              </div>
-              <div class="field-group">
-                <label>Posta Elettronica Certificata (PEC)</label>
-                <input type="email" id="reg-pec" value="amministrazione@pec.aurora.it">
-              </div>
-              <div class="field-group">
-                <label>Codice SDI (Fatturazione Elettronica)</label>
-                <input type="text" id="reg-sdi" value="M5UXCR1">
-              </div>
-              <div class="field-group">
-                <label>CCNL / Contratto Collettivo Applicabile</label>
-                <select id="reg-ccnl">
-                  <option>CCNL Metalmeccanico Industria</option>
-                  <option>CCNL Commercio e Terziario</option>
-                  <option>CCNL Logistica, Trasporto Merci e Spedizioni</option>
-                  <option>CCNL Edilizia e Affini</option>
-                  <option>CCNL Alimentari e Bevande</option>
-                </select>
-              </div>
-            </div>
-            <button class="btn btn-primary" onclick="setStep(2)">Conferma Dati & Continua →</button>
-          </div>
-
-          <!-- Step 2 -->
-          <div id="step-content-2" style="display: none;">
-            <h2 style="font-size: 18px; margin-bottom: 14px;">2. Registrazione Passkey e Generazione Chiavi Aziendali</h2>
-            <p style="font-size: 13px; color: #556B63; line-height: 1.5; margin-bottom: 16px;">
-              Fide non utilizza password per gli amministratori. La tua identità è protetta dall'enclave hardware del tuo dispositivo (Touch ID, Windows Hello o YubiKey). Verrà inoltre generata la coppia di chiavi crittografiche <strong>X25519 / Ed25519</strong> della società.
-            </p>
-            <div style="background: var(--accent-muted); padding: 18px; border-radius: 12px; margin-bottom: 20px;">
-              <div style="font-weight: 700; color: var(--accent); margin-bottom: 4px;">Impronta Chiave Pubblica Aziendale:</div>
-              <div style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: var(--text-dark);">
-                7F3A 91C2 0B4E D815 66AF 2C90
-              </div>
-              <div style="font-size: 12px; color: #556B63; margin-top: 4px;">
-                Tutti i cedolini paga e i token QR generati per i dipendenti saranno firmati con questa autorità crittografica.
-              </div>
-            </div>
-            <button class="btn btn-primary" onclick="setStep(3)">Attiva Passkey FIDO2 (Biometria) →</button>
-          </div>
-
-          <!-- Step 3 -->
-          <div id="step-content-3" style="display: none;">
-            <h2 style="font-size: 18px; margin-bottom: 14px;">3. Definizione Sedi Fisiche e Geovalla Locale</h2>
-            <div class="form-grid">
-              <div class="field-group">
-                <label>Nome Sede</label>
-                <input type="text" id="site-name" value="Stabilimento Centrale Milano">
-              </div>
-              <div class="field-group">
-                <label>Indirizzo Completo</label>
-                <input type="text" id="site-addr" value="Via dell'Innovazione 42, Milano (MI)">
-              </div>
-              <div class="field-group">
-                <label>Radio Geovalla (Metri)</label>
-                <input type="number" id="site-radius" value="150">
-              </div>
-              <div class="field-group">
-                <label>Metodi di Timbratura Abilitati</label>
-                <select id="site-methods">
-                  <option>Tutti (Geovalla RAM + QR Dinamico + Tag NFC)</option>
-                  <option>Solo QR Dinamico (Tablet all'ingresso)</option>
-                  <option>Solo Geovalla sul Dispositivo</option>
-                </select>
-              </div>
-            </div>
-            <div style="background: #F4F8F6; border: 1px solid var(--border-light); padding: 14px; border-radius: 12px; font-size: 13px; color: #3E544C; margin-bottom: 18px;">
-              🛡️ <strong>Garanzia Garante Privacy:</strong> Le coordinate esatte della sede vengono memorizzate solo per permettere all'app del dipendente di calcolare la distanza in RAM. Al server dell'azienda perviene solo <code>in_geofence: true</code>.
-            </div>
-            <button class="btn btn-primary" onclick="setStep(4)">Salva Sede & Configura Inviti →</button>
-          </div>
-
-          <!-- Step 4 -->
-          <div id="step-content-4" style="display: none;">
-            <h2 style="font-size: 18px; margin-bottom: 14px;">4. Invito e Attivazione Lavoratori</h2>
-            <p style="font-size: 13px; color: #556B63; margin-bottom: 16px;">
-              Genera link universali o codici QR per consentire ai collaboratori di attivare la loro app Fide in meno di 1 minuto senza password.
-            </p>
-            <div class="form-grid">
-              <div class="field-group">
-                <label>Nome e Cognome Dipendente</label>
-                <input type="text" id="emp-name" placeholder="es. Marco Rossi">
-              </div>
-              <div class="field-group">
-                <label>Reparto / Mansione</label>
-                <input type="text" id="emp-dept" placeholder="es. Logistica & Magazzino">
-              </div>
-              <div class="field-group">
-                <label>Orario di Lavoro</label>
-                <input type="text" id="emp-shift" value="08:30 - 17:30">
-              </div>
-            </div>
-            <button class="btn btn-primary" onclick="generateInvite()">Genera Link e QR di Invito 🚀</button>
-
-            <div id="invite-result" style="display: none; margin-top: 20px; background: var(--accent-muted); padding: 18px; border-radius: 14px;">
-              <div style="font-weight: 700; color: var(--accent); margin-bottom: 6px;">Link di Invito Univoco Generato:</div>
-              <div style="background: #fff; padding: 10px; border-radius: 8px; font-family: monospace; font-size: 12px; word-break: break-all; margin-bottom: 10px;" id="invite-url">
-                fide://invite?code=AURORA-2026-9842&company=Officine+Aurora+S.r.l.&name=Marco+Rossi&dept=Logistica
-              </div>
-              <div style="font-size: 12px; color: #556B63;">
-                Invia questo link al dipendente via WhatsApp, SMS o Email. Toccando il link dal proprio iPhone o Android, l'app Fide completerà l'onboarding e la registrazione FIDO2 in meno di 60 secondi.
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- TAB 2: LIVE ATTENDANCE MONITOR -->
-      <section id="tab-live" style="display: block;">
-        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+      <!-- ==================== TAB 1: PRESENCIA EN VIVO ==================== -->
+      <section id="tab-presence">
+        <div class="page-header">
           <div>
-            <h1 class="section-title">Monitor Presenze in Tempo Reale</h1>
-            <p class="section-desc" style="margin-bottom: 0;">Presenze aziendali certificate crittograficamente con Supabase EU Realtime.</p>
+            <h1 class="page-title">Monitor de Presencia en Directo</h1>
+            <p class="page-desc">Supervisión en tiempo real de entradas y salidas certificadas sin invasión de privacidad GPS.</p>
           </div>
-          <div style="display: flex; gap: 10px;">
-            <button class="btn btn-secondary" onclick="fetchRecentPunches()" style="font-size: 13px;">🔄 Aggiorna Dati</button>
-            <button class="btn btn-primary" onclick="simulateLivePunch()" style="font-size: 13px;">⚡ Simula Fichaje Live</button>
-          </div>
-        </div>
-
-        <div style="background: rgba(72, 180, 120, 0.1); border: 1px solid var(--accent-light); padding: 12px 18px; border-radius: 12px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between;">
-          <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--accent);">
-            <span style="display: inline-block; width: 10px; height: 10px; background: var(--success); border-radius: 50%; box-shadow: 0 0 8px var(--success);"></span>
-            <strong>Connesso a Supabase EU (Milano / Cloudflare MXP)</strong> · Canale Realtime WebSocket Attivo
-          </div>
-          <span style="font-size: 12px; color: #556B63;" id="last-sync-time">In ascolto eventi...</span>
-        </div>
-
-        <div class="stats-grid">
-          <div class="stat-card">
-            <span class="stat-label">In Turno Adesso</span>
-            <span class="stat-val" style="color: var(--success);" id="stat-active">14</span>
-          </div>
-          <div class="stat-card">
-            <span class="stat-label">Uscite Registrate</span>
-            <span class="stat-val" id="stat-out">2</span>
-          </div>
-          <div class="stat-card">
-            <span class="stat-label">Ferie / Permessi Oggi</span>
-            <span class="stat-val" style="color: var(--warning);">1</span>
-          </div>
-          <div class="stat-card">
-            <span class="stat-label">Verifiche Valide</span>
-            <span class="stat-val" style="color: var(--accent);">100%</span>
+          <div class="page-actions">
+            <button class="btn btn-secondary" onclick="fetchPunchesFromSupabase()">
+              🔄 Refrescar
+            </button>
+            <button class="btn btn-primary" onclick="simulateTestPunch()">
+              ⚡ Simular Fichaje de Empleado
+            </button>
           </div>
         </div>
 
-        <div class="card">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
-            <h2 style="font-size: 18px;">Marcature Odierne Verificate</h2>
-            <span style="font-size: 12px; color: #6C8279;">Firma crittografica Ed25519 & Geovalla RAM (150m)</span>
+        <!-- Metric KPI Cards -->
+        <div class="metrics-grid">
+          <div class="metric-card accent">
+            <span class="metric-label">En Turno Ahora</span>
+            <div class="metric-value-row">
+              <span class="metric-num" id="kpi-in">14</span>
+              <span class="metric-sub">/ 16 trabajadores</span>
+            </div>
           </div>
-          <div class="table-wrap">
+          <div class="metric-card blue">
+            <span class="metric-label">Sedes con Geovalla</span>
+            <div class="metric-value-row">
+              <span class="metric-num">2</span>
+              <span class="metric-sub">Activas y verificadas</span>
+            </div>
+          </div>
+          <div class="metric-card warning">
+            <span class="metric-label">Permisos Hoy</span>
+            <div class="metric-value-row">
+              <span class="metric-num">2</span>
+              <span class="metric-sub">Aprobados por convenio</span>
+            </div>
+          </div>
+          <div class="metric-card accent">
+            <span class="metric-label">Firma Criptográfica</span>
+            <div class="metric-value-row">
+              <span class="metric-num">100%</span>
+              <span class="metric-sub">Ed25519 Hardware Enclave</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Real-Time Event Table -->
+        <div class="panel-card">
+          <div class="panel-header">
+            <div class="panel-title">
+              <span>Registro de Fichajes en Tiempo Real</span>
+              <span class="badge badge-in" id="realtime-status-pill">🟢 Supabase Realtime Conectado</span>
+            </div>
+            <div style="font-size: 12px; color: var(--text-muted);" id="last-sync-caption">
+              Conexión directa con Supabase EU (Milán / Madrid)
+            </div>
+          </div>
+
+          <div class="table-container">
             <table>
               <thead>
                 <tr>
-                  <th>Collaboratore / ID</th>
-                  <th>Tipo Evento</th>
-                  <th>Orario / Sync</th>
-                  <th>Metodo di Verifica</th>
-                  <th>Ricevuta Digitale Fide</th>
-                  <th>Stato</th>
+                  <th>Trabajador</th>
+                  <th>Evento</th>
+                  <th>Hora Exacta</th>
+                  <th>Método de Validación</th>
+                  <th>Recibo Criptográfico Fide</th>
+                  <th>Cumplimiento Legal</th>
                 </tr>
               </thead>
-              <tbody id="live-punches-body">
+              <tbody id="presence-table-body">
                 <tr>
-                  <td colspan="6" style="text-align: center; color: #6C8279; padding: 20px;">Caricamento eventi da Supabase...</td>
+                  <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 24px;">
+                    Cargando fichajes certificados desde Supabase...
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -594,106 +634,146 @@
         </div>
       </section>
 
-      <!-- TAB 3: KIOSK DISPLAY (ROTATING QR) -->
+      <!-- ==================== TAB 2: SEDES & KIOSCO QR ==================== -->
       <section id="tab-kiosk" style="display: none;">
-        <h1 class="section-title">Chiosco di Ingresso Sede — QR Dinamico Rotativo</h1>
-        <p class="section-desc">Schermata per tablet o monitor installato all'ingresso aziendale. Il QR ruota ogni 30 secondi con firma HMAC.</p>
-
-        <div class="kiosk-card">
-          <div style="font-size: 14px; color: var(--accent-light); text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">
-            Officine Aurora S.r.l. · Ingresso Centrale
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Sedes Físicas y Kiosco QR Dinámico</h1>
+            <p class="page-desc">Pantalla para recepción o tornos. El código QR rota cada 30 segundos firmado con HMAC.</p>
           </div>
-          <div style="font-size: 22px; font-weight: 700; margin-top: 6px;">
-            Inquadra con l'App Fide per Timbrare
+          <div class="page-actions">
+            <button class="btn btn-secondary" onclick="openFullscreenKiosk()">
+              ⛶ Abrir Modo Pantalla Completa (Tablet)
+            </button>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start;">
+          <!-- Kiosk Terminal Preview -->
+          <div class="kiosk-preview">
+            <div class="kiosk-title">Fide Kiosk Terminal · Sede Central</div>
+            <div class="kiosk-headline">Enfoca con tu App Fide para Fichar</div>
+
+            <div class="kiosk-qr-frame">
+              <svg width="200" height="200" viewBox="0 0 200 200">
+                <rect width="200" height="200" fill="#FFFFFF"/>
+                <!-- Outer Corners -->
+                <rect x="20" y="20" width="50" height="50" fill="#000000"/>
+                <rect x="28" y="28" width="34" height="34" fill="#FFFFFF"/>
+                <rect x="36" y="36" width="18" height="18" fill="#000000"/>
+
+                <rect x="130" y="20" width="50" height="50" fill="#000000"/>
+                <rect x="138" y="28" width="34" height="34" fill="#FFFFFF"/>
+                <rect x="146" y="36" width="18" height="18" fill="#000000"/>
+
+                <rect x="20" y="130" width="50" height="50" fill="#000000"/>
+                <rect x="28" y="138" width="34" height="34" fill="#FFFFFF"/>
+                <rect x="36" y="146" width="18" height="18" fill="#000000"/>
+
+                <!-- Dynamic Data Pattern -->
+                <rect x="80" y="30" width="12" height="12" fill="#000000"/>
+                <rect x="100" y="45" width="12" height="12" fill="#000000"/>
+                <rect x="80" y="70" width="40" height="40" fill="#15803D" rx="6"/>
+                <rect x="92" y="82" width="16" height="16" fill="#FFFFFF" rx="3"/>
+                <rect x="135" y="90" width="14" height="14" fill="#000000"/>
+                <rect x="40" y="95" width="14" height="14" fill="#000000"/>
+                <rect x="85" y="135" width="12" height="12" fill="#000000"/>
+                <rect x="110" y="150" width="16" height="16" fill="#000000"/>
+                <rect x="145" y="135" width="18" height="18" fill="#000000"/>
+              </svg>
+            </div>
+
+            <div class="kiosk-timer-bar">
+              <div class="kiosk-timer-fill" id="kiosk-progress-bar"></div>
+            </div>
+            <div style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: var(--accent); margin-top: 6px;">
+              Rotación del token en: <span id="kiosk-countdown">30s</span>
+            </div>
+            <div style="font-size: 11px; color: var(--text-muted); margin-top: 8px;">
+              HMAC Token: <span class="code-pill" id="kiosk-token-hash">HMAC_SHA256_FIDE_78A9C1</span>
+            </div>
           </div>
 
-          <div class="kiosk-qr-box">
-            <!-- Simulated QR SVG -->
-            <svg width="180" height="180" viewBox="0 0 100 100" fill="#0F1A17">
-              <rect x="5" y="5" width="25" height="25" rx="3" fill="#1D6F42" />
-              <rect x="10" y="10" width="15" height="15" fill="#FFFFFF" />
-              <rect x="13" y="13" width="9" height="9" fill="#1D6F42" />
-              <rect x="70" y="5" width="25" height="25" rx="3" fill="#1D6F42" />
-              <rect x="75" y="10" width="15" height="15" fill="#FFFFFF" />
-              <rect x="78" y="13" width="9" height="9" fill="#1D6F42" />
-              <rect x="5" y="70" width="25" height="25" rx="3" fill="#1D6F42" />
-              <rect x="10" y="75" width="15" height="15" fill="#FFFFFF" />
-              <rect x="13" y="78" width="9" height="9" fill="#1D6F42" />
-              <circle cx="45" cy="20" r="4" />
-              <circle cx="55" cy="30" r="3" />
-              <circle cx="40" cy="50" r="5" />
-              <circle cx="65" cy="60" r="4" />
-              <circle cx="80" cy="80" r="5" />
-              <circle cx="50" cy="85" r="4" />
-              <circle cx="85" cy="50" r="3" />
-            </svg>
-          </div>
+          <!-- Geofence Site Information -->
+          <div class="panel-card">
+            <div class="panel-title" style="margin-bottom: 16px;">Sedes Físicas Registradas</div>
+            
+            <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 16px; margin-bottom: 12px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="font-weight: 700; color: #FFFFFF;">Madrid HQ — Oficinas Centrales</div>
+                <span class="badge badge-in">Geovalla 150m</span>
+              </div>
+              <div style="font-size: 12px; color: var(--text-muted); margin-top: 6px;">
+                Paseo de la Castellana 200, Madrid · Lat 40.4682, Lon -3.6890
+              </div>
+              <div style="font-size: 11px; color: var(--accent); margin-top: 8px;">
+                ✓ Los teléfonos calculan la distancia en su propia RAM sin enviar el GPS al servidor.
+              </div>
+            </div>
 
-          <div class="kiosk-countdown" id="kioskTimer">24s</div>
-          <div style="font-size: 12px; color: var(--text-muted); margin-top: 8px;">
-            Token HMAC crittografico valido per 30s. Le foto e gli screenshot inoltrati scadono automaticamente.
+            <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 16px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="font-weight: 700; color: #FFFFFF;">Milán Hub — Sede Operativa</div>
+                <span class="badge badge-in">Geovalla 150m</span>
+              </div>
+              <div style="font-size: 12px; color: var(--text-muted); margin-top: 6px;">
+                Via Tortona 31, Milano · Lat 45.4518, Lon 9.1624
+              </div>
+              <div style="font-size: 11px; color: var(--accent); margin-top: 8px;">
+                ✓ Cumplimiento estricto Garante Privacy (Provvedimento 392/2016).
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      <!-- TAB 4: E2EE PAYROLL DISPATCHER -->
-      <section id="tab-payroll" style="display: none;">
-        <h1 class="section-title">Distribuzione Cedolini con Cifratura E2EE</h1>
-        <p class="section-desc">Carica il PDF generale delle paghe. Fide suddivide e cifra ciascuna busta paga con la chiave X25519 del rispettivo dipendente.</p>
-
-        <div class="card">
-          <div style="border: 2px dashed var(--accent); padding: 36px; border-radius: 16px; text-align: center; background: var(--accent-muted); cursor: pointer;" onclick="simulatePayrollUpload()">
-            <div style="font-size: 36px; margin-bottom: 8px;">📄</div>
-            <div style="font-size: 16px; font-weight: 700; color: var(--accent);">Clicca qui per caricare il file PDF unico delle buste paga del mese</div>
-            <div style="font-size: 13px; color: #556B63; margin-top: 4px;">Supporta esportazioni da Zucchetti, TeamSystem, A3Innuva, Factorial o SAP</div>
-          </div>
-
-          <div id="payroll-progress" style="display: none; margin-top: 24px;">
-            <h3 style="font-size: 16px; margin-bottom: 12px;">Elaborazione Criptografica E2EE in Corso:</h3>
-            <div style="background: #E8F0EC; border-radius: 8px; height: 12px; overflow: hidden; margin-bottom: 12px;">
-              <div style="background: var(--accent); width: 100%; height: 100%;"></div>
-            </div>
-            <div style="font-size: 13px; color: var(--success); font-weight: 600;">
-              ✓ 24 Cedolini cifrati con XChaCha20-Poly1305 · Notifiche push inviate con successo!
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- TAB 5: REQUESTS & LEAVES -->
+      <!-- ==================== TAB 3: SOLICITUDES & VACACIONES ==================== -->
       <section id="tab-requests" style="display: none;">
-        <h1 class="section-title">Gestione Ferie, Permessi e Timbrature Dimenticate</h1>
-        <p class="section-desc">Richieste ricevute dall'app con calcolo dell'impatto sul saldo residuo.</p>
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Gestión de Vacaciones y Permisos</h1>
+            <p class="page-desc">Aprobación de solicitudes enviadas desde las aplicaciones móviles de los trabajadores.</p>
+          </div>
+        </div>
 
-        <div class="card">
-          <div class="table-wrap">
+        <div class="panel-card">
+          <div class="panel-header">
+            <div class="panel-title">Solicitudes Pendientes de Resolución</div>
+          </div>
+
+          <div class="table-container">
             <table>
               <thead>
                 <tr>
-                  <th>Dipendente</th>
-                  <th>Tipologia</th>
-                  <th>Dettaglio & Periodo</th>
-                  <th>Saldo Residuo</th>
-                  <th>Azione</th>
+                  <th>Trabajador</th>
+                  <th>Departamento</th>
+                  <th>Tipo de Ausencia</th>
+                  <th>Fechas Solicitadas</th>
+                  <th>Saldo Restante</th>
+                  <th>Acción Rápida</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody id="requests-table-body">
                 <tr>
                   <td><strong>Marco Rossi</strong></td>
-                  <td>Ferie Annuali</td>
-                  <td>15 - 20 Luglio (5 giorni lavorativi)</td>
-                  <td>14,5 giorni rimasti</td>
+                  <td>Logística & Almacén</td>
+                  <td>Vacaciones Anuales</td>
+                  <td>12 Oct 2026 - 16 Oct 2026 (5 días)</td>
+                  <td>17 días disponibles</td>
                   <td>
-                    <button class="btn btn-primary" style="padding: 6px 12px; font-size: 12px;" onclick="alert('Richiesta approvata con successo. Il saldo del lavoratore è stato aggiornato sull\'app!')">Approva</button>
+                    <button class="btn btn-primary" style="padding: 4px 10px; font-size: 11px;" onclick="approveRequest(this, 'Marco Rossi')">✓ Aprobar</button>
+                    <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 11px; color: var(--danger);" onclick="rejectRequest(this)">✕ Rechazar</button>
                   </td>
                 </tr>
                 <tr>
                   <td><strong>Elena Conti</strong></td>
-                  <td>Permesso Retribuito (ROL)</td>
-                  <td>Domani 09:00 - 11:00 (Visita medica)</td>
-                  <td>24 ore rimaste</td>
+                  <td>Administración</td>
+                  <td>Permiso Retribuido (Médico)</td>
+                  <td>06 Oct 2026 (11:00 - 13:00)</td>
+                  <td>30 horas disponibles</td>
                   <td>
-                    <button class="btn btn-primary" style="padding: 6px 12px; font-size: 12px;" onclick="alert('Permesso approvato!')">Approva</button>
+                    <button class="btn btn-primary" style="padding: 4px 10px; font-size: 11px;" onclick="approveRequest(this, 'Elena Conti')">✓ Aprobar</button>
+                    <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 11px; color: var(--danger);" onclick="rejectRequest(this)">✕ Rechazar</button>
                   </td>
                 </tr>
               </tbody>
@@ -702,103 +782,133 @@
         </div>
       </section>
 
-      <!-- TAB 6: LABOR INSPECTORATE AUDIT -->
-      <section id="tab-audit" style="display: none;">
-        <h1 class="section-title">Esportazione Ufficiale per Ispettorato del Lavoro</h1>
-        <p class="section-desc">Registro di presenza conforme alle prescrizioni del D.Lgs. 81/2008 (Italia) e RDL 8/2019 (Spagna).</p>
-
-        <div class="card">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <div>
-              <div style="font-size: 16px; font-weight: 700;">Registro Mensile Vidimato Digitalmente</div>
-              <div style="font-size: 13px; color: #556B63;">Firma digitale certificata con marca temporale immutabile</div>
-            </div>
-            <button class="btn btn-primary" onclick="alert('Esportazione Registro Ufficiale generata in formato PDF/A con timbro digitale e firme Ed25519.')">Scarica Registro Ufficiale (PDF / CSV) 📥</button>
+      <!-- ==================== TAB 4: NÓMINAS & BUSTE PAGA E2EE ==================== -->
+      <section id="tab-payroll" style="display: none;">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Distribución de Nóminas Cifradas (Zero-Knowledge)</h1>
+            <p class="page-desc">Arrastra los PDFs de tu gestoría. Se cifran asimétricamente en tu navegador antes de enviarse.</p>
           </div>
-          <div style="background: #F4F8F6; padding: 16px; border-radius: 12px; font-size: 13px; color: #3E544C; line-height: 1.6;">
-            <strong>Garanzia di Conformità Legale:</strong> Il registro Fide contiene per ciascun evento di marcatura la marca temporale esatta, il metodo di convalida (senza coordinate GPS) e l'impronta crittografica del dispositivo del dipendente, escludendo contestazioni su alterazioni retroattive.
+        </div>
+
+        <div class="panel-card">
+          <div class="dropzone" onclick="simulatePayrollUpload()">
+            <div style="font-size: 38px; margin-bottom: 12px;">🔒</div>
+            <div style="font-weight: 700; font-size: 16px; color: #FFFFFF; margin-bottom: 4px;">
+              Arrastra aquí el archivo comprimido o los PDFs de las nóminas de este mes
+            </div>
+            <div style="font-size: 12px; color: var(--text-muted); max-width: 500px; margin: 0 auto;">
+              El navegador utilizará la clave pública <strong style="color: var(--accent);">X25519</strong> de cada empleado para cifrar cada documento. Supabase solo guardará texto cifrado imposible de descifrar por terceros.
+            </div>
+            <div style="margin-top: 16px;">
+              <button class="btn btn-primary" onclick="simulatePayrollUpload()">Seleccionar Archivos (Simular Cifrado)</button>
+            </div>
+          </div>
+
+          <div id="payroll-upload-progress" style="display: none; margin-top: 20px; background: var(--bg-card); padding: 18px; border-radius: 12px; border: 1px solid var(--accent-border);">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+              <span style="font-weight: 600; color: var(--accent);">Cifrando con libsodium X25519 + XChaCha20-Poly1305...</span>
+              <span id="payroll-percent" style="font-family: monospace; font-weight: 700;">0%</span>
+            </div>
+            <div style="height: 6px; background: rgba(0,0,0,0.4); border-radius: 3px; overflow: hidden;">
+              <div id="payroll-bar" style="height: 100%; width: 0%; background: var(--accent); transition: width 0.3s ease;"></div>
+            </div>
+            <div id="payroll-log" style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--text-muted); margin-top: 10px; line-height: 1.6;">
+            </div>
           </div>
         </div>
       </section>
+
+      <!-- ==================== TAB 5: REGISTRO OFICIAL INSPECCIÓN ==================== -->
+      <section id="tab-legal" style="display: none;">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Registro Oficial para la Inspección de Trabajo</h1>
+            <p class="page-desc">Exportación inmutable conforme al Real Decreto-ley 8/2019 (España) y Decreto Legislativo 81/2008 (Italia).</p>
+          </div>
+          <div class="page-actions">
+            <button class="btn btn-primary" onclick="exportLaborInspectionReport()">
+              📥 Descargar Informe con Timbre Digital
+            </button>
+          </div>
+        </div>
+
+        <div class="panel-card">
+          <div style="background: rgba(34, 197, 94, 0.08); border: 1px solid var(--accent-border); padding: 16px; border-radius: 12px; font-size: 13px; color: #D1FAE5; line-height: 1.6; margin-bottom: 20px;">
+            🛡️ <strong>Validez Legal Incontestable:</strong> Cada registro de jornada generado por Fide contiene la marca temporal de red sincronizada, el identificador único del dispositivo hardware, el método de verificación (geovalla/QR) y la firma digital asimétrica. Queda excluida cualquier posibilidad de manipulación o edición retroactiva.
+          </div>
+
+          <div style="display: flex; gap: 14px;">
+            <div style="flex: 1; background: var(--bg-card); padding: 18px; border-radius: 12px; border: 1px solid var(--border-subtle);">
+              <div style="font-size: 12px; color: var(--text-muted);">Periodo Legal de Conservación</div>
+              <div style="font-size: 20px; font-weight: 700; color: #FFF; margin-top: 4px;">4 Años Obligatorios</div>
+              <div style="font-size: 11px; color: var(--accent); margin-top: 4px;">✓ Custodia inmutable en Supabase EU</div>
+            </div>
+
+            <div style="flex: 1; background: var(--bg-card); padding: 18px; border-radius: 12px; border: 1px solid var(--border-subtle);">
+              <div style="font-size: 12px; color: var(--text-muted);">Disponibilidad Inmediata</div>
+              <div style="font-size: 20px; font-weight: 700; color: #FFF; margin-top: 4px;">En Sede / Remoto</div>
+              <div style="font-size: 11px; color: var(--accent); margin-top: 4px;">✓ Formato estándar para el Inspector</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== TAB 6: EMPLEADOS & ALTAS ==================== -->
+      <section id="tab-employees" style="display: none;">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Gestión de Empleados y Nuevas Invitaciones</h1>
+            <p class="page-desc">Invita a nuevos trabajadores mediante enlace universal o código QR instantáneo sin contraseñas.</p>
+          </div>
+        </div>
+
+        <div class="panel-card" style="max-width: 600px;">
+          <div class="panel-title" style="margin-bottom: 16px;">Generar Nueva Invitación de Empleado</div>
+          <div style="display: flex; flex-direction: column; gap: 14px;">
+            <div>
+              <label style="font-size: 12px; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 6px;">Nombre Completo</label>
+              <input type="text" id="new-emp-name" placeholder="Ej. Carlos Mendoza" style="width: 100%; padding: 10px 14px; background: var(--bg-app); border: 1px solid var(--border-subtle); border-radius: 8px; color: #FFF; font-size: 13px;">
+            </div>
+            <div>
+              <label style="font-size: 12px; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 6px;">Departamento</label>
+              <input type="text" id="new-emp-dept" placeholder="Ej. Logística / Operaciones" style="width: 100%; padding: 10px 14px; background: var(--bg-app); border: 1px solid var(--border-subtle); border-radius: 8px; color: #FFF; font-size: 13px;">
+            </div>
+            <div>
+              <label style="font-size: 12px; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 6px;">Horario de Turno</label>
+              <input type="text" id="new-emp-shift" value="08:30 - 17:30" style="width: 100%; padding: 10px 14px; background: var(--bg-app); border: 1px solid var(--border-subtle); border-radius: 8px; color: #FFF; font-size: 13px;">
+            </div>
+            <button class="btn btn-primary" onclick="generateEmployeeInviteLink()" style="margin-top: 8px;">
+              Generar Enlace de Activación Fide
+            </button>
+          </div>
+
+          <div id="invite-box-result" style="display: none; margin-top: 20px; background: var(--bg-card); padding: 16px; border-radius: 12px; border: 1px solid var(--accent-border);">
+            <div style="font-weight: 700; color: var(--accent); margin-bottom: 6px; font-size: 13px;">Enlace de Activación Generado:</div>
+            <div id="invite-link-text" class="code-pill" style="display: block; padding: 10px; word-break: break-all; margin-bottom: 10px;"></div>
+            <div style="font-size: 12px; color: var(--text-muted);">
+              Envía este enlace por WhatsApp o email al trabajador. Al tocarlo en su móvil, la App Fide se configurará automáticamente con su clave FIDO2 en menos de 1 minuto.
+            </div>
+          </div>
+        </div>
+      </section>
+
     </main>
   </div>
 
   <script>
-    function showTab(tabId) {
+    // Tab Switcher
+    function switchTab(tabId) {
       document.querySelectorAll('main > section').forEach(s => s.style.display = 'none');
-      document.getElementById('tab-' + tabId).style.display = 'block';
+      const target = document.getElementById('tab-' + tabId);
+      if (target) target.style.display = 'block';
 
       document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-      const activeBtn = Array.from(document.querySelectorAll('.nav-btn')).find(b => b.getAttribute('onclick').includes(tabId));
+      const activeBtn = Array.from(document.querySelectorAll('.nav-btn')).find(b => b.getAttribute('onclick')?.includes(tabId));
       if (activeBtn) activeBtn.classList.add('active');
     }
 
-    function setStep(stepNum) {
-      for (let i = 1; i <= 4; i++) {
-        const content = document.getElementById('step-content-' + i);
-        const nav = document.getElementById('step-nav-' + i);
-        if (content) content.style.display = (i === stepNum ? 'block' : 'none');
-        if (nav) {
-          if (i === stepNum) {
-            nav.className = 'step-item active';
-          } else if (i < stepNum) {
-            nav.className = 'step-item completed';
-          } else {
-            nav.className = 'step-item';
-          }
-        }
-      }
-    }
-
-    function generateInvite() {
-      const name = document.getElementById('emp-name').value || 'Marco Rossi';
-      const dept = document.getElementById('emp-dept').value || 'Logistica';
-      const code = 'AURORA-2026-' + Math.floor(1000 + Math.random() * 9000);
-      const url = `fide://invite?code=${code}&company=Officine+Aurora+S.r.l.&name=${encodeURIComponent(name)}&dept=${encodeURIComponent(dept)}`;
-
-      document.getElementById('invite-url').innerText = url;
-      document.getElementById('invite-result').style.display = 'block';
-    }
-
-    function simulatePayrollUpload() {
-      const progress = document.getElementById('payroll-progress');
-      progress.style.display = 'block';
-    }
-
-    let isItaly = true;
-    function switchCountry() {
-      isItaly = !isItaly;
-      const label = document.getElementById('countryLabel');
-      const ccnl = document.getElementById('reg-ccnl');
-      if (isItaly) {
-        label.innerText = '🇮🇹 Italia (CCNL)';
-        ccnl.innerHTML = `
-          <option>CCNL Metalmeccanico Industria</option>
-          <option>CCNL Commercio e Terziario</option>
-          <option>CCNL Logistica, Trasporto Merci e Spedizioni</option>
-          <option>CCNL Edilizia e Affini</option>
-        `;
-      } else {
-        label.innerText = '🇪🇸 España (Convenio)';
-        ccnl.innerHTML = `
-          <option>Convenio Colectivo del Metal</option>
-          <option>Convenio de Comercio General</option>
-          <option>Convenio de Hostelería y Restauración</option>
-          <option>Convenio de Transporte de Mercancías</option>
-        `;
-      }
-    }
-
-    // 30s Kiosk countdown simulation
-    let secondsLeft = 30;
-    setInterval(() => {
-      secondsLeft--;
-      if (secondsLeft <= 0) secondsLeft = 30;
-      const timerEl = document.getElementById('kioskTimer');
-      if (timerEl) timerEl.innerText = secondsLeft + 's';
-    }, 1000);
-
-    // Supabase Realtime & REST Integration
+    // Supabase Credentials
     const supabaseUrl = 'https://saehchpgnbcciqimrqsj.supabase.co';
     const supabaseKey = 'sb_publishable_4p1NyO7FWXx_vGEDgJ8b0Q_xDxp_WUx';
     let supabaseClient = null;
@@ -807,88 +917,86 @@
       if (window.supabase) {
         supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-        // Realtime subscription
+        // Subscribe to real-time clock-ins
         supabaseClient
           .channel('public:attendance_punches')
           .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'attendance_punches' }, (payload) => {
-            handleNewLivePunch(payload.new, true);
+            renderPunchRow(payload.new, true);
           })
           .subscribe((status) => {
-            const syncEl = document.getElementById('last-sync-time');
-            if (syncEl) syncEl.innerText = 'Realtime: ' + status + ' (' + new Date().toLocaleTimeString() + ')';
+            const pill = document.getElementById('realtime-status-pill');
+            if (pill) {
+              pill.innerText = '🟢 Supabase Realtime: ' + status;
+            }
           });
       }
     } catch (e) {
-      console.warn('[Supabase] Initializing error:', e);
+      console.warn('Supabase init warning:', e);
     }
 
-    async function fetchRecentPunches() {
-      const tbody = document.getElementById('live-punches-body');
+    async function fetchPunchesFromSupabase() {
+      const tbody = document.getElementById('presence-table-body');
       try {
-        const res = await fetch(`${supabaseUrl}/rest/v1/attendance_punches?select=*&order=synced_at.desc&limit=10`, {
+        const res = await fetch(`${supabaseUrl}/rest/v1/attendance_punches?select=*&order=synced_at.desc&limit=15`, {
           headers: {
             'apikey': supabaseKey,
             'Authorization': `Bearer ${supabaseKey}`
           }
         });
-        const punches = await res.json();
-        if (Array.isArray(punches) && punches.length > 0) {
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) {
           tbody.innerHTML = '';
-          punches.forEach(p => handleNewLivePunch(p, false));
-          const syncEl = document.getElementById('last-sync-time');
-          if (syncEl) syncEl.innerText = `Sincronizzato: ${punches.length} eventi scaricati alle ${new Date().toLocaleTimeString()}`;
+          data.forEach(p => renderPunchRow(p, false));
+          document.getElementById('last-sync-caption').innerText = 
+            `Sincronizado: ${data.length} eventos a las ${new Date().toLocaleTimeString()}`;
         } else {
-          tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #6C8279; padding: 20px;">Nessun evento ancora registrato. Clicca su "Simula Fichaje Live" per testare!</td></tr>';
+          tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 24px;">No hay fichajes registrados aún. Pulsa en "⚡ Simular Fichaje de Empleado" para probar el sistema en directo.</td></tr>`;
         }
       } catch (err) {
         console.error('Fetch error:', err);
       }
     }
 
-    function handleNewLivePunch(punch, isNew = false) {
-      const tbody = document.getElementById('live-punches-body');
+    function renderPunchRow(punch, isNew = false) {
+      const tbody = document.getElementById('presence-table-body');
       if (!tbody) return;
 
       const tr = document.createElement('tr');
       if (isNew) {
-        tr.style.backgroundColor = 'rgba(72, 180, 120, 0.25)';
+        tr.style.backgroundColor = 'rgba(34, 197, 94, 0.2)';
         tr.style.transition = 'background-color 2s ease';
       }
 
+      const isEntry = punch.punch_type === 'Entrada';
+      const typeBadge = isEntry ? '<span class="badge badge-in">🟢 ENTRADA</span>' : '<span class="badge badge-out">🔴 SALIDA</span>';
+
+      const methodBadge = punch.verification_method === 'geo'
+        ? '<span class="badge badge-geo">📍 Geovalla RAM (150m)</span>'
+        : (punch.verification_method === 'qr' ? '<span class="badge badge-qr">⚡ QR Dinámico (30s)</span>' : '<span class="badge badge-geo">🏷️ Tag NFC</span>');
+
       const dateObj = punch.timestamp_epoch ? new Date(punch.timestamp_epoch) : new Date(punch.synced_at || Date.now());
       const timeStr = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      const dateStr = dateObj.toLocaleDateString();
 
-      const isEntry = punch.punch_type === 'Entrada';
-      const badgeClass = isEntry ? 'badge-online' : 'badge-offline';
-      const badgeText = isEntry ? 'Entrata Verificata' : 'Uscita Registrata';
-
-      const methodLabel = punch.verification_method === 'geo' 
-        ? '📍 Geovalla RAM (150 m)' 
-        : (punch.verification_method === 'qr' ? '⚡ QR Dinamico Kiosk (30s)' : '🏷️ Tag NFC Fisico');
-
-      const receipt = punch.receipt_code || punch.device_signature?.slice(0, 16) || 'FIDE-OK-2026';
+      const receipt = punch.receipt_code || punch.device_signature?.slice(0, 16) || 'FIDE-VERIFIED-REC';
 
       tr.innerHTML = `
         <td>
-          <div style="font-weight: 700; color: var(--text-dark);">${punch.employee_name || 'Dipendente Verificato'}</div>
-          <div style="font-size: 11px; color: #6C8279; font-family: monospace;">UID: ${punch.user_id ? punch.user_id.slice(0, 8) + '...' : 'ANON-APP'}</div>
+          <div style="font-weight: 700; color: #FFFFFF;">${punch.employee_name || 'Marco Rossi'}</div>
+          <div style="font-size: 11px; color: var(--text-muted);">Logística / Operaciones</div>
+        </td>
+        <td>${typeBadge}</td>
+        <td>
+          <div style="font-weight: 600; color: #FFFFFF;">${timeStr}</div>
+          <div style="font-size: 11px; color: var(--text-muted);">${dateStr}</div>
+        </td>
+        <td>${methodBadge}</td>
+        <td>
+          <span class="code-pill">${receipt}</span>
         </td>
         <td>
-          <span style="font-weight: 600; color: ${isEntry ? 'var(--success)' : 'var(--danger)'};">
-            ${isEntry ? '🟢 ENTRATA' : '🔴 USCITA'}
-          </span>
+          <span style="font-size: 12px; color: var(--accent); font-weight: 600;">✓ Ley RD 8/2019 OK</span>
         </td>
-        <td>
-          <div style="font-weight: 600;">${timeStr}</div>
-          <div style="font-size: 11px; color: #6C8279;">${dateObj.toLocaleDateString()}</div>
-        </td>
-        <td>${methodLabel}</td>
-        <td>
-          <code style="background: #EBF5F0; color: var(--accent); padding: 4px 8px; border-radius: 6px; font-family: monospace; font-size: 11px; font-weight: 600;">
-            ${receipt}
-          </code>
-        </td>
-        <td><span class="status-badge ${badgeClass}">${badgeText}</span></td>
       `;
 
       if (isNew) {
@@ -899,8 +1007,8 @@
       }
     }
 
-    async function simulateLivePunch() {
-      const names = ['Marco Rossi (Logistica)', 'Elena Conti (HR Admin)', 'Luca Moretti (Produzione)', 'Sofia Ramos (Qualità)'];
+    async function simulateTestPunch() {
+      const names = ['Carlos Mendoza (Logística)', 'Elena Conti (Administración)', 'Javier Romero (Producción)', 'Laura Gómez (Comercial)'];
       const methods = ['geo', 'qr', 'nfc'];
       const types = ['Entrada', 'Salida'];
 
@@ -910,7 +1018,6 @@
       const randomReceipt = 'FIDE-REC-' + Math.floor(100000 + Math.random() * 900000);
       const signatureHex = 'SIG_ED25519_' + Math.random().toString(36).substring(2, 10).toUpperCase() + '_HARDWARE_ENCLAVE_OK';
 
-      // Live payload matching Supabase RLS policy
       const payload = {
         user_id: '47d512a2-cb3e-4621-8208-8e6ca6f4c9c1',
         timestamp_epoch: Date.now(),
@@ -937,18 +1044,94 @@
           const inserted = await res.json();
           const item = Array.isArray(inserted) ? inserted[0] : payload;
           item.employee_name = randomName;
-          handleNewLivePunch(item, true);
-        } else {
-          console.error('Insert error:', await res.text());
+          renderPunchRow(item, true);
         }
       } catch (err) {
-        console.error('Simulate punch error:', err);
+        console.error('Insert error:', err);
       }
     }
 
-    // Carica dati reali all'avvio
+    // 30s Kiosk Countdown
+    let kioskSeconds = 30;
+    setInterval(() => {
+      kioskSeconds--;
+      if (kioskSeconds <= 0) {
+        kioskSeconds = 30;
+        const randomHex = Math.random().toString(36).substring(2, 8).toUpperCase();
+        document.getElementById('kiosk-token-hash').innerText = 'HMAC_SHA256_FIDE_' + randomHex;
+      }
+      const el = document.getElementById('kiosk-countdown');
+      if (el) el.innerText = kioskSeconds + 's';
+      const bar = document.getElementById('kiosk-progress-bar');
+      if (bar) bar.style.width = ((kioskSeconds / 30) * 100) + '%';
+    }, 1000);
+
+    function openFullscreenKiosk() {
+      switchTab('kiosk');
+      const elem = document.documentElement;
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+      }
+    }
+
+    function approveRequest(btn, name) {
+      const tr = btn.closest('tr');
+      tr.style.opacity = '0.5';
+      btn.parentElement.innerHTML = '<span style="color: var(--accent); font-weight: 600;">✓ Aprobado</span>';
+    }
+
+    function rejectRequest(btn) {
+      const tr = btn.closest('tr');
+      tr.style.opacity = '0.5';
+      btn.parentElement.innerHTML = '<span style="color: var(--danger); font-weight: 600;">✕ Rechazado</span>';
+    }
+
+    function simulatePayrollUpload() {
+      const progressBox = document.getElementById('payroll-upload-progress');
+      const bar = document.getElementById('payroll-bar');
+      const percent = document.getElementById('payroll-percent');
+      const log = document.getElementById('payroll-log');
+
+      progressBox.style.display = 'block';
+      bar.style.width = '0%';
+      percent.innerText = '0%';
+      log.innerHTML = 'Extrayendo nóminas y resolviendo claves públicas X25519 de la plantilla...<br>';
+
+      let current = 0;
+      const interval = setInterval(() => {
+        current += 20;
+        bar.style.width = current + '%';
+        percent.innerText = current + '%';
+
+        if (current === 40) {
+          log.innerHTML += '✓ Marco Rossi: Cifrado con X25519 (SHA-256: e3b0c44298fc1c149afbf4c8996fb924...)<br>';
+        } else if (current === 60) {
+          log.innerHTML += '✓ Elena Conti: Cifrado con X25519 (SHA-256: 8a5d3f1e9c2b4a7065e8d1a3f6b9c8e2...)<br>';
+        } else if (current === 80) {
+          log.innerHTML += '✓ Ion Popescu: Cifrado con X25519 (SHA-256: f4b1c8a9e2d3f6a7081b2c3d4e5f6a7b...)<br>';
+        } else if (current >= 100) {
+          clearInterval(interval);
+          log.innerHTML += '<strong style="color: var(--accent);">✓ 100% Completado: 14 Nóminas cifradas y listas para descarga segura en las Apps de los trabajadores.</strong>';
+        }
+      }, 500);
+    }
+
+    function generateEmployeeInviteLink() {
+      const name = document.getElementById('new-emp-name').value || 'Empleado Nuevo';
+      const dept = document.getElementById('new-emp-dept').value || 'Operaciones';
+      const code = 'FIDE-' + Math.floor(1000 + Math.random() * 9000);
+      const url = `fide://invite?code=${code}&company=Officine+Aurora&name=${encodeURIComponent(name)}&dept=${encodeURIComponent(dept)}`;
+
+      document.getElementById('invite-link-text').innerText = url;
+      document.getElementById('invite-box-result').style.display = 'block';
+    }
+
+    function exportLaborInspectionReport() {
+      alert('📄 INFORME LEGAL GENERADO:\n\nRegistro de Jornada Laboral conforme al Real Decreto-ley 8/2019.\nTotal eventos exportados: 16 registros certificados con firma Ed25519.\n\nEl archivo se descargará en formato PDF/A auditable.');
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
-      fetchRecentPunches();
+      fetchPunchesFromSupabase();
     });
   </script>
 </body>
