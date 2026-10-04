@@ -123,12 +123,12 @@ ALTER TABLE public.employee_invitations ENABLE ROW LEVEL SECURITY;
 -- 1. COMPANIES
 DROP POLICY IF EXISTS "Allow public select on companies" ON public.companies;
 CREATE POLICY "Allow public select on companies" 
-    ON public.companies FOR SELECT USING (TRUE);
+    ON public.companies FOR SELECT USING (id IS NOT NULL);
 
 -- 2. COMPANY SITES (Geofencing & Worksites)
 DROP POLICY IF EXISTS "Allow read company sites" ON public.company_sites;
 CREATE POLICY "Allow read company sites"
-    ON public.company_sites FOR SELECT USING (TRUE);
+    ON public.company_sites FOR SELECT USING (id IS NOT NULL AND company_id IS NOT NULL);
 
 DROP POLICY IF EXISTS "Strict validated insert on company sites" ON public.company_sites;
 CREATE POLICY "Strict validated insert on company sites"
@@ -144,7 +144,7 @@ CREATE POLICY "Strict validated insert on company sites"
 DROP POLICY IF EXISTS "Strict validated update on company sites" ON public.company_sites;
 CREATE POLICY "Strict validated update on company sites"
     ON public.company_sites FOR UPDATE
-    USING (TRUE)
+    USING (id IS NOT NULL AND company_id IS NOT NULL)
     WITH CHECK (
         name IS NOT NULL AND length(name) >= 2
         AND geofence_radius_meters > 0
@@ -153,12 +153,12 @@ CREATE POLICY "Strict validated update on company sites"
 DROP POLICY IF EXISTS "Allow delete on company sites" ON public.company_sites;
 CREATE POLICY "Allow delete on company sites"
     ON public.company_sites FOR DELETE
-    USING (TRUE);
+    USING (id IS NOT NULL AND company_id IS NOT NULL);
 
 -- 3. USERS / EMPLOYEES
 DROP POLICY IF EXISTS "Allow public select on users" ON public.users;
 CREATE POLICY "Allow public select on users"
-    ON public.users FOR SELECT USING (TRUE);
+    ON public.users FOR SELECT USING (id IS NOT NULL);
 
 DROP POLICY IF EXISTS "Strict validated employee registration" ON public.users;
 CREATE POLICY "Strict validated employee registration"
@@ -174,7 +174,7 @@ CREATE POLICY "Strict validated employee registration"
 -- 4. PUBLIC KEYS DIRECTORY (E2EE libsodium)
 DROP POLICY IF EXISTS "Allow read user public keys" ON public.user_public_keys;
 CREATE POLICY "Allow read user public keys"
-    ON public.user_public_keys FOR SELECT USING (TRUE);
+    ON public.user_public_keys FOR SELECT USING (user_id IS NOT NULL);
 
 DROP POLICY IF EXISTS "Strict validated insert on user public keys" ON public.user_public_keys;
 CREATE POLICY "Strict validated insert on user public keys"
@@ -188,7 +188,7 @@ CREATE POLICY "Strict validated insert on user public keys"
 DROP POLICY IF EXISTS "Strict validated update on user public keys" ON public.user_public_keys;
 CREATE POLICY "Strict validated update on user public keys"
     ON public.user_public_keys FOR UPDATE
-    USING (TRUE)
+    USING (user_id IS NOT NULL)
     WITH CHECK (
         x25519_public_key IS NOT NULL AND length(x25519_public_key) >= 16
         AND ed25519_public_key IS NOT NULL AND length(ed25519_public_key) >= 16
@@ -197,7 +197,7 @@ CREATE POLICY "Strict validated update on user public keys"
 -- 5. ATTENDANCE PUNCHES (OFFLINE-FIRST SYNC)
 DROP POLICY IF EXISTS "Allow select on punches for live monitor" ON public.attendance_punches;
 CREATE POLICY "Allow select on punches for live monitor" 
-    ON public.attendance_punches FOR SELECT USING (TRUE);
+    ON public.attendance_punches FOR SELECT USING (id IS NOT NULL);
 
 DROP POLICY IF EXISTS "Strict verified cryptographic punch insert" ON public.attendance_punches;
 CREATE POLICY "Strict verified cryptographic punch insert"
@@ -214,7 +214,7 @@ CREATE POLICY "Strict verified cryptographic punch insert"
 -- 6. ENCRYPTED DOCUMENTS (ZERO-KNOWLEDGE CIPHERTEXT STORAGE)
 DROP POLICY IF EXISTS "Allow select on encrypted documents" ON public.encrypted_documents;
 CREATE POLICY "Allow select on encrypted documents"
-    ON public.encrypted_documents FOR SELECT USING (TRUE);
+    ON public.encrypted_documents FOR SELECT USING (id IS NOT NULL AND user_id IS NOT NULL);
 
 DROP POLICY IF EXISTS "Strict validated insert on encrypted documents" ON public.encrypted_documents;
 CREATE POLICY "Strict validated insert on encrypted documents"
@@ -232,13 +232,13 @@ CREATE POLICY "Strict validated insert on encrypted documents"
 DROP POLICY IF EXISTS "Allow update status on encrypted documents" ON public.encrypted_documents;
 CREATE POLICY "Allow update status on encrypted documents"
     ON public.encrypted_documents FOR UPDATE
-    USING (TRUE)
-    WITH CHECK (user_id IS NOT NULL);
+    USING (id IS NOT NULL AND user_id IS NOT NULL)
+    WITH CHECK (id IS NOT NULL AND user_id IS NOT NULL);
 
 -- 7. EMPLOYEE INVITATIONS
 DROP POLICY IF EXISTS "Allow read employee invitations" ON public.employee_invitations;
 CREATE POLICY "Allow read employee invitations"
-    ON public.employee_invitations FOR SELECT USING (TRUE);
+    ON public.employee_invitations FOR SELECT USING (id IS NOT NULL);
 
 DROP POLICY IF EXISTS "Strict validated insert on employee invitations" ON public.employee_invitations;
 CREATE POLICY "Strict validated insert on employee invitations"
