@@ -1,0 +1,9 @@
+{
+  "name": "@fide/web-portal",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Fide Business Web Portal for Companies and HR Administration",
+  "scripts": {
+    "start": "npx serve -l 3000 ."
+  }
+}

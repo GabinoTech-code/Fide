@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fide — Portale Aziendale & Amministrazione HR</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --dark: #0F1A17;
+      --dark-card: #152420;
+      --accent: #1D6F42;
+      --accent-hover: #134E2E;
+      --accent-light: #48B478;
+      --accent-muted: #EBF5F0;
+      --text-white: #FFFFFF;
+      --text-muted: #7E968D;
+      --text-dark: #121E1A;
+      --border-subtle: #223A33;
+      --border-light: #E0ECE6;
+      --bg-page: #F7FAF8;
+      --success: #1E8E5A;
+      --danger: #D94841;
+      --warning: #D97706;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-page);
+      color: var(--text-dark);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header */
+    header {
+      background: var(--dark);
+      color: var(--text-white);
+      padding: 16px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .brand-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand-logo {
+      width: 38px;
+      height: 38px;
+      background: var(--accent);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 20px;
+      color: var(--text-white);
+    }
+    .brand-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+    .brand-subtitle {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .badge-fido {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(72, 180, 120, 0.15);
+      border: 1px solid var(--accent-light);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      color: var(--accent-light);
+      font-weight: 600;
+    }
+    .badge-fido::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: var(--accent-light);
+      border-radius: 50%;
+    }
+
+    /* Main Container */
+    .app-body {
+      display: flex;
+      flex: 1;
+    }
+
+    /* Sidebar Navigation */
+    aside {
+      width: 260px;
+      background: var(--dark);
+      padding: 24px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      border-right: 1px solid var(--border-subtle);
+    }
+    .nav-btn {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border-radius: 12px;
+      color: var(--text-muted);
+      font-size: 14px;
+      font-weight: 500;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      width: 100%;
+      text-align: left;
+      transition: all 0.2s;
+    }
+    .nav-btn:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-white);
+    }
+    .nav-btn.active {
+      background: var(--accent);
+      color: var(--text-white);
+      font-weight: 600;
+    }
+
+    /* Content Area */
+    main {
+      flex: 1;
+      padding: 32px;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .section-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--text-dark);
+      margin-bottom: 6px;
+    }
+    .section-desc {
+      font-size: 14px;
+      color: #556B63;
+      margin-bottom: 24px;
+    }
+
+    .card {
+      background: #FFFFFF;
+      border: 1px solid var(--border-light);
+      border-radius: 18px;
+      padding: 24px;
+      box-shadow: 0 4px 16px rgba(15, 26, 23, 0.04);
+      margin-bottom: 24px;
+    }
+
+    /* Registration Wizard Steps */
+    .steps-nav {
+      display: flex;
+      margin-bottom: 24px;
+      background: #FFFFFF;
+      border-radius: 14px;
+      border: 1px solid var(--border-light);
+      overflow: hidden;
+    }
+    .step-item {
+      flex: 1;
+      padding: 14px 16px;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 600;
+      color: #6C8279;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border-right: 1px solid var(--border-light);
+      transition: all 0.2s;
+    }
+    .step-item:last-child { border-right: none; }
+    .step-item.active {
+      background: var(--accent-muted);
+      color: var(--accent);
+    }
+    .step-item.completed {
+      color: var(--success);
+    }
+
+    /* Form Fields */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 18px;
+      margin-bottom: 20px;
+    }
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .field-group label {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #4A635B;
+    }
+    .field-group input, .field-group select {
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1.5px solid var(--border-light);
+      font-size: 14px;
+      outline: none;
+      font-family: inherit;
+      transition: border-color 0.2s;
+    }
+    .field-group input:focus, .field-group select:focus {
+      border-color: var(--accent);
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border-radius: 12px;
+      border: none;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: var(--text-white);
+    }
+    .btn-primary:hover { background: var(--accent-hover); }
+    .btn-secondary {
+      background: #E8F0EC;
+      color: var(--text-dark);
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .stat-card {
+      background: #FFFFFF;
+      border: 1px solid var(--border-light);
+      border-radius: 14px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .stat-label {
+      font-size: 12px;
+      color: #6C8279;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .stat-val {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 30px;
+      font-weight: 700;
+      color: var(--text-dark);
+    }
+
+    /* Tables */
+    .table-wrap {
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+    th {
+      background: #F4F8F6;
+      padding: 12px 16px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #4A635B;
+      border-bottom: 1px solid var(--border-light);
+    }
+    td {
+      padding: 14px 16px;
+      font-size: 13px;
+      border-bottom: 1px solid var(--border-light);
+    }
+    .status-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .badge-online { background: #DFF5E9; color: var(--success); }
+    .badge-offline { background: #FEE8D8; color: var(--warning); }
+
+    /* Kiosk Display Simulation */
+    .kiosk-card {
+      background: var(--dark);
+      color: var(--text-white);
+      border-radius: 20px;
+      padding: 32px;
+      text-align: center;
+      max-width: 480px;
+      margin: 0 auto;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    }
+    .kiosk-qr-box {
+      background: #FFFFFF;
+      padding: 20px;
+      border-radius: 16px;
+      display: inline-block;
+      margin: 20px 0;
+    }
+    .kiosk-countdown {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 24px;
+      color: var(--accent-light);
+      font-weight: 700;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .app-body { flex-direction: column; }
+      aside { width: 100%; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="brand-wrap">
+      <div class="brand-logo">F</div>
+      <div>
+        <div class="brand-title">Fide Business</div>
+        <div class="brand-subtitle">Zero-Knowledge HR & Employee Security Platform</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <div class="badge-fido">Admin FIDO2 Passkey Verificata</div>
+      <button class="btn btn-secondary" style="font-size:12px; padding: 6px 12px;" onclick="switchCountry()">
+        <span id="countryLabel">🇮🇹 Italia (CCNL)</span>
+      </button>
+    </div>
+  </header>
+
+  <div class="app-body">
+    <!-- Sidebar Navigation -->
+    <aside>
+      <button class="nav-btn active" onclick="showTab('wizard')">🏢 1. Registrazione Azienda</button>
+      <button class="nav-btn" onclick="showTab('live')">👥 2. Monitor Presenze Live</button>
+      <button class="nav-btn" onclick="showTab('kiosk')">📍 3. Sedí & Chiosco QR</button>
+      <button class="nav-btn" onclick="showTab('payroll')">🔒 4. Distribuzione Buste Paga</button>
+      <button class="nav-btn" onclick="showTab('requests')">📝 5. Gestione Ferie & Permessi</button>
+      <button class="nav-btn" onclick="showTab('audit')">⚖️ 6. Ispettorato del Lavoro</button>
+    </aside>
+
+    <!-- Main Content -->
+    <main>
+      <!-- TAB 1: REGISTRATION WIZARD -->
+      <section id="tab-wizard">
+        <h1 class="section-title">Registrazione e Attivazione Azienda</h1>
+        <p class="section-desc">Procedura in 4 passaggi per registrare la tua organizzazione con chiavi asimmetriche e zero password.</p>
+
+        <div class="steps-nav">
+          <div class="step-item active" id="step-nav-1" onclick="setStep(1)">1. Dati Fiscali & CCNL</div>
+          <div class="step-item" id="step-nav-2" onclick="setStep(2)">2. Passkey Admin FIDO2</div>
+          <div class="step-item" id="step-nav-3" onclick="setStep(3)">3. Sedí & Geovalle</div>
+          <div class="step-item" id="step-nav-4" onclick="setStep(4)">4. Invito Lavoratori</div>
+        </div>
+
+        <div class="card">
+          <!-- Step 1 -->
+          <div id="step-content-1">
+            <h2 style="font-size: 18px; margin-bottom: 14px;">1. Dati Societari e Inquadramento Contrattuale</h2>
+            <div class="form-grid">
+              <div class="field-group">
+                <label>Ragione Sociale</label>
+                <input type="text" id="reg-name" value="Officine Aurora S.r.l.">
+              </div>
+              <div class="field-group">
+                <label>Partita IVA / CIF</label>
+                <input type="text" id="reg-vat" value="IT09876543210">
+              </div>
+              <div class="field-group">
+                <label>Codice Fiscale / NIF</label>
+                <input type="text" id="reg-cf" value="09876543210">
+              </div>
+              <div class="field-group">
+                <label>Posta Elettronica Certificata (PEC)</label>
+                <input type="email" id="reg-pec" value="amministrazione@pec.aurora.it">
+              </div>
+              <div class="field-group">
+                <label>Codice SDI (Fatturazione Elettronica)</label>
+                <input type="text" id="reg-sdi" value="M5UXCR1">
+              </div>
+              <div class="field-group">
+                <label>CCNL / Contratto Collettivo Applicabile</label>
+                <select id="reg-ccnl">
+                  <option>CCNL Metalmeccanico Industria</option>
+                  <option>CCNL Commercio e Terziario</option>
+                  <option>CCNL Logistica, Trasporto Merci e Spedizioni</option>
+                  <option>CCNL Edilizia e Affini</option>
+                  <option>CCNL Alimentari e Bevande</option>
+                </select>
+              </div>
+            </div>
+            <button class="btn btn-primary" onclick="setStep(2)">Conferma Dati & Continua →</button>
+          </div>
+
+          <!-- Step 2 -->
+          <div id="step-content-2" style="display: none;">
+            <h2 style="font-size: 18px; margin-bottom: 14px;">2. Registrazione Passkey e Generazione Chiavi Aziendali</h2>
+            <p style="font-size: 13px; color: #556B63; line-height: 1.5; margin-bottom: 16px;">
+              Fide non utilizza password per gli amministratori. La tua identità è protetta dall'enclave hardware del tuo dispositivo (Touch ID, Windows Hello o YubiKey). Verrà inoltre generata la coppia di chiavi crittografiche <strong>X25519 / Ed25519</strong> della società.
+            </p>
+            <div style="background: var(--accent-muted); padding: 18px; border-radius: 12px; margin-bottom: 20px;">
+              <div style="font-weight: 700; color: var(--accent); margin-bottom: 4px;">Impronta Chiave Pubblica Aziendale:</div>
+              <div style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: var(--text-dark);">
+                7F3A 91C2 0B4E D815 66AF 2C90
+              </div>
+              <div style="font-size: 12px; color: #556B63; margin-top: 4px;">
+                Tutti i cedolini paga e i token QR generati per i dipendenti saranno firmati con questa autorità crittografica.
+              </div>
+            </div>
+            <button class="btn btn-primary" onclick="setStep(3)">Attiva Passkey FIDO2 (Biometria) →</button>
+          </div>
+
+          <!-- Step 3 -->
+          <div id="step-content-3" style="display: none;">
+            <h2 style="font-size: 18px; margin-bottom: 14px;">3. Definizione Sedi Fisiche e Geovalla Locale</h2>
+            <div class="form-grid">
+              <div class="field-group">
+                <label>Nome Sede</label>
+                <input type="text" id="site-name" value="Stabilimento Centrale Milano">
+              </div>
+              <div class="field-group">
+                <label>Indirizzo Completo</label>
+                <input type="text" id="site-addr" value="Via dell'Innovazione 42, Milano (MI)">
+              </div>
+              <div class="field-group">
+                <label>Radio Geovalla (Metri)</label>
+                <input type="number" id="site-radius" value="150">
+              </div>
+              <div class="field-group">
+                <label>Metodi di Timbratura Abilitati</label>
+                <select id="site-methods">
+                  <option>Tutti (Geovalla RAM + QR Dinamico + Tag NFC)</option>
+                  <option>Solo QR Dinamico (Tablet all'ingresso)</option>
+                  <option>Solo Geovalla sul Dispositivo</option>
+                </select>
+              </div>
+            </div>
+            <div style="background: #F4F8F6; border: 1px solid var(--border-light); padding: 14px; border-radius: 12px; font-size: 13px; color: #3E544C; margin-bottom: 18px;">
+              🛡️ <strong>Garanzia Garante Privacy:</strong> Le coordinate esatte della sede vengono memorizzate solo per permettere all'app del dipendente di calcolare la distanza in RAM. Al server dell'azienda perviene solo <code>in_geofence: true</code>.
+            </div>
+            <button class="btn btn-primary" onclick="setStep(4)">Salva Sede & Configura Inviti →</button>
+          </div>
+
+          <!-- Step 4 -->
+          <div id="step-content-4" style="display: none;">
+            <h2 style="font-size: 18px; margin-bottom: 14px;">4. Invito e Attivazione Lavoratori</h2>
+            <p style="font-size: 13px; color: #556B63; margin-bottom: 16px;">
+              Genera link universali o codici QR per consentire ai collaboratori di attivare la loro app Fide in meno di 1 minuto senza password.
+            </p>
+            <div class="form-grid">
+              <div class="field-group">
+                <label>Nome e Cognome Dipendente</label>
+                <input type="text" id="emp-name" placeholder="es. Marco Rossi">
+              </div>
+              <div class="field-group">
+                <label>Reparto / Mansione</label>
+                <input type="text" id="emp-dept" placeholder="es. Logistica & Magazzino">
+              </div>
+              <div class="field-group">
+                <label>Orario di Lavoro</label>
+                <input type="text" id="emp-shift" value="08:30 - 17:30">
+              </div>
+            </div>
+            <button class="btn btn-primary" onclick="generateInvite()">Genera Link e QR di Invito 🚀</button>
+
+            <div id="invite-result" style="display: none; margin-top: 20px; background: var(--accent-muted); padding: 18px; border-radius: 14px;">
+              <div style="font-weight: 700; color: var(--accent); margin-bottom: 6px;">Link di Invito Univoco Generato:</div>
+              <div style="background: #fff; padding: 10px; border-radius: 8px; font-family: monospace; font-size: 12px; word-break: break-all; margin-bottom: 10px;" id="invite-url">
+                fide://invite?code=AURORA-2026-9842&company=Officine+Aurora+S.r.l.&name=Marco+Rossi&dept=Logistica
+              </div>
+              <div style="font-size: 12px; color: #556B63;">
+                Invia questo link al dipendente via WhatsApp, SMS o Email. Toccando il link dal proprio iPhone o Android, l'app Fide completerà l'onboarding e la registrazione FIDO2 in meno di 60 secondi.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 2: LIVE ATTENDANCE MONITOR -->
+      <section id="tab-live" style="display: none;">
+        <h1 class="section-title">Monitor Presenze in Tempo Reale</h1>
+        <p class="section-desc">Stato del turno odierno verificato senza tracciamento GPS continuo.</p>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span class="stat-label">In Turno Adesso</span>
+            <span class="stat-val" style="color: var(--success);">18</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Uscite Registrate</span>
+            <span class="stat-val">4</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Ferie / Permessi Oggi</span>
+            <span class="stat-val" style="color: var(--warning);">2</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Verifiche Valide</span>
+            <span class="stat-val">100%</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2 style="font-size: 18px; margin-bottom: 14px;">Marcature Odierne Verificate</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Collaboratore</th>
+                  <th>Reparto</th>
+                  <th>Orario Entrata</th>
+                  <th>Metodo di Verifica</th>
+                  <th>Firma Criptografica (Ed25519)</th>
+                  <th>Stato</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Marco Rossi</strong></td>
+                  <td>Operazioni</td>
+                  <td>08:28</td>
+                  <td>Geovalla in RAM (150 m)</td>
+                  <td><code style="font-family: monospace; font-size: 11px;">SIG_ED25519_4B8F_OK</code></td>
+                  <td><span class="status-badge badge-online">Presente</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Elena Conti</strong></td>
+                  <td>Amministrazione</td>
+                  <td>08:31</td>
+                  <td>QR Dinamico Sede (30s)</td>
+                  <td><code style="font-family: monospace; font-size: 11px;">SIG_ED25519_99C1_OK</code></td>
+                  <td><span class="status-badge badge-online">Presente</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Ion Popescu</strong></td>
+                  <td>Magazzino</td>
+                  <td>08:20</td>
+                  <td>Tag NFC Ingresso</td>
+                  <td><code style="font-family: monospace; font-size: 11px;">SIG_ED25519_12AB_OK</code></td>
+                  <td><span class="status-badge badge-online">Presente</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Ahmed Mansour</strong></td>
+                  <td>Logistica</td>
+                  <td>08:35</td>
+                  <td>Geovalla in RAM (120 m)</td>
+                  <td><code style="font-family: monospace; font-size: 11px;">SIG_ED25519_77D2_OK</code></td>
+                  <td><span class="status-badge badge-online">Presente</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 3: KIOSK DISPLAY (ROTATING QR) -->
+      <section id="tab-kiosk" style="display: none;">
+        <h1 class="section-title">Chiosco di Ingresso Sede — QR Dinamico Rotativo</h1>
+        <p class="section-desc">Schermata per tablet o monitor installato all'ingresso aziendale. Il QR ruota ogni 30 secondi con firma HMAC.</p>
+
+        <div class="kiosk-card">
+          <div style="font-size: 14px; color: var(--accent-light); text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">
+            Officine Aurora S.r.l. · Ingresso Centrale
+          </div>
+          <div style="font-size: 22px; font-weight: 700; margin-top: 6px;">
+            Inquadra con l'App Fide per Timbrare
+          </div>
+
+          <div class="kiosk-qr-box">
+            <!-- Simulated QR SVG -->
+            <svg width="180" height="180" viewBox="0 0 100 100" fill="#0F1A17">
+              <rect x="5" y="5" width="25" height="25" rx="3" fill="#1D6F42" />
+              <rect x="10" y="10" width="15" height="15" fill="#FFFFFF" />
+              <rect x="13" y="13" width="9" height="9" fill="#1D6F42" />
+              <rect x="70" y="5" width="25" height="25" rx="3" fill="#1D6F42" />
+              <rect x="75" y="10" width="15" height="15" fill="#FFFFFF" />
+              <rect x="78" y="13" width="9" height="9" fill="#1D6F42" />
+              <rect x="5" y="70" width="25" height="25" rx="3" fill="#1D6F42" />
+              <rect x="10" y="75" width="15" height="15" fill="#FFFFFF" />
+              <rect x="13" y="78" width="9" height="9" fill="#1D6F42" />
+              <circle cx="45" cy="20" r="4" />
+              <circle cx="55" cy="30" r="3" />
+              <circle cx="40" cy="50" r="5" />
+              <circle cx="65" cy="60" r="4" />
+              <circle cx="80" cy="80" r="5" />
+              <circle cx="50" cy="85" r="4" />
+              <circle cx="85" cy="50" r="3" />
+            </svg>
+          </div>
+
+          <div class="kiosk-countdown" id="kioskTimer">24s</div>
+          <div style="font-size: 12px; color: var(--text-muted); margin-top: 8px;">
+            Token HMAC crittografico valido per 30s. Le foto e gli screenshot inoltrati scadono automaticamente.
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 4: E2EE PAYROLL DISPATCHER -->
+      <section id="tab-payroll" style="display: none;">
+        <h1 class="section-title">Distribuzione Cedolini con Cifratura E2EE</h1>
+        <p class="section-desc">Carica il PDF generale delle paghe. Fide suddivide e cifra ciascuna busta paga con la chiave X25519 del rispettivo dipendente.</p>
+
+        <div class="card">
+          <div style="border: 2px dashed var(--accent); padding: 36px; border-radius: 16px; text-align: center; background: var(--accent-muted); cursor: pointer;" onclick="simulatePayrollUpload()">
+            <div style="font-size: 36px; margin-bottom: 8px;">📄</div>
+            <div style="font-size: 16px; font-weight: 700; color: var(--accent);">Clicca qui per caricare il file PDF unico delle buste paga del mese</div>
+            <div style="font-size: 13px; color: #556B63; margin-top: 4px;">Supporta esportazioni da Zucchetti, TeamSystem, A3Innuva, Factorial o SAP</div>
+          </div>
+
+          <div id="payroll-progress" style="display: none; margin-top: 24px;">
+            <h3 style="font-size: 16px; margin-bottom: 12px;">Elaborazione Criptografica E2EE in Corso:</h3>
+            <div style="background: #E8F0EC; border-radius: 8px; height: 12px; overflow: hidden; margin-bottom: 12px;">
+              <div style="background: var(--accent); width: 100%; height: 100%;"></div>
+            </div>
+            <div style="font-size: 13px; color: var(--success); font-weight: 600;">
+              ✓ 24 Cedolini cifrati con XChaCha20-Poly1305 · Notifiche push inviate con successo!
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 5: REQUESTS & LEAVES -->
+      <section id="tab-requests" style="display: none;">
+        <h1 class="section-title">Gestione Ferie, Permessi e Timbrature Dimenticate</h1>
+        <p class="section-desc">Richieste ricevute dall'app con calcolo dell'impatto sul saldo residuo.</p>
+
+        <div class="card">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Dipendente</th>
+                  <th>Tipologia</th>
+                  <th>Dettaglio & Periodo</th>
+                  <th>Saldo Residuo</th>
+                  <th>Azione</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Marco Rossi</strong></td>
+                  <td>Ferie Annuali</td>
+                  <td>15 - 20 Luglio (5 giorni lavorativi)</td>
+                  <td>14,5 giorni rimasti</td>
+                  <td>
+                    <button class="btn btn-primary" style="padding: 6px 12px; font-size: 12px;" onclick="alert('Richiesta approvata con successo. Il saldo del lavoratore è stato aggiornato sull\'app!')">Approva</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>Elena Conti</strong></td>
+                  <td>Permesso Retribuito (ROL)</td>
+                  <td>Domani 09:00 - 11:00 (Visita medica)</td>
+                  <td>24 ore rimaste</td>
+                  <td>
+                    <button class="btn btn-primary" style="padding: 6px 12px; font-size: 12px;" onclick="alert('Permesso approvato!')">Approva</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 6: LABOR INSPECTORATE AUDIT -->
+      <section id="tab-audit" style="display: none;">
+        <h1 class="section-title">Esportazione Ufficiale per Ispettorato del Lavoro</h1>
+        <p class="section-desc">Registro di presenza conforme alle prescrizioni del D.Lgs. 81/2008 (Italia) e RDL 8/2019 (Spagna).</p>
+
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <div>
+              <div style="font-size: 16px; font-weight: 700;">Registro Mensile Vidimato Digitalmente</div>
+              <div style="font-size: 13px; color: #556B63;">Firma digitale certificata con marca temporale immutabile</div>
+            </div>
+            <button class="btn btn-primary" onclick="alert('Esportazione Registro Ufficiale generata in formato PDF/A con timbro digitale e firme Ed25519.')">Scarica Registro Ufficiale (PDF / CSV) 📥</button>
+          </div>
+          <div style="background: #F4F8F6; padding: 16px; border-radius: 12px; font-size: 13px; color: #3E544C; line-height: 1.6;">
+            <strong>Garanzia di Conformità Legale:</strong> Il registro Fide contiene per ciascun evento di marcatura la marca temporale esatta, il metodo di convalida (senza coordinate GPS) e l'impronta crittografica del dispositivo del dipendente, escludendo contestazioni su alterazioni retroattive.
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    function showTab(tabId) {
+      document.querySelectorAll('main > section').forEach(s => s.style.display = 'none');
+      document.getElementById('tab-' + tabId).style.display = 'block';
+
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      const activeBtn = Array.from(document.querySelectorAll('.nav-btn')).find(b => b.getAttribute('onclick').includes(tabId));
+      if (activeBtn) activeBtn.classList.add('active');
+    }
+
+    function setStep(stepNum) {
+      for (let i = 1; i <= 4; i++) {
+        const content = document.getElementById('step-content-' + i);
+        const nav = document.getElementById('step-nav-' + i);
+        if (content) content.style.display = (i === stepNum ? 'block' : 'none');
+        if (nav) {
+          if (i === stepNum) {
+            nav.className = 'step-item active';
+          } else if (i < stepNum) {
+            nav.className = 'step-item completed';
+          } else {
+            nav.className = 'step-item';
+          }
+        }
+      }
+    }
+
+    function generateInvite() {
+      const name = document.getElementById('emp-name').value || 'Marco Rossi';
+      const dept = document.getElementById('emp-dept').value || 'Logistica';
+      const code = 'AURORA-2026-' + Math.floor(1000 + Math.random() * 9000);
+      const url = `fide://invite?code=${code}&company=Officine+Aurora+S.r.l.&name=${encodeURIComponent(name)}&dept=${encodeURIComponent(dept)}`;
+
+      document.getElementById('invite-url').innerText = url;
+      document.getElementById('invite-result').style.display = 'block';
+    }
+
+    function simulatePayrollUpload() {
+      const progress = document.getElementById('payroll-progress');
+      progress.style.display = 'block';
+    }
+
+    let isItaly = true;
+    function switchCountry() {
+      isItaly = !isItaly;
+      const label = document.getElementById('countryLabel');
+      const ccnl = document.getElementById('reg-ccnl');
+      if (isItaly) {
+        label.innerText = '🇮🇹 Italia (CCNL)';
+        ccnl.innerHTML = `
+          <option>CCNL Metalmeccanico Industria</option>
+          <option>CCNL Commercio e Terziario</option>
+          <option>CCNL Logistica, Trasporto Merci e Spedizioni</option>
+          <option>CCNL Edilizia e Affini</option>
+        `;
+      } else {
+        label.innerText = '🇪🇸 España (Convenio)';
+        ccnl.innerHTML = `
+          <option>Convenio Colectivo del Metal</option>
+          <option>Convenio de Comercio General</option>
+          <option>Convenio de Hostelería y Restauración</option>
+          <option>Convenio de Transporte de Mercancías</option>
+        `;
+      }
+    }
+
+    // 30s Kiosk countdown simulation
+    let secondsLeft = 30;
+    setInterval(() => {
+      secondsLeft--;
+      if (secondsLeft <= 0) secondsLeft = 30;
+      const timerEl = document.getElementById('kioskTimer');
+      if (timerEl) timerEl.innerText = secondsLeft + 's';
+    }, 1000);
+  </script>
+</body>
+</html>
