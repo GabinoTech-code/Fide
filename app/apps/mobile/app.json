@@ -1,0 +1,45 @@
+{
+  "expo": {
+    "name": "Fide",
+    "slug": "fide",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.fide.app",
+      "infoPlist": {
+        "NSFaceIDUsageDescription": "Usa Face ID / Touch ID per autenticarti in modo sicuro con passkey FIDO2 crittografiche.",
+        "NSLocationWhenInUseUsageDescription": "La tua posizione viene verificata esclusivamente sul dispositivo per confermare la presenza in sede, senza tracciamento GPS continuo.",
+        "NSCameraUsageDescription": "Necessaria per scansionare il codice QR dinamico della sede."
+      }
+    },
+    "android": {
+      "package": "com.fide.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#0F1A17",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "permissions": [
+        "USE_BIOMETRIC",
+        "USE_FINGERPRINT",
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION",
+        "CAMERA"
+      ],
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-status-bar",
+      "expo-font",
+      "expo-splash-screen"
+    ]
+  }
+}

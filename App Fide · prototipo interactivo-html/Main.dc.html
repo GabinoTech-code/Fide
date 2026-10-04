@@ -1,0 +1,560 @@
+﻿<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Fide · App del empleado</title>
+<script src="./vendor/react.js"></script>
+<script src="./vendor/react-dom.js"></script>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#0B6E4F}a:hover{color:#08513A}
+button{font-family:inherit}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #F4F5F2; color: #0F1A17; font-family: 'IBM Plex Sans', sans-serif; font-size: 15px">
+
+<sc-if value="{{isLogin}}" hint-placeholder-val="{{ false }}">
+<div style="position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: space-between; padding: 72px 28px 40px; box-sizing: border-box; background: #0F1A17; color: #F4F5F2">
+  <div style="display: flex; flex-direction: column; gap: 18px">
+    <div style="display: flex; align-items: center; gap: 10px">
+      <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="{{accentLight}}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l8 3v6c0 5-3.4 9.3-8 11-4.6-1.7-8-6-8-11V5l8-3z"></path><path d="M8.5 12l2.5 2.5 4.5-5"></path></svg>
+      <span style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 28px; letter-spacing: -0.5px">Fide</span>
+    </div>
+    <h1 style="margin: 24px 0 0; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 34px; line-height: 1.1; letter-spacing: -0.8px">Tu trabajo en el bolsillo.<br>Tus datos, solo tuyos.</h1>
+    <p style="margin: 0; color: #B9C4BF; line-height: 1.5">Fichajes, ausencias, nóminas cifradas y un asistente que responde al momento.</p>
+  </div>
+  <div style="display: flex; flex-direction: column; gap: 14px">
+    <div style="background: #1B2925; border: 1px solid #2C3B36; border-radius: 18px; padding: 18px; display: flex; flex-direction: column; gap: 6px">
+      <span style="font-size: 12px; text-transform: uppercase; letter-spacing: 1.2px; color: #9FB0A9">Invitación recibida</span>
+      <span style="font-weight: 600; font-size: 17px">Mi Empresa S.L.</span>
+      <span style="color: #B9C4BF; font-size: 14px">Colaborador · Operaciones</span>
+    </div>
+    <button onClick="{{doLogin}}" style="height: 56px; border: 0; border-radius: 16px; background: {{accentLight}}; color: #0F1A17; font-weight: 600; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3H5a2 2 0 0 0-2 2v2M17 3h2a2 2 0 0 1 2 2v2M7 21H5a2 2 0 0 1-2-2v-2M17 21h2a2 2 0 0 0 2-2v-2"></path><path d="M9 9v1M15 9v1M9.5 15.5c1.4 1 3.6 1 5 0M12 9v4h-1"></path></svg>
+      {{loginLabel}}
+    </button>
+    <span style="text-align: center; font-size: 13px; color: #9FB0A9">Sin contraseñas · passkey FIDO2 · la clave nunca sale del móvil</span>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{showApp}}" hint-placeholder-val="{{ true }}">
+<div style="position: absolute; inset: 0; display: flex; flex-direction: column">
+
+  <div style="padding: 20px 20px 12px; display: flex; align-items: center; justify-content: space-between">
+    <div style="display: flex; flex-direction: column">
+      <span style="font-size: 12px; color: #56635E; text-transform: uppercase; letter-spacing: 1.2px">{{subtitle}}</span>
+      <span style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 26px; letter-spacing: -0.5px">{{title}}</span>
+    </div>
+    <button onClick="{{goPrivacy}}" aria-label="Mis datos y privacidad" style="width: 44px; height: 44px; border-radius: 22px; border: 1px solid #D5DBD8; background: #FFFFFF; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #0F1A17">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l8 3v6c0 5-3.4 9.3-8 11-4.6-1.7-8-6-8-11V5l8-3z"></path><circle cx="12" cy="10" r="2.5"></circle><path d="M8 16c1-1.6 2.4-2.4 4-2.4s3 .8 4 2.4"></path></svg>
+    </button>
+  </div>
+
+  <div style="flex: 1; overflow-y: auto; padding: 4px 20px 24px; display: flex; flex-direction: column; gap: 16px">
+
+    <sc-if value="{{isHome}}" hint-placeholder-val="{{ true }}">
+    <div style="display: flex; flex-direction: column; gap: 16px">
+      <div style="background: #0F1A17; color: #F4F5F2; border-radius: 22px; padding: 20px; display: flex; flex-direction: column; gap: 14px">
+        <div style="display: flex; justify-content: space-between; align-items: center">
+          <span style="font-size: 13px; color: #B9C4BF">{{statusText}}</span>
+          <span style="font-size: 12px; padding: 4px 10px; border-radius: 999px; background: #1F302B; color: {{accentLight}}">{{statusPill}}</span>
+        </div>
+        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 40px; font-weight: 500; letter-spacing: -1px">{{elapsed}}</span>
+        <button onClick="{{goFichar}}" style="height: 48px; border: 0; border-radius: 14px; background: {{accentLight}}; color: #0F1A17; font-weight: 600; font-size: 15px; cursor: pointer">{{homeClockCta}}</button>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
+        <div style="background: #FFFFFF; border-radius: 18px; padding: 16px; display: flex; flex-direction: column; gap: 4px; border: 1px solid #E2E7E4">
+          <span style="font-size: 13px; color: #56635E">Vacaciones</span>
+          <span style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 26px">14,5 <span style="font-size: 14px; font-weight: 500; color: #56635E">días</span></span>
+        </div>
+        <div style="background: #FFFFFF; border-radius: 18px; padding: 16px; display: flex; flex-direction: column; gap: 4px; border: 1px solid #E2E7E4">
+          <span style="font-size: 13px; color: #56635E">Permisos</span>
+          <span style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 26px">22 <span style="font-size: 14px; font-weight: 500; color: #56635E">h</span></span>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px">
+        <button onClick="{{goSolicitudes}}" style="border: 0; background: transparent; display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; color: #0F1A17; font-size: 12px; padding: 0">
+          <span style="width: 56px; height: 56px; border-radius: 18px; background: #FFFFFF; border: 1px solid #E2E7E4; display: flex; align-items: center; justify-content: center; color: {{accent}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"></rect><path d="M3 10h18M8 3v4M16 3v4"></path></svg></span>Ausencia
+        </button>
+        <button onClick="{{scanExpense}}" style="border: 0; background: transparent; display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; color: #0F1A17; font-size: 12px; padding: 0">
+          <span style="width: 56px; height: 56px; border-radius: 18px; background: #FFFFFF; border: 1px solid #E2E7E4; display: flex; align-items: center; justify-content: center; color: {{accent}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2h12v20l-3-2-3 2-3-2-3 2V2z"></path><path d="M9 7h6M9 11h6M9 15h3"></path></svg></span>Gasto
+        </button>
+        <button onClick="{{shiftSwap}}" style="border: 0; background: transparent; display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; color: #0F1A17; font-size: 12px; padding: 0">
+          <span style="width: 56px; height: 56px; border-radius: 18px; background: #FFFFFF; border: 1px solid #E2E7E4; display: flex; align-items: center; justify-content: center; color: {{accent}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h13l-3-3M20 16H7l3 3"></path></svg></span>Turnos
+        </button>
+        <button onClick="{{goAsistente}}" style="border: 0; background: transparent; display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; color: #0F1A17; font-size: 12px; padding: 0">
+          <span style="width: 56px; height: 56px; border-radius: 18px; background: #FFFFFF; border: 1px solid #E2E7E4; display: flex; align-items: center; justify-content: center; color: {{accent}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8L12 3z"></path><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15z"></path></svg></span>Asistente
+        </button>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 10px">
+        <span style="font-weight: 600; font-size: 15px">Avisos</span>
+        <button onClick="{{goDocs}}" style="text-align: left; border: 1px solid #E2E7E4; background: #FFFFFF; border-radius: 16px; padding: 14px; display: flex; gap: 12px; align-items: center; cursor: pointer; color: #0F1A17">
+          <span style="width: 40px; height: 40px; border-radius: 12px; background: #E3F1EA; color: {{accent}}; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg></span>
+          <span style="display: flex; flex-direction: column; gap: 2px; flex: 1"><span style="font-weight: 600; font-size: 14px">Nómina de septiembre disponible</span><span style="font-size: 13px; color: #56635E">Cifrada de extremo a extremo · hace 2 h</span></span>
+        </button>
+        <div style="border: 1px solid #E2E7E4; background: #FFFFFF; border-radius: 16px; padding: 14px; display: flex; gap: 12px; align-items: center">
+          <span style="width: 40px; height: 40px; border-radius: 12px; background: #FBEFD9; color: #8A4B00; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H8l-4 4V5z"></path></svg></span>
+          <span style="display: flex; flex-direction: column; gap: 2px; flex: 1"><span style="font-weight: 600; font-size: 14px">Circular: horario de invierno</span><span style="font-size: 13px; color: #56635E">RR.HH. · ayer · confirmada como leída</span></span>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{isFichar}}" hint-placeholder-val="{{ false }}">
+    <div style="display: flex; flex-direction: column; gap: 18px">
+      <div style="display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 8px 0">
+        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 34px; font-weight: 500">{{elapsed}}</span>
+        <button onClick="{{clock}}" style="width: 168px; height: 168px; border-radius: 84px; border: 10px solid {{clockRing}}; background: {{clockBg}}; color: #FFFFFF; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 22px; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px">
+          {{clockLabel}}
+          <span style="font-family: 'IBM Plex Sans', sans-serif; font-weight: 400; font-size: 12px; opacity: 0.85">{{methodLabel}}</span>
+        </button>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 10px">
+        <span style="font-weight: 600">Verificación</span>
+        <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+          <sc-for list="{{methods}}" as="m" hint-placeholder-count="3">
+            <button onClick="{{m.pick}}" aria-pressed="{{m.pressed}}" style="height: 44px; border-radius: 12px; border: 1.5px solid {{m.border}}; background: {{m.bg}}; color: #0F1A17; font-weight: 500; font-size: 14px; cursor: pointer">{{m.label}}</button>
+          </sc-for>
+        </div>
+        <div style="background: #E3F1EA; border-radius: 14px; padding: 12px 14px; display: flex; gap: 10px; align-items: flex-start; font-size: 13px; line-height: 1.45; color: #13372B">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0; margin-top: 1px"><path d="M12 2l8 3v6c0 5-3.4 9.3-8 11-4.6-1.7-8-6-8-11V5l8-3z"></path></svg>
+          <span>{{methodInfo}}</span>
+        </div>
+      </div>
+
+      <div style="background: #FFFFFF; border: 1px solid #E2E7E4; border-radius: 16px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px">
+        <span style="display: flex; flex-direction: column; gap: 2px"><span style="font-weight: 600; font-size: 14px">Modo sin conexión</span><span style="font-size: 12px; color: #56635E">Simula sótano o zona sin cobertura</span></span>
+        <button onClick="{{toggleOffline}}" aria-pressed="{{offlinePressed}}" aria-label="Simular sin conexión" style="width: 52px; height: 32px; border-radius: 16px; border: 0; background: {{offlineTrack}}; padding: 0; cursor: pointer; display: flex; align-items: center">
+          <span style="width: 26px; height: 26px; border-radius: 13px; background: #FFFFFF; margin-left: {{offlineKnob}}; box-shadow: 0 1px 3px rgba(0,0,0,0.25)"></span>
+        </button>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 8px">
+        <span style="font-weight: 600">Hoy</span>
+        <sc-if value="{{noPunches}}" hint-placeholder-val="{{ true }}">
+          <span style="font-size: 14px; color: #56635E">Aún no has fichado hoy.</span>
+        </sc-if>
+        <sc-for list="{{punches}}" as="p" hint-placeholder-count="0">
+          <div style="background: #FFFFFF; border: 1px solid #E2E7E4; border-radius: 14px; padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; gap: 10px">
+            <span style="display: flex; flex-direction: column; gap: 2px"><span style="font-weight: 600; font-size: 14px">{{p.tipo}} · {{p.metodo}}</span><span style="font-size: 12px; color: {{p.estadoColor}}">{{p.estado}}</span></span>
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 16px">{{p.t}}</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{isSolicitudes}}" hint-placeholder-val="{{ false }}">
+    <div style="display: flex; flex-direction: column; gap: 16px">
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+        <sc-for list="{{reqTypes}}" as="r" hint-placeholder-count="4">
+          <button onClick="{{r.pick}}" aria-pressed="{{r.pressed}}" style="height: 48px; border-radius: 14px; border: 1.5px solid {{r.border}}; background: {{r.bg}}; color: #0F1A17; font-weight: 500; font-size: 14px; cursor: pointer">{{r.label}}</button>
+        </sc-for>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E2E7E4; border-radius: 18px; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+        <span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 12px; color: #56635E; text-transform: uppercase; letter-spacing: 1px">Detalle</span><span style="font-weight: 600; font-size: 16px">{{reqDetail}}</span></span>
+        <span style="font-size: 13px; color: #56635E">{{reqImpact}}</span>
+        <label for="req-note" style="font-size: 13px; font-weight: 500">Nota para tu responsable (opcional)</label>
+        <textarea id="req-note" rows="2" style="border: 1px solid #D5DBD8; border-radius: 12px; padding: 10px; font-family: inherit; font-size: 14px; resize: none; background: #F9FAF8"></textarea>
+        <button onClick="{{sendRequest}}" style="height: 48px; border: 0; border-radius: 14px; background: {{accent}}; color: #FFFFFF; font-weight: 600; font-size: 15px; cursor: pointer">Enviar solicitud</button>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 8px">
+        <span style="font-weight: 600">Historial</span>
+        <sc-for list="{{requests}}" as="q" hint-placeholder-count="2">
+          <div style="background: #FFFFFF; border: 1px solid #E2E7E4; border-radius: 14px; padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; gap: 10px">
+            <span style="display: flex; flex-direction: column; gap: 2px"><span style="font-weight: 600; font-size: 14px">{{q.tipo}}</span><span style="font-size: 12px; color: #56635E">{{q.detalle}}</span></span>
+            <span style="font-size: 12px; font-weight: 600; padding: 5px 10px; border-radius: 999px; background: {{q.bg}}; color: {{q.fg}}">{{q.estado}}</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{isDocs}}" hint-placeholder-val="{{ false }}">
+    <div style="display: flex; flex-direction: column; gap: 12px">
+      <div style="background: #0F1A17; color: #E9EFEC; border-radius: 16px; padding: 14px; display: flex; gap: 12px; align-items: center; font-size: 13px; line-height: 1.45">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="{{accentLight}}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>
+        <span>Cifrados de extremo a extremo. Solo tú y el emisor podéis abrirlos; ni Fide ni terceros.</span>
+      </div>
+      <sc-for list="{{docs}}" as="d" hint-placeholder-count="4">
+        <button onClick="{{d.open}}" style="text-align: left; border: 1px solid #E2E7E4; background: #FFFFFF; border-radius: 16px; padding: 14px; display: flex; gap: 12px; align-items: center; cursor: pointer; color: #0F1A17">
+          <span style="width: 40px; height: 40px; border-radius: 12px; background: #EEF1EF; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: #0F1A17"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5z"></path><path d="M14 3v5h5"></path></svg></span>
+          <span style="display: flex; flex-direction: column; gap: 2px; flex: 1"><span style="font-weight: 600; font-size: 14px">{{d.nombre}}</span><span style="font-size: 12px; color: #56635E">{{d.meta}}</span></span>
+          <sc-if value="{{d.nuevo}}" hint-placeholder-val="{{ false }}"><span style="font-size: 11px; font-weight: 600; padding: 4px 8px; border-radius: 999px; background: #E3F1EA; color: #0B5A41">Nuevo</span></sc-if>
+        </button>
+      </sc-for>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{isAsistente}}" hint-placeholder-val="{{ false }}">
+    <div style="display: flex; flex-direction: column; gap: 12px">
+      <sc-for list="{{chat}}" as="c" hint-placeholder-count="1">
+        <div style="display: flex; justify-content: {{c.justify}}">
+          <span style="max-width: 82%; padding: 11px 14px; border-radius: 16px; font-size: 14px; line-height: 1.45; background: {{c.bg}}; color: {{c.fg}}">{{c.text}}</span>
+        </div>
+      </sc-for>
+      <sc-if value="{{typing}}" hint-placeholder-val="{{ false }}">
+        <span style="font-size: 13px; color: #56635E">El asistente está escribiendo…</span>
+      </sc-if>
+      <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px">
+        <sc-for list="{{suggestions}}" as="g" hint-placeholder-count="4">
+          <button onClick="{{g.ask}}" style="min-height: 44px; padding: 8px 14px; border-radius: 22px; border: 1px solid #C9D2CE; background: #FFFFFF; color: #0F1A17; font-size: 13px; cursor: pointer; text-align: left">{{g.q}}</button>
+        </sc-for>
+      </div>
+      <span style="font-size: 12px; color: #56635E; line-height: 1.45">Modelo alojado en la UE · no se entrena con tus datos · RR.HH. no ve tus conversaciones · lee tu nómina solo si lo autorizas, descifrada en tu móvil.</span>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{isPrivacy}}" hint-placeholder-val="{{ false }}">
+    <div style="display: flex; flex-direction: column; gap: 16px">
+      <div style="background: #FFFFFF; border: 1px solid #E2E7E4; border-radius: 18px; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+        <span style="font-weight: 600">Qué ve tu empresa</span>
+        <div style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 14px; font-weight: 500">Fichajes</span><span style="font-size: 13px; color: #56635E">Hora y «dentro de sede: sí/no». Nunca tus coordenadas.</span></div>
+        <div style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 14px; font-weight: 500">Documentos</span><span style="font-size: 13px; color: #56635E">Solo el emisor y tú. Cada apertura queda registrada.</span></div>
+        <div style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 14px; font-weight: 500">Asistente IA</span><span style="font-size: 13px; color: #56635E">Privado. RR.HH. no tiene acceso.</span></div>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E2E7E4; border-radius: 18px; padding: 6px 16px; display: flex; flex-direction: column">
+        <sc-for list="{{toggles}}" as="t" hint-placeholder-count="3">
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 0">
+            <span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 14px; font-weight: 500">{{t.label}}</span><span style="font-size: 12px; color: #56635E">{{t.desc}}</span></span>
+            <button onClick="{{t.toggle}}" aria-pressed="{{t.pressed}}" aria-label="{{t.label}}" style="width: 52px; height: 32px; border-radius: 16px; border: 0; background: {{t.track}}; padding: 0; cursor: pointer; display: flex; align-items: center; flex-shrink: 0">
+              <span style="width: 26px; height: 26px; border-radius: 13px; background: #FFFFFF; margin-left: {{t.knob}}; box-shadow: 0 1px 3px rgba(0,0,0,0.25)"></span>
+            </button>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+        <button onClick="{{exportData}}" style="min-height: 48px; border-radius: 14px; border: 1.5px solid #0F1A17; background: transparent; color: #0F1A17; font-weight: 600; font-size: 13px; cursor: pointer">Exportar mis datos</button>
+        <button onClick="{{deleteData}}" style="min-height: 48px; border-radius: 14px; border: 1.5px solid #9B2C1F; background: transparent; color: #9B2C1F; font-weight: 600; font-size: 13px; cursor: pointer">Solicitar supresión</button>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <span style="font-weight: 600">Registro de accesos</span>
+        <span style="font-size: 13px; color: #56635E; font-family: 'IBM Plex Mono', monospace">27 sep 10:04 · RR.HH. · emisión nómina</span>
+        <span style="font-size: 13px; color: #56635E; font-family: 'IBM Plex Mono', monospace">03 oct 09:12 · Tú · lectura nómina</span>
+      </div>
+      <button onClick="{{goHome}}" style="height: 48px; border: 0; border-radius: 14px; background: #E2E7E4; color: #0F1A17; font-weight: 600; cursor: pointer">Volver</button>
+    </div>
+    </sc-if>
+
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); padding: 6px 8px 18px; background: #FFFFFF; border-top: 1px solid #E2E7E4">
+    <button onClick="{{goHome}}" style="border: 0; background: transparent; min-height: 52px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 11px; font-weight: 500; cursor: pointer; color: {{tabs.home}}">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1v-9z"></path></svg>Inicio
+    </button>
+    <button onClick="{{goFichar}}" style="border: 0; background: transparent; min-height: 52px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 11px; font-weight: 500; cursor: pointer; color: {{tabs.fichar}}">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="8"></circle><path d="M12 9v4l2.5 2.5M9 2h6"></path></svg>Fichar
+    </button>
+    <button onClick="{{goSolicitudes}}" style="border: 0; background: transparent; min-height: 52px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 11px; font-weight: 500; cursor: pointer; color: {{tabs.solicitudes}}">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"></rect><path d="M3 10h18M8 3v4M16 3v4"></path></svg>Solicitudes
+    </button>
+    <button onClick="{{goDocs}}" style="border: 0; background: transparent; min-height: 52px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 11px; font-weight: 500; cursor: pointer; color: {{tabs.docs}}">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5z"></path><path d="M14 3v5h5"></path></svg>Docs
+    </button>
+    <button onClick="{{goAsistente}}" style="border: 0; background: transparent; min-height: 52px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 11px; font-weight: 500; cursor: pointer; color: {{tabs.asistente}}">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8L12 3z"></path></svg>Asistente
+    </button>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{showSheet}}" hint-placeholder-val="{{ false }}">
+<div style="position: absolute; inset: 0; background: rgba(15,26,23,0.5); display: flex; flex-direction: column; justify-content: flex-end">
+  <div style="background: #FFFFFF; border-radius: 26px 26px 0 0; padding: 22px 20px 28px; display: flex; flex-direction: column; gap: 14px">
+    <span style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 20px">{{sheet.nombre}}</span>
+    <div style="background: #F4F5F2; border-radius: 14px; padding: 12px 14px; display: flex; flex-direction: column; gap: 6px">
+      <span style="font-size: 12px; color: #56635E; text-transform: uppercase; letter-spacing: 1px">Cifrado</span>
+      <span style="font-size: 13px">X25519 + XChaCha20-Poly1305 (libsodium)</span>
+      <span style="font-size: 12px; color: #56635E">Huella de la clave del emisor</span>
+      <span style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; letter-spacing: 0.5px">{{sheet.fp}}</span>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 4px">
+      <span style="font-size: 12px; color: #56635E; text-transform: uppercase; letter-spacing: 1px">Accesos</span>
+      <span style="font-size: 13px; font-family: 'IBM Plex Mono', monospace">{{sheet.log1}}</span>
+      <span style="font-size: 13px; font-family: 'IBM Plex Mono', monospace">{{sheet.log2}}</span>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+      <button onClick="{{closeSheet}}" style="height: 48px; border-radius: 14px; border: 1px solid #D5DBD8; background: #FFFFFF; color: #0F1A17; font-weight: 600; cursor: pointer">Cerrar</button>
+      <button onClick="{{downloadDoc}}" style="height: 48px; border-radius: 14px; border: 0; background: {{accent}}; color: #FFFFFF; font-weight: 600; cursor: pointer">Descifrar y abrir</button>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{showToast}}" hint-placeholder-val="{{ false }}">
+<div style="position: absolute; left: 16px; right: 16px; bottom: 96px; background: #0F1A17; color: #F4F5F2; border-radius: 14px; padding: 13px 16px; font-size: 14px; line-height: 1.4; box-shadow: 0 8px 24px rgba(15,26,23,0.25)" role="status">{{toast}}</div>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#0B6E4F","options":["#0B6E4F","#1F4FB8","#6B3FA0","#B4531A"]},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = {
+      screen: 'login',
+      loggingIn: false,
+      clockedIn: false,
+      clockStart: 0,
+      method: 'geo',
+      offline: false,
+      punches: [],
+      reqType: 'vac',
+      requests: [
+        { id: 1, tipo: 'Horas extra', detalle: '12 sep · 1 h 30 min', estado: 'Aprobada' },
+        { id: 2, tipo: 'Vacaciones', detalle: '18–22 ago · 5 días', estado: 'Aprobada' }
+      ],
+      sheet: null,
+      chat: [{ id: 0, from: 'bot', text: '¡Hola! Soy tu asistente de RR.HH.: pregúntame por saldos, nóminas o pídeme que prepare una solicitud.' }],
+      typing: false,
+      toast: null,
+      toggles: { push: true, pk: true, an: false }
+    };
+  }
+
+  componentDidMount() {
+    this.tick = setInterval(() => { if (this.state.clockedIn) this.forceUpdate(); }, 1000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.tick);
+    clearTimeout(this.tt);
+  }
+
+  flash(msg) {
+    this.setState({ toast: msg });
+    clearTimeout(this.tt);
+    this.tt = setTimeout(() => this.setState({ toast: null }), 2800);
+  }
+
+  hhmm(d) {
+    const p = (n) => String(n).padStart(2, '0');
+    return p(d.getHours()) + ':' + p(d.getMinutes());
+  }
+
+  renderVals() {
+    const s = this.state;
+    const accent = this.props.accent ?? '#0B6E4F';
+    const accentLight = '#7FD8B2';
+    const scr = s.screen;
+    const pad = (n) => String(n).padStart(2, '0');
+    const go = (k) => () => this.setState({ screen: k, sheet: null });
+
+    let elapsed = '00:00:00';
+    if (s.clockedIn) {
+      const d = Math.max(0, Math.floor((Date.now() - s.clockStart) / 1000));
+      elapsed = pad(Math.floor(d / 3600)) + ':' + pad(Math.floor((d % 3600) / 60)) + ':' + pad(d % 60);
+    }
+
+    const titles = {
+      home: ['Domingo, 4 oct', 'Hola, Colaborador'],
+      fichar: ['Jornada', 'Fichar'],
+      solicitudes: ['Ausencias y horas', 'Solicitudes'],
+      docs: ['Nóminas y certificados', 'Documentos'],
+      asistente: ['Respuestas al instante', 'Asistente'],
+      privacidad: ['Tus derechos RGPD', 'Mis datos']
+    };
+    const tt = titles[scr] || titles.home;
+
+    const methodDefs = {
+      geo: { label: 'Geovalla', info: 'Tu posición se comprueba en el propio móvil. A la empresa solo llega «dentro de sede: sí». Nunca tus coordenadas.' },
+      qr: { label: 'QR sede', info: 'Escanea el QR rotativo de la sede (cambia cada 30 s y va firmado): no sirve una foto reenviada.' },
+      nfc: { label: 'NFC', info: 'Acerca el móvil a la etiqueta NFC firmada de la entrada. Funciona sin GPS y sin datos.' }
+    };
+    const methods = Object.keys(methodDefs).map((k) => ({
+      label: methodDefs[k].label,
+      pressed: s.method === k ? 'true' : 'false',
+      border: s.method === k ? accent : '#D5DBD8',
+      bg: s.method === k ? '#E3F1EA' : '#FFFFFF',
+      pick: () => this.setState({ method: k })
+    }));
+
+    const reqDefs = {
+      vac: { label: 'Vacaciones', detail: '12–16 oct · 5 días laborables', impact: 'Te quedarán 9,5 días. Nadie de tu equipo tiene vacaciones esas fechas.' },
+      per: { label: 'Permiso', detail: 'Mañana · 09:00–11:00', impact: 'Se descontarán 2 h de tu bolsa de permisos (quedan 22 h).' },
+      olv: { label: 'Fichaje olvidado', detail: '3 oct · Entrada 08:52', impact: 'Se adjunta tu actividad del día como justificante.' },
+      ext: { label: 'Horas extra', detail: '2 oct · 2 h 30 min', impact: 'Pendiente de validación según el convenio aplicable.' }
+    };
+    const rd = reqDefs[s.reqType];
+    const reqTypes = Object.keys(reqDefs).map((k) => ({
+      label: reqDefs[k].label,
+      pressed: s.reqType === k ? 'true' : 'false',
+      border: s.reqType === k ? accent : '#D5DBD8',
+      bg: s.reqType === k ? '#E3F1EA' : '#FFFFFF',
+      pick: () => this.setState({ reqType: k })
+    }));
+    const requests = s.requests.map((q) => ({
+      ...q,
+      bg: q.estado === 'Pendiente' ? '#FBEFD9' : '#DDEFE6',
+      fg: q.estado === 'Pendiente' ? '#7A4200' : '#0B5A41'
+    }));
+
+    const docsData = [
+      { id: 'n09', nombre: 'Nómina · septiembre 2026', meta: 'PDF · 182 KB · 27 sep', nuevo: true, fp: '7F3A 91C2 0B4E D815 66AF 2C90', log1: '27 sep 10:04 · RR.HH. · emisión', log2: 'Aún no abierto por ti' },
+      { id: 'n08', nombre: 'Nómina · agosto 2026', meta: 'PDF · 179 KB · 27 ago', nuevo: false, fp: '7F3A 91C2 0B4E D815 66AF 2C90', log1: '27 ago 10:01 · RR.HH. · emisión', log2: '28 ago 21:40 · Tú · lectura' },
+      { id: 'cu', nombre: 'Certificación Única 2026', meta: 'PDF · 240 KB · 16 mar', nuevo: false, fp: '7F3A 91C2 0B4E D815 66AF 2C90', log1: '16 mar 09:30 · RR.HH. · emisión', log2: '20 mar 18:02 · Tú · lectura' },
+      { id: 'pr09', nombre: 'Hoja de presencias · septiembre', meta: 'PDF · 96 KB · 1 oct', nuevo: false, fp: '7F3A 91C2 0B4E D815 66AF 2C90', log1: '01 oct 08:00 · Sistema · generado', log2: 'Aún no abierto por ti' }
+    ];
+    const docs = docsData.map((d) => ({ ...d, open: () => this.setState({ sheet: d.id }) }));
+    const sheet = docsData.find((d) => d.id === s.sheet) || docsData[0];
+
+    const chat = s.chat.map((c) => ({
+      ...c,
+      justify: c.from === 'user' ? 'flex-end' : 'flex-start',
+      bg: c.from === 'user' ? accent : '#FFFFFF',
+      fg: c.from === 'user' ? '#FFFFFF' : '#0F1A17'
+    }));
+    const answers = [
+      { q: '¿Cuántas vacaciones me quedan?', a: 'Te quedan 14,5 días de vacaciones y 22 h de permisos. Si pides del 12 al 16 de octubre, te quedarían 9,5 días.' },
+      { q: 'Explícame mi última nómina', a: 'He descifrado tu nómina de septiembre en el móvil. Respecto a agosto, el neto sube por las 1 h 30 min de horas extra del 12 sep. ¿Quieres el desglose de retenciones?' },
+      { q: '¿Cuándo cobro?', a: 'Según tu contrato, la nómina se abona el día 27 de cada mes. La de octubre llegará el martes 27.' },
+      { q: 'Pide 2 h de permiso mañana', a: 'He preparado un permiso para mañana de 09:00 a 11:00. Revísalo en Solicitudes y envíalo con un toque.', action: 'per' }
+    ];
+    const suggestions = answers.map((x) => ({
+      q: x.q,
+      ask: () => {
+        if (s.typing) return;
+        const n = this.state.chat.length;
+        this.setState({ chat: [...this.state.chat, { id: n + 1, from: 'user', text: x.q }], typing: true });
+        setTimeout(() => {
+          const upd = { chat: [...this.state.chat, { id: n + 2, from: 'bot', text: x.a }], typing: false };
+          if (x.action) upd.reqType = x.action;
+          this.setState(upd);
+        }, 900);
+      }
+    }));
+
+    const toggleDefs = [
+      { k: 'push', label: 'Notificaciones push', desc: 'Contenido cifrado; el servidor no lo lee' },
+      { k: 'pk', label: 'Passkey biométrica', desc: 'Sin contraseñas; la clave no sale del móvil' },
+      { k: 'an', label: 'Analítica anónima', desc: 'Desactivada por defecto' }
+    ];
+    const toggles = toggleDefs.map((t) => ({
+      ...t,
+      pressed: s.toggles[t.k] ? 'true' : 'false',
+      track: s.toggles[t.k] ? accent : '#B8C1BD',
+      knob: s.toggles[t.k] ? '23px' : '3px',
+      toggle: () => this.setState({ toggles: { ...this.state.toggles, [t.k]: !this.state.toggles[t.k] } })
+    }));
+
+    const tabColor = (k) => (scr === k ? accent : '#5E6B66');
+
+    return {
+      accent,
+      accentLight,
+      isLogin: scr === 'login',
+      showApp: scr !== 'login',
+      isHome: scr === 'home',
+      isFichar: scr === 'fichar',
+      isSolicitudes: scr === 'solicitudes',
+      isDocs: scr === 'docs',
+      isAsistente: scr === 'asistente',
+      isPrivacy: scr === 'privacidad',
+      subtitle: tt[0],
+      title: tt[1],
+      tabs: { home: tabColor('home'), fichar: tabColor('fichar'), solicitudes: tabColor('solicitudes'), docs: tabColor('docs'), asistente: tabColor('asistente') },
+      loginLabel: s.loggingIn ? 'Verificando passkey…' : 'Activar con passkey',
+      doLogin: () => {
+        if (s.loggingIn) return;
+        this.setState({ loggingIn: true });
+        setTimeout(() => { this.setState({ screen: 'home', loggingIn: false }); this.flash('Dispositivo vinculado · claves generadas en el móvil'); }, 1100);
+      },
+      goHome: go('home'),
+      goFichar: go('fichar'),
+      goSolicitudes: go('solicitudes'),
+      goDocs: go('docs'),
+      goAsistente: go('asistente'),
+      goPrivacy: go('privacidad'),
+
+      elapsed,
+      statusText: s.clockedIn ? 'Jornada en curso' : 'Turno 08:30–17:30 · aún sin fichar',
+      statusPill: s.offline ? 'Sin conexión' : 'En línea',
+      homeClockCta: s.clockedIn ? 'Ir a fichar salida' : 'Fichar entrada',
+
+      clockLabel: s.clockedIn ? 'Salida' : 'Entrada',
+      clockBg: s.clockedIn ? '#0F1A17' : accent,
+      clockRing: s.clockedIn ? '#D5DBD8' : '#CFE8DC',
+      methodLabel: methodDefs[s.method].label,
+      methodInfo: methodDefs[s.method].info,
+      methods,
+      clock: () => {
+        const now = new Date();
+        const st = this.state;
+        const p = {
+          id: now.getTime(),
+          t: this.hhmm(now),
+          tipo: st.clockedIn ? 'Salida' : 'Entrada',
+          metodo: methodDefs[st.method].label,
+          estado: st.offline ? 'En cola · firmado en el dispositivo' : 'Verificado · sincronizado',
+          queued: st.offline
+        };
+        this.setState({ clockedIn: !st.clockedIn, clockStart: st.clockedIn ? st.clockStart : now.getTime(), punches: [p, ...st.punches] });
+        this.flash(st.offline ? 'Sin conexión: fichaje firmado y en cola. Válido igualmente.' : (st.clockedIn ? 'Salida registrada' : 'Entrada registrada'));
+      },
+      offlinePressed: s.offline ? 'true' : 'false',
+      offlineTrack: s.offline ? '#B4531A' : '#B8C1BD',
+      offlineKnob: s.offline ? '23px' : '3px',
+      toggleOffline: () => {
+        const st = this.state;
+        if (st.offline) {
+          const hadQueue = st.punches.some((p) => p.queued);
+          this.setState({ offline: false, punches: st.punches.map((p) => (p.queued ? { ...p, queued: false, estado: 'Sincronizado al reconectar' } : p)) });
+          if (hadQueue) this.flash('Conexión recuperada · cola sincronizada');
+        } else {
+          this.setState({ offline: true });
+        }
+      },
+      noPunches: s.punches.length === 0,
+      punches: s.punches.map((p) => ({ ...p, estadoColor: p.queued ? '#8A4B00' : '#0B5A41' })),
+
+      reqTypes,
+      reqDetail: rd.detail,
+      reqImpact: rd.impact,
+      requests,
+      sendRequest: () => {
+        const id = Date.now();
+        this.setState({ requests: [{ id, tipo: rd.label, detalle: rd.detail, estado: 'Pendiente' }, ...this.state.requests] });
+        this.flash('Enviada a tu responsable · recibirás un push al resolverse');
+        setTimeout(() => {
+          this.setState({ requests: this.state.requests.map((q) => (q.id === id ? { ...q, estado: 'Aprobada' } : q)) });
+          this.flash('Push: tu responsable ha aprobado tu solicitud');
+        }, 3200);
+      },
+
+      docs,
+      showSheet: s.sheet !== null,
+      sheet,
+      closeSheet: () => this.setState({ sheet: null }),
+      downloadDoc: () => { this.setState({ sheet: null }); this.flash('Descifrado en tu móvil · acceso registrado en el log'); },
+
+      chat,
+      typing: s.typing,
+      suggestions,
+
+      toggles,
+      exportData: () => this.flash('Exportación (RGPD art. 15 y 20) en preparación · te avisaremos'),
+      deleteData: () => this.flash('Solicitud de supresión (art. 17) enviada al DPO de la empresa'),
+
+      scanExpense: () => this.flash('Escáner de tickets: OCR en el dispositivo · próximamente en la demo'),
+      shiftSwap: () => this.flash('Cambio de turno entre compañeros · próximamente en la demo'),
+
+      showToast: !!s.toast,
+      toast: s.toast || ''
+    };
+  }
+}
+</script>
+</body>
+</html>

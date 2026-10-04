@@ -1,0 +1,13 @@
+{
+  "name": "fide",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "mobile": "npm --workspace apps/mobile run start",
+    "web": "npm --workspace apps/mobile run web",
+    "typecheck": "npm --workspaces --if-present run typecheck"
+  }
+}
