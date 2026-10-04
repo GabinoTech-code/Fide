@@ -3,45 +3,60 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fide — Portale Aziendale & Amministrazione B2B</title>
+  <title>Fide Business — Plataforma de Gestión y Cumplimiento Laboral</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
-      --dark: #0F1A17;
-      --dark-card: #152420;
-      --accent: #1D6F42;
-      --accent-hover: #134E2E;
-      --accent-light: #48B478;
-      --accent-muted: #EBF5F0;
-      --text-white: #FFFFFF;
-      --text-muted: #7E968D;
-      --text-dark: #121E1A;
-      --border-subtle: #223A33;
-      --border-light: #E0ECE6;
-      --bg-page: #F7FAF8;
-      --success: #1E8E5A;
-      --danger: #D94841;
+      --dark-sidebar: #0E1614;
+      --dark-header: #0A110F;
+      --accent: #15803D;
+      --accent-hover: #166534;
+      --accent-light: #22C55E;
+      --accent-muted: #F0FDF4;
+      --accent-border: #BBF7D0;
+      --text-main: #0F172A;
+      --text-muted: #64748B;
+      --text-light: #94A3B8;
+      --border-subtle: #1E2E2A;
+      --border-card: #E2E8F0;
+      --bg-app: #F8FAFC;
+      --bg-white: #FFFFFF;
+      --success: #16A34A;
+      --danger: #DC2626;
       --warning: #D97706;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: var(--bg-page);
-      color: var(--text-dark);
+      background: var(--bg-app);
+      color: var(--text-main);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* SVG Icon Helpers */
+    .icon-svg {
+      width: 18px;
+      height: 18px;
+      stroke-width: 1.75;
+      stroke: currentColor;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      flex-shrink: 0;
     }
 
     /* Header */
     header {
-      background: var(--dark);
-      color: var(--text-white);
-      padding: 16px 32px;
+      background: var(--dark-header);
+      color: #FFFFFF;
+      padding: 14px 28px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -53,23 +68,35 @@
       gap: 12px;
     }
     .brand-logo-img {
-      width: 42px;
-      height: 42px;
-      border-radius: 12px;
+      width: 36px;
+      height: 36px;
+      border-radius: 9px;
       object-fit: cover;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
     }
     .brand-title {
       font-family: 'Space Grotesk', sans-serif;
-      font-size: 22px;
+      font-size: 20px;
       font-weight: 700;
       letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .badge-enterprise {
+      font-size: 10px;
+      background: rgba(34, 197, 94, 0.15);
+      border: 1px solid rgba(34, 197, 94, 0.4);
+      color: #4ADE80;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
     .brand-subtitle {
       font-size: 11px;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 1px;
+      color: var(--text-light);
     }
 
     .header-actions {
@@ -81,23 +108,23 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      background: rgba(72, 180, 120, 0.15);
-      border: 1px solid var(--accent-light);
-      padding: 6px 14px;
-      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 6px 12px;
+      border-radius: 8px;
       font-size: 12px;
-      color: var(--accent-light);
-      font-weight: 600;
+      color: #CBD5E1;
+      font-family: 'IBM Plex Mono', monospace;
     }
-    .badge-fido::before {
-      content: '';
-      width: 8px;
-      height: 8px;
+    .badge-fido .dot {
+      width: 7px;
+      height: 7px;
       background: var(--accent-light);
       border-radius: 50%;
+      box-shadow: 0 0 8px var(--accent-light);
     }
 
-    /* Main Container */
+    /* Layout */
     .app-body {
       display: flex;
       flex: 1;
@@ -105,21 +132,29 @@
 
     /* Sidebar Navigation */
     aside {
-      width: 270px;
-      background: var(--dark);
-      padding: 24px 16px;
+      width: 260px;
+      background: var(--dark-sidebar);
+      padding: 24px 14px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 4px;
       border-right: 1px solid var(--border-subtle);
+    }
+    .nav-section-title {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #4E6861;
+      padding: 12px 12px 6px 12px;
     }
     .nav-btn {
       display: flex;
       align-items: center;
       gap: 12px;
-      padding: 12px 16px;
-      border-radius: 12px;
-      color: var(--text-muted);
+      padding: 10px 14px;
+      border-radius: 8px;
+      color: #8EABA3;
       font-size: 13.5px;
       font-weight: 500;
       text-decoration: none;
@@ -128,83 +163,159 @@
       background: transparent;
       width: 100%;
       text-align: left;
-      transition: all 0.2s;
+      transition: all 0.15s ease;
     }
     .nav-btn:hover {
-      background: rgba(255, 255, 255, 0.05);
-      color: var(--text-white);
+      background: rgba(255, 255, 255, 0.04);
+      color: #FFFFFF;
     }
     .nav-btn.active {
       background: var(--accent);
-      color: var(--text-white);
+      color: #FFFFFF;
       font-weight: 600;
     }
+    .nav-btn.active .icon-svg {
+      stroke: #FFFFFF;
+    }
 
-    /* Content Area */
+    /* Main Content */
     main {
       flex: 1;
-      padding: 32px;
-      max-width: 1200px;
+      padding: 32px 40px;
+      max-width: 1280px;
       margin: 0 auto;
       width: 100%;
     }
 
     .section-title {
       font-family: 'Space Grotesk', sans-serif;
-      font-size: 26px;
+      font-size: 24px;
       font-weight: 700;
-      color: var(--text-dark);
-      margin-bottom: 6px;
+      color: var(--text-main);
+      letter-spacing: -0.4px;
     }
     .section-desc {
-      font-size: 14px;
-      color: #556B63;
+      font-size: 13.5px;
+      color: var(--text-muted);
+      margin-top: 4px;
       margin-bottom: 24px;
     }
 
     .card {
-      background: #FFFFFF;
-      border: 1px solid var(--border-light);
-      border-radius: 18px;
+      background: var(--bg-white);
+      border: 1px solid var(--border-card);
+      border-radius: 14px;
       padding: 24px;
-      box-shadow: 0 4px 16px rgba(15, 26, 23, 0.04);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.02);
       margin-bottom: 24px;
     }
 
-    /* Registration Wizard Steps */
-    .steps-nav {
-      display: flex;
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
       margin-bottom: 24px;
+    }
+    .stat-card {
+      background: var(--bg-white);
+      border: 1px solid var(--border-card);
+      border-radius: 12px;
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+    }
+    .stat-label {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .stat-val {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    /* Buttons */
+    .btn {
+      padding: 9px 18px;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.15s ease;
+      font-family: inherit;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #FFFFFF;
+    }
+    .btn-primary:hover {
+      background: var(--accent-hover);
+    }
+    .btn-secondary {
       background: #FFFFFF;
-      border-radius: 14px;
-      border: 1px solid var(--border-light);
+      color: var(--text-main);
+      border-color: #CBD5E1;
+    }
+    .btn-secondary:hover {
+      background: #F1F5F9;
+      border-color: #94A3B8;
+    }
+
+    /* Tables */
+    .table-wrap {
+      border: 1px solid var(--border-card);
+      border-radius: 10px;
       overflow: hidden;
     }
-    .step-item {
-      flex: 1;
-      padding: 14px 16px;
-      text-align: center;
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
       font-size: 13px;
+    }
+    th {
+      background: #F8FAFC;
+      padding: 12px 16px;
       font-weight: 600;
-      color: #6C8279;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      border-right: 1px solid var(--border-light);
-      transition: all 0.2s;
+      color: #475569;
+      border-bottom: 1px solid var(--border-card);
+      text-transform: uppercase;
+      font-size: 11px;
+      letter-spacing: 0.5px;
     }
-    .step-item:last-child { border-right: none; }
-    .step-item.active {
-      background: var(--accent-muted);
-      color: var(--accent);
+    td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border-card);
+      color: var(--text-main);
     }
-    .step-item.completed {
-      color: var(--success);
-    }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover { background: #FAFAFA; }
 
-    /* Form Fields */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 11.5px;
+      font-weight: 600;
+      font-family: 'IBM Plex Mono', monospace;
+    }
+    .badge-online { background: #DCFCE7; color: #15803D; }
+    .badge-offline { background: #FEE2E2; color: #B91C1C; }
+
+    /* Forms */
     .form-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -217,125 +328,100 @@
       gap: 6px;
     }
     .field-group label {
-      font-size: 12px;
-      font-weight: 700;
+      font-size: 11.5px;
+      font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      color: #4A635B;
+      color: #475569;
     }
     .field-group input, .field-group select {
-      padding: 12px 14px;
-      border-radius: 10px;
-      border: 1.5px solid var(--border-light);
-      font-size: 14px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: 1px solid #CBD5E1;
+      font-size: 13.5px;
       outline: none;
       font-family: inherit;
       background: #FFFFFF;
-      color: var(--text-dark);
-      transition: border-color 0.2s;
+      color: var(--text-main);
+      transition: border-color 0.15s;
     }
     .field-group input:focus, .field-group select:focus {
       border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(21, 128, 61, 0.1);
     }
 
-    .btn {
-      padding: 12px 24px;
-      border-radius: 12px;
-      border: none;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      transition: all 0.2s;
+    /* Gate / Locked Screen Overlay */
+    #gate-screen {
+      max-width: 640px;
+      margin: 40px auto;
+      text-align: center;
     }
-    .btn-primary {
-      background: var(--accent);
-      color: var(--text-white);
-    }
-    .btn-primary:hover { background: var(--accent-hover); }
-    .btn-secondary {
-      background: #E8F0EC;
-      color: var(--text-dark);
+    .gate-card {
+      background: #FFFFFF;
+      border: 1px solid var(--border-card);
+      border-radius: 16px;
+      padding: 40px 32px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
     }
 
-    /* Stats Grid */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 16px;
+    /* Stepper */
+    .stepper {
+      display: flex;
+      border-bottom: 1px solid var(--border-card);
       margin-bottom: 24px;
     }
-    .stat-card {
-      background: #FFFFFF;
-      border: 1px solid var(--border-light);
-      border-radius: 14px;
-      padding: 18px;
+    .step-tab {
+      flex: 1;
+      padding: 14px 10px;
+      text-align: center;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
       display: flex;
-      flex-direction: column;
-      gap: 6px;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.15s ease;
     }
-    .stat-label {
-      font-size: 12px;
-      color: #6C8279;
-      font-weight: 600;
-      text-transform: uppercase;
+    .step-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+      background: rgba(21, 128, 61, 0.03);
     }
-    .stat-val {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 30px;
-      font-weight: 700;
-      color: var(--text-dark);
+    .step-num {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #E2E8F0;
+      color: #475569;
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'IBM Plex Mono', monospace;
     }
-
-    /* Tables */
-    .table-wrap {
-      overflow-x: auto;
+    .step-tab.active .step-num {
+      background: var(--accent);
+      color: #FFFFFF;
     }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      text-align: left;
-      font-size: 13.5px;
-    }
-    th {
-      background: #F4F8F6;
-      padding: 12px 16px;
-      font-weight: 600;
-      color: #4A635B;
-      border-bottom: 1px solid var(--border-light);
-    }
-    td {
-      padding: 14px 16px;
-      border-bottom: 1px solid var(--border-light);
-      color: var(--text-dark);
-    }
-    tr:last-child td { border-bottom: none; }
-
-    .status-badge {
-      display: inline-block;
-      padding: 4px 10px;
-      border-radius: 12px;
-      font-size: 12px;
-      font-weight: 600;
-    }
-    .badge-online { background: #DFF5E9; color: var(--success); }
-    .badge-offline { background: #FDE8E8; color: var(--danger); }
 
     /* Kiosk Display */
     .kiosk-card {
-      background: var(--dark);
-      color: var(--text-white);
-      border-radius: 20px;
+      background: var(--dark-sidebar);
+      color: #FFFFFF;
+      border-radius: 18px;
       padding: 40px;
       text-align: center;
-      margin-bottom: 24px;
+      max-width: 580px;
+      margin: 0 auto 24px auto;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
     }
     .kiosk-qr-box {
       background: #FFFFFF;
       padding: 20px;
-      border-radius: 16px;
+      border-radius: 14px;
       display: inline-block;
       margin: 20px 0;
     }
@@ -345,259 +431,129 @@
       color: var(--accent-light);
       font-weight: 700;
     }
-
-    /* Responsive */
-    @media (max-width: 900px) {
-      .app-body { flex-direction: column; }
-      aside { width: 100%; }
-      .stats-grid { grid-template-columns: repeat(2, 1fr); }
-    }
   </style>
 </head>
 <body>
 
-  <!-- Header -->
+  <!-- Top Header -->
   <header>
     <div class="brand-wrap">
       <img src="assets/icon.png" class="brand-logo-img" alt="Fide Logo">
       <div>
-        <div class="brand-title">Fide Business</div>
-        <div class="brand-subtitle">Zero-Knowledge HR & Employee Security Platform</div>
+        <div class="brand-title">
+          Fide Business
+          <span class="badge-enterprise">Enterprise</span>
+        </div>
+        <div class="brand-subtitle" id="header-company-name">Sin empresa seleccionada</div>
       </div>
     </div>
+
     <div class="header-actions">
-      <div class="badge-fido">Admin FIDO2 Passkey Verificata</div>
-      <button class="btn btn-secondary" style="font-size:12px; padding: 6px 12px;" onclick="switchCountry()">
-        <span id="countryLabel">🇪🇸 España (Convenio)</span>
+      <div class="badge-fido">
+        <span class="dot"></span>
+        <span id="fido-status-text">FIDO2 WebAuthn Activo</span>
+      </div>
+      <button class="btn btn-secondary" id="btn-session-toggle" onclick="handleSessionToggle()" style="font-size: 12px; padding: 6px 14px;">
+        Acceder con Passkey
       </button>
     </div>
   </header>
 
-  <div class="app-body">
-    <!-- Sidebar Navigation -->
+  <!-- ==================== GATE: PANTALLA DE ACCESO CUANDO NO ESTÁ REGISTRADA ==================== -->
+  <div id="gate-screen">
+    <div class="gate-card">
+      <div style="width: 48px; height: 48px; background: var(--accent-muted); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px auto; color: var(--accent);">
+        <svg class="icon-svg" style="width: 24px; height: 24px;" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+
+      <h1 style="font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 700; margin-bottom: 8px;">
+        Centro de Control Empresarial Fide
+      </h1>
+      <p style="font-size: 13.5px; color: var(--text-muted); line-height: 1.5; margin-bottom: 24px;">
+        Para acceder a los registros de presencia, quioscos y nóminas de tu organización, debes dar de alta tu empresa o autenticarte con tu llave FIDO2.
+      </p>
+
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <button class="btn btn-primary" style="justify-content: center; padding: 12px;" onclick="openOnboardingView()">
+          <svg class="icon-svg" viewBox="0 0 24 24"><path d="M3 21h18M3 7v14M21 7v14M6 7V3h12v4M9 11h2M13 11h2M9 15h2M13 15h2"/></svg>
+          Registrar Nueva Empresa (Onboarding Oficial)
+        </button>
+
+        <button class="btn btn-secondary" style="justify-content: center; padding: 12px;" onclick="authenticateWithPasskey()">
+          <svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+          Iniciar Sesión de Administrador con Passkey
+        </button>
+      </div>
+
+      <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border-card); font-size: 12px; color: var(--text-muted);">
+        🔒 Cumplimiento estricto con el <strong>Real Decreto-ley 8/2019</strong> (España) y <strong>D.Lgs. 81/2008</strong> (Italia).
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== CONTENEDOR PRINCIPAL AUTENTICADO ==================== -->
+  <div class="app-body" id="authenticated-app" style="display: none;">
+    <!-- Sidebar -->
     <aside>
-      <button class="nav-btn active" onclick="showTab('wizard')">🏢 1. Registro & Onboarding Empresa</button>
-      <button class="nav-btn" onclick="showTab('live')">👥 2. Monitor Presenze Live</button>
-      <button class="nav-btn" onclick="showTab('kiosk')">📍 3. Sedí & Chiosco QR (30s)</button>
-      <button class="nav-btn" onclick="showTab('payroll')">🔒 4. Distribuzione Buste Paga E2EE</button>
-      <button class="nav-btn" onclick="showTab('requests')">📝 5. Gestione Ferie & Permessi</button>
-      <button class="nav-btn" onclick="showTab('audit')">⚖️ 6. Ispettorato del Lavoro</button>
+      <div class="nav-section-title">Control Operativo</div>
+      <button class="nav-btn active" onclick="switchPortalTab('presence')">
+        <svg class="icon-svg" viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+        Presencia en Directo
+      </button>
+      <button class="nav-btn" onclick="switchPortalTab('kiosk')">
+        <svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Sedes & Quiosco QR
+      </button>
+      <button class="nav-btn" onclick="switchPortalTab('requests')">
+        <svg class="icon-svg" viewBox="0 0 24 24"><path d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/></svg>
+        Permisos & Vacaciones
+      </button>
+
+      <div class="nav-section-title">Seguridad & Nóminas</div>
+      <button class="nav-btn" onclick="switchPortalTab('payroll')">
+        <svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        Distribución Nóminas E2EE
+      </button>
+      <button class="nav-btn" onclick="switchPortalTab('audit')">
+        <svg class="icon-svg" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        Inspección de Trabajo
+      </button>
+
+      <div class="nav-section-title">Configuración</div>
+      <button class="nav-btn" onclick="openOnboardingView()">
+        <svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        Ajustes & Nueva Sede
+      </button>
     </aside>
 
-    <!-- Main Content -->
+    <!-- Main Views -->
     <main>
 
-      <!-- ==================== TAB 1: ONBOARDING WIZARD ==================== -->
-      <section id="tab-wizard">
+      <!-- ==================== VIEW 1: PRESENCIA EN VIVO ==================== -->
+      <section id="view-presence">
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
           <div>
-            <h1 class="section-title">Registro y Onboarding de la Empresa</h1>
-            <p class="section-desc" style="margin-bottom: 0;">Configura tu organización con claves asimétricas de grado militar y conexión directa a Supabase.</p>
-          </div>
-          <div style="display: flex; gap: 8px;">
-            <button class="btn btn-secondary" style="font-size: 12px; padding: 8px 14px;" onclick="loadPreset('ES')">
-              🇪🇸 Rellenar Ejemplo España
-            </button>
-            <button class="btn btn-secondary" style="font-size: 12px; padding: 8px 14px;" onclick="loadPreset('IT')">
-              🇮🇹 Rellenar Ejemplo Italia
-            </button>
-          </div>
-        </div>
-
-        <div class="steps-nav">
-          <div class="step-item active" id="step-nav-1" onclick="setStep(1)">1. Dati Fiscali & CCNL</div>
-          <div class="step-item" id="step-nav-2" onclick="setStep(2)">2. Sede & Geovalla RAM</div>
-          <div class="step-item" id="step-nav-3" onclick="setStep(3)">3. FIDO2 & Claves E2EE</div>
-          <div class="step-item" id="step-nav-4" onclick="setStep(4)">4. Plantilla & Activación</div>
-        </div>
-
-        <div class="card">
-          <!-- Step 1: Legal & Agreement -->
-          <div id="step-content-1">
-            <h2 style="font-size: 18px; margin-bottom: 14px;">1. Datos Societarios y Encuadramiento Laboral</h2>
-            <div class="form-grid">
-              <div class="field-group">
-                <label>País Principal</label>
-                <select id="reg-country" onchange="handleCountrySelectorChange()">
-                  <option value="ES">🇪🇸 España (Real Decreto-ley 8/2019)</option>
-                  <option value="IT">🇮🇹 Italia (CCNL & D.Lgs 81/2008)</option>
-                </select>
-              </div>
-              <div class="field-group">
-                <label>Razón Social / Nombre Legal</label>
-                <input type="text" id="reg-name" value="Acme Soluciones Tecnológicas S.L.">
-              </div>
-              <div class="field-group">
-                <label>CIF / NIF / Partita IVA</label>
-                <input type="text" id="reg-vat" value="B88349201">
-              </div>
-              <div class="field-group">
-                <label>Email Oficial / PEC</label>
-                <input type="email" id="reg-pec" value="administracion@acmetech.es">
-              </div>
-              <div class="field-group">
-                <label>Código Cuenta Cotización / SDI</label>
-                <input type="text" id="reg-sdi" value="28/1234567/89">
-              </div>
-              <div class="field-group">
-                <label>Convenio Colectivo Aplicable</label>
-                <select id="reg-ccnl">
-                  <option>Convenio Colectivo de Oficinas y Despachos</option>
-                  <option>Convenio Colectivo de la Industria del Metal</option>
-                  <option>Convenio de Comercio General y Logística</option>
-                  <option>Convenio de Hostelería y Restauración</option>
-                </select>
-              </div>
-              <div class="field-group" style="grid-column: span 2;">
-                <label>Domicilio Social Central</label>
-                <input type="text" id="reg-address" value="Paseo de la Castellana 200, 28046 Madrid, España">
-              </div>
-            </div>
-            <div style="display: flex; justify-content: flex-end;">
-              <button class="btn btn-primary" onclick="setStep(2)">Continuar: Configurar Sede y Geovalla →</button>
-            </div>
-          </div>
-
-          <!-- Step 2: Site & Geofence -->
-          <div id="step-content-2" style="display: none;">
-            <h2 style="font-size: 18px; margin-bottom: 14px;">2. Sede Física y Parámetros de Geovalla en RAM</h2>
-            <div class="form-grid">
-              <div class="field-group">
-                <label>Nombre de la Sede</label>
-                <input type="text" id="site-name" value="Sede Central Paseo Castellana">
-              </div>
-              <div class="field-group">
-                <label>Radio de Geovalla Permitido</label>
-                <select id="site-radius">
-                  <option value="50">50 metros (Oficina muy compacta)</option>
-                  <option value="100">100 metros (Planta corporativa estándar)</option>
-                  <option value="150" selected>150 metros (Recomendado estándar GDPR / Precisión GPS)</option>
-                  <option value="250">250 metros (Nave logística o polígono)</option>
-                </select>
-              </div>
-              <div class="field-group" style="grid-column: span 2;">
-                <label>Dirección Física de la Sede</label>
-                <input type="text" id="site-address" value="Paseo de la Castellana 200, Madrid">
-              </div>
-              <div class="field-group">
-                <label>Latitud</label>
-                <input type="number" step="0.000001" id="site-lat" value="40.468200">
-              </div>
-              <div class="field-group">
-                <label>Longitud</label>
-                <input type="number" step="0.000001" id="site-lon" value="-3.689000">
-              </div>
-            </div>
-
-            <div style="background: #F4F8F6; border: 1px solid var(--border-light); padding: 14px; border-radius: 12px; font-size: 13px; color: #3E544C; margin-bottom: 18px;">
-              🛡️ <strong>Garantía Garante Privacy / AEPD:</strong> Las coordenadas exactas de la sede se descargan a la app del empleado únicamente para que calcule la distancia en su propia RAM. Al servidor de Supabase solo llega <code>in_geofence: true</code>. Cero rastreo continuo.
-            </div>
-
-            <div style="display: flex; justify-content: space-between;">
-              <button class="btn btn-secondary" onclick="setStep(1)">← Volver a Datos Fiscales</button>
-              <button class="btn btn-primary" onclick="setStep(3)">Continuar: Claves Criptográficas FIDO2 →</button>
-            </div>
-          </div>
-
-          <!-- Step 3: FIDO2 & Keys -->
-          <div id="step-content-3" style="display: none;">
-            <h2 style="font-size: 18px; margin-bottom: 14px;">3. Identidad FIDO2 y Par de Claves Asimétricas</h2>
-            <p style="font-size: 13px; color: #556B63; line-height: 1.5; margin-bottom: 16px;">
-              Fide no utiliza contraseñas para los administradores. La identidad está protegida por el enclave hardware de tu equipo (Touch ID, Windows Hello o llave FIDO2). Se genera además el par criptográfico <strong>X25519 (nóminas) / Ed25519 (firmas)</strong>.
-            </p>
-
-            <div style="background: #F8FAF9; border: 1px solid var(--border-light); padding: 18px; border-radius: 14px; margin-bottom: 20px;">
-              <div style="display: flex; justify-content: space-between; align-items: center;">
-                <span style="font-weight: 700; font-size: 13px; color: var(--accent);">Huella Pública de la Empresa (SHA-256):</span>
-                <button class="btn btn-secondary" style="font-size: 11px; padding: 4px 10px;" onclick="regenerateKeys()">Regenerar Claves</button>
-              </div>
-              <div style="background: #FFF; border: 1px solid var(--border-light); padding: 10px; border-radius: 8px; font-family: monospace; font-size: 12px; margin-top: 8px; word-break: break-all;" id="reg-fingerprint">
-                SHA256:7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069
-              </div>
-            </div>
-
-            <div style="display: flex; justify-content: space-between;">
-              <button class="btn btn-secondary" onclick="setStep(2)">← Volver a Sede</button>
-              <button class="btn btn-primary" onclick="setStep(4)">Continuar: Invitar Trabajadores y Activar →</button>
-            </div>
-          </div>
-
-          <!-- Step 4: Employees & Activation -->
-          <div id="step-content-4" style="display: none;">
-            <h2 style="font-size: 18px; margin-bottom: 14px;">4. Invitación de Trabajadores y Guardado en Supabase</h2>
-            <p style="font-size: 13px; color: #556B63; margin-bottom: 16px;">
-              Genera los enlaces de invitación para que tus colaboradores activen su App Fide sin contraseñas. Al guardar, se creará el registro oficial en Supabase.
-            </p>
-
-            <div class="form-grid">
-              <div class="field-group">
-                <label>Nombre y Apellidos</label>
-                <input type="text" id="emp-name" value="Marco Rossi">
-              </div>
-              <div class="field-group">
-                <label>Departamento / Área</label>
-                <input type="text" id="emp-dept" value="Logística & Almacén">
-              </div>
-              <div class="field-group">
-                <label>Horario de Turno</label>
-                <input type="text" id="emp-shift" value="08:30 - 17:30">
-              </div>
-            </div>
-
-            <div style="display: flex; gap: 12px; margin-top: 10px;">
-              <button class="btn btn-primary" id="btn-save-company-db" onclick="saveCompanyToSupabase()">
-                🚀 Guardar y Activar Empresa en Supabase
-              </button>
-            </div>
-
-            <!-- Dynamic Result Box -->
-            <div id="invite-result-box" style="display: none; margin-top: 24px; background: var(--accent-muted); border: 1.5px solid var(--accent); padding: 20px; border-radius: 14px;">
-              <div style="font-weight: 700; color: var(--accent); font-size: 15px; margin-bottom: 4px;">
-                ✓ ¡Empresa Guardada en Supabase con Éxito!
-              </div>
-              <div style="font-size: 12px; color: #556B63; margin-bottom: 12px;" id="created-company-id-text">
-                ID Organización: ...
-              </div>
-              <div style="font-weight: 600; font-size: 13px; margin-bottom: 6px;">Enlace de Activación Móvil para el Empleado:</div>
-              <div style="background: #fff; padding: 10px; border-radius: 8px; font-family: monospace; font-size: 12px; word-break: break-all; margin-bottom: 12px; border: 1px solid var(--border-light);" id="invite-url-text">
-                fide://invite?code=FIDE-ES-2026&company=Acme+Soluciones&name=Marco+Rossi&dept=Logistica
-              </div>
-              <div style="display: flex; gap: 10px;">
-                <button class="btn btn-secondary" style="font-size: 12px; padding: 6px 12px;" onclick="copyInviteUrl(this)">
-                  📋 Copiar Enlace
-                </button>
-                <button class="btn btn-primary" style="font-size: 12px; padding: 6px 12px;" onclick="showTab('live')">
-                  Ir al Monitor de Presencia en Directo →
-                </button>
-              </div>
-            </div>
-
-            <div style="margin-top: 24px;">
-              <button class="btn btn-secondary" onclick="setStep(3)">← Volver a Claves</button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ==================== TAB 2: LIVE ATTENDANCE MONITOR ==================== -->
-      <section id="tab-live" style="display: none;">
-        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
-          <div>
-            <h1 class="section-title">Monitor de Presencia en Tiempo Real</h1>
-            <p class="section-desc" style="margin-bottom: 0;">Presencias verificadas crittograficamente con Supabase EU Realtime.</p>
+            <h1 class="section-title">Monitor de Presencia en Directo</h1>
+            <p class="section-desc" style="margin-bottom: 0;">Presencias certificadas crittograficamente con Supabase EU Realtime.</p>
           </div>
           <div style="display: flex; gap: 10px;">
-            <button class="btn btn-secondary" onclick="fetchRecentPunches()" style="font-size: 13px;">🔄 Actualizar</button>
-            <button class="btn btn-primary" onclick="simulateLivePunch()" style="font-size: 13px;">⚡ Simular Fichaje Live</button>
+            <button class="btn btn-secondary" onclick="fetchRecentPunches()">
+              <svg class="icon-svg" viewBox="0 0 24 24"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+              Actualizar
+            </button>
+            <button class="btn btn-primary" onclick="simulateLivePunch()">
+              <svg class="icon-svg" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              Simular Fichaje Live
+            </button>
           </div>
         </div>
 
-        <div style="background: rgba(72, 180, 120, 0.12); border: 1px solid var(--accent-light); padding: 12px 18px; border-radius: 12px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between;">
-          <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--accent);">
-            <span style="display: inline-block; width: 10px; height: 10px; background: var(--success); border-radius: 50%; box-shadow: 0 0 8px var(--success);"></span>
+        <div style="background: var(--accent-muted); border: 1px solid var(--accent-border); padding: 12px 18px; border-radius: 10px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between;">
+          <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--accent); font-weight: 500;">
+            <span style="display: inline-block; width: 8px; height: 8px; background: var(--success); border-radius: 50%; box-shadow: 0 0 8px var(--success);"></span>
             <strong>Conectado a Supabase EU (Milán / Cloudflare MXP)</strong> · Canal Realtime WebSocket Activo
           </div>
-          <span style="font-size: 12px; color: #556B63;" id="last-sync-time">En escucha de eventos...</span>
+          <span style="font-size: 12px; color: var(--text-muted);" id="last-sync-time">En escucha de eventos...</span>
         </div>
 
         <div class="stats-grid">
@@ -621,24 +577,24 @@
 
         <div class="card">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
-            <h2 style="font-size: 18px;">Marcajes Odiernos Certificados</h2>
-            <span style="font-size: 12px; color: #6C8279;">Firma Ed25519 & Geovalla RAM (150m)</span>
+            <h2 style="font-size: 16px; font-weight: 700;">Registro de Marcajes de Hoy</h2>
+            <span style="font-size: 12px; color: var(--text-muted);">Firmas Ed25519 & Geovallas en RAM (150m)</span>
           </div>
           <div class="table-wrap">
             <table>
               <thead>
                 <tr>
-                  <th>Colaborador / ID</th>
+                  <th>Trabajador / ID</th>
                   <th>Evento</th>
                   <th>Hora / Sincronización</th>
-                  <th>Método de Verificación</th>
-                  <th>Recibo Digital Fide</th>
+                  <th>Método de Validación</th>
+                  <th>Recibo Criptográfico Fide</th>
                   <th>Estado</th>
                 </tr>
               </thead>
               <tbody id="live-punches-body">
                 <tr>
-                  <td colspan="6" style="text-align: center; color: #6C8279; padding: 20px;">Cargando eventos desde Supabase...</td>
+                  <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 20px;">Cargando eventos desde Supabase...</td>
                 </tr>
               </tbody>
             </table>
@@ -646,64 +602,64 @@
         </div>
       </section>
 
-      <!-- ==================== TAB 3: KIOSK DISPLAY ==================== -->
-      <section id="tab-kiosk" style="display: none;">
+      <!-- ==================== VIEW 2: QUIOSCO QR ==================== -->
+      <section id="view-kiosk" style="display: none;">
         <h1 class="section-title">Quiosco de Entrada — QR Dinámico Rotativo (30s)</h1>
         <p class="section-desc">Pantalla para tablet instalada en recepción o tornos. El código QR rota cada 30 segundos firmado con HMAC.</p>
 
         <div class="kiosk-card">
-          <div style="font-size: 14px; color: var(--accent-light); text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">
+          <div style="font-size: 13px; color: #4ADE80; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;" id="kiosk-site-name">
             Fide Business · Sede Central
           </div>
-          <div style="font-size: 22px; font-weight: 700; margin-top: 6px;">
+          <div style="font-size: 20px; font-weight: 700; margin-top: 6px;">
             Enfoca con tu App Fide para Fichar
           </div>
 
           <div class="kiosk-qr-box">
             <svg width="220" height="220" viewBox="0 0 220 220">
               <rect width="220" height="220" fill="#FFFFFF"/>
-              <!-- Corner Finder Patterns -->
-              <rect x="20" y="20" width="50" height="50" fill="#0F1A17"/>
+              <rect x="20" y="20" width="50" height="50" fill="#0E1614"/>
               <rect x="28" y="28" width="34" height="34" fill="#FFFFFF"/>
-              <rect x="36" y="36" width="18" height="18" fill="#1D6F42"/>
+              <rect x="36" y="36" width="18" height="18" fill="#15803D"/>
 
-              <rect x="150" y="20" width="50" height="50" fill="#0F1A17"/>
+              <rect x="150" y="20" width="50" height="50" fill="#0E1614"/>
               <rect x="158" y="28" width="34" height="34" fill="#FFFFFF"/>
-              <rect x="166" y="36" width="18" height="18" fill="#1D6F42"/>
+              <rect x="166" y="36" width="18" height="18" fill="#15803D"/>
 
-              <rect x="20" y="150" width="50" height="50" fill="#0F1A17"/>
+              <rect x="20" y="150" width="50" height="50" fill="#0E1614"/>
               <rect x="28" y="158" width="34" height="34" fill="#FFFFFF"/>
-              <rect x="36" y="166" width="18" height="18" fill="#1D6F42"/>
+              <rect x="36" y="166" width="18" height="18" fill="#15803D"/>
 
-              <!-- Dynamic Data Blocks -->
-              <rect x="85" y="30" width="15" height="15" fill="#0F1A17"/>
-              <rect x="110" y="45" width="15" height="15" fill="#0F1A17"/>
-              <rect x="85" y="85" width="50" height="50" fill="#1D6F42" rx="8"/>
+              <rect x="85" y="30" width="15" height="15" fill="#0E1614"/>
+              <rect x="110" y="45" width="15" height="15" fill="#0E1614"/>
+              <rect x="85" y="85" width="50" height="50" fill="#15803D" rx="8"/>
               <rect x="100" y="100" width="20" height="20" fill="#FFFFFF" rx="4"/>
-              <rect x="150" y="95" width="15" height="15" fill="#0F1A17"/>
-              <rect x="45" y="105" width="15" height="15" fill="#0F1A17"/>
-              <rect x="90" y="155" width="15" height="15" fill="#0F1A17"/>
-              <rect x="120" y="165" width="20" height="20" fill="#0F1A17"/>
+              <rect x="150" y="95" width="15" height="15" fill="#0E1614"/>
+              <rect x="45" y="105" width="15" height="15" fill="#0E1614"/>
+              <rect x="90" y="155" width="15" height="15" fill="#0E1614"/>
+              <rect x="120" y="165" width="20" height="20" fill="#0E1614"/>
             </svg>
           </div>
 
-          <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 8px;">
+          <div style="font-size: 13px; color: var(--text-light); margin-bottom: 8px;">
             El código se renueva automáticamente para impedir fotos o fichajes fraudulentos:
           </div>
           <div class="kiosk-countdown" id="kioskTimer">30s</div>
         </div>
       </section>
 
-      <!-- ==================== TAB 4: PAYROLL E2EE ==================== -->
-      <section id="tab-payroll" style="display: none;">
+      <!-- ==================== VIEW 3: NÓMINAS E2EE ==================== -->
+      <section id="view-payroll" style="display: none;">
         <h1 class="section-title">Distribución de Nóminas Cifradas (Zero-Knowledge)</h1>
         <p class="section-desc">Carga por lotes de nóminas en PDF con cifrado asimétrico X25519 en el navegador antes de almacenar.</p>
 
         <div class="card">
-          <div style="border: 2px dashed var(--accent); padding: 36px; border-radius: 16px; text-align: center; background: var(--accent-muted); cursor: pointer;" onclick="simulatePayrollUpload()">
-            <div style="font-size: 32px; margin-bottom: 10px;">🔒</div>
-            <div style="font-weight: 700; font-size: 16px; margin-bottom: 4px;">Arrastra aquí los archivos PDF de las nóminas</div>
-            <div style="font-size: 13px; color: #556B63;">El navegador resolverá la clave pública X25519 de cada trabajador y cifrará cada documento localmente.</div>
+          <div style="border: 2px dashed #94A3B8; padding: 40px 20px; border-radius: 12px; text-align: center; background: #F8FAFC; cursor: pointer;" onclick="simulatePayrollUpload()">
+            <div style="width: 48px; height: 48px; background: var(--accent-muted); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px auto; color: var(--accent);">
+              <svg class="icon-svg" style="width: 24px; height: 24px;" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            </div>
+            <div style="font-weight: 700; font-size: 15px; margin-bottom: 4px;">Arrastra aquí los archivos PDF de las nóminas</div>
+            <div style="font-size: 13px; color: var(--text-muted); max-width: 520px; margin: 0 auto;">El navegador resolverá la clave pública X25519 de cada trabajador y cifrará cada documento de forma local.</div>
           </div>
 
           <div id="payroll-progress" style="display: none; margin-top: 20px;">
@@ -711,7 +667,7 @@
               <span>Cifrado asimétrico en curso (libsodium)...</span>
               <span style="color: var(--accent);">100% Completado</span>
             </div>
-            <div style="background: #E8F0EC; height: 8px; border-radius: 4px; overflow: hidden;">
+            <div style="background: #E2E8F0; height: 8px; border-radius: 4px; overflow: hidden;">
               <div style="background: var(--accent); width: 100%; height: 100%;"></div>
             </div>
             <div style="margin-top: 12px; font-size: 12px; color: var(--success); font-weight: 600;">
@@ -721,8 +677,8 @@
         </div>
       </section>
 
-      <!-- ==================== TAB 5: VACACIONES Y PERMISOS ==================== -->
-      <section id="tab-requests" style="display: none;">
+      <!-- ==================== VIEW 4: VACACIONES Y PERMISOS ==================== -->
+      <section id="view-requests" style="display: none;">
         <h1 class="section-title">Gestión de Vacaciones y Permisos</h1>
         <p class="section-desc">Solicitudes enviadas desde la aplicación móvil de los trabajadores.</p>
 
@@ -745,7 +701,7 @@
                   <td>15 - 20 Julio (5 días laborables)</td>
                   <td>14,5 días disponibles</td>
                   <td>
-                    <button class="btn btn-primary" style="padding: 6px 12px; font-size: 12px;" onclick="approveRow(this, 'Marco Rossi')">✓ Aprobar</button>
+                    <button class="btn btn-primary" style="padding: 5px 12px; font-size: 12px;" onclick="approveRow(this)">✓ Aprobar</button>
                   </td>
                 </tr>
                 <tr>
@@ -754,7 +710,7 @@
                   <td>Mañana 09:00 - 11:00 (Visita especialista)</td>
                   <td>24 horas disponibles</td>
                   <td>
-                    <button class="btn btn-primary" style="padding: 6px 12px; font-size: 12px;" onclick="approveRow(this, 'Elena Conti')">✓ Aprobar</button>
+                    <button class="btn btn-primary" style="padding: 5px 12px; font-size: 12px;" onclick="approveRow(this)">✓ Aprobar</button>
                   </td>
                 </tr>
               </tbody>
@@ -763,8 +719,8 @@
         </div>
       </section>
 
-      <!-- ==================== TAB 6: INSPECCIÓN LABORAL ==================== -->
-      <section id="tab-audit" style="display: none;">
+      <!-- ==================== VIEW 5: INSPECCIÓN LABORAL ==================== -->
+      <section id="view-audit" style="display: none;">
         <h1 class="section-title">Exportación Oficial para la Inspección de Trabajo</h1>
         <p class="section-desc">Registro de jornada conforme al Real Decreto-ley 8/2019 (España) y D.Lgs. 81/2008 (Italia).</p>
 
@@ -772,11 +728,14 @@
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <div>
               <div style="font-size: 16px; font-weight: 700;">Registro Mensual Vidimado Digitalmente</div>
-              <div style="font-size: 13px; color: #556B63;">Firma digital certificada con marca temporal inmutable</div>
+              <div style="font-size: 13px; color: var(--text-muted);">Firma digital certificada con marca temporal inmutable</div>
             </div>
-            <button class="btn btn-primary" onclick="alert('Esportazione Registro Ufficiale generata in formato PDF/A con timbro digitale e firme Ed25519.')">Descargar Registro Oficial (PDF / CSV) 📥</button>
+            <button class="btn btn-primary" onclick="exportReport()">
+              <svg class="icon-svg" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Descargar Registro Oficial (PDF/A)
+            </button>
           </div>
-          <div style="background: #F4F8F6; padding: 16px; border-radius: 12px; font-size: 13px; color: #3E544C; line-height: 1.6;">
+          <div style="background: #F8FAFC; border: 1px solid var(--border-card); padding: 16px; border-radius: 10px; font-size: 13px; color: #334155; line-height: 1.6;">
             <strong>Garantía de Conformidad Legal:</strong> El registro Fide contiene para cada evento la marca temporal exacta, el método de validación (sin coordenadas GPS continuas) y la huella digital del dispositivo del empleado, excluyendo cualquier alteración retroactiva.
           </div>
         </div>
@@ -785,41 +744,277 @@
     </main>
   </div>
 
+  <!-- ==================== ONBOARDING MODAL / FULL SCREEN ==================== -->
+  <div id="onboarding-modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(10, 17, 15, 0.85); backdrop-filter: blur(4px); z-index: 100; overflow-y: auto; padding: 40px 20px;">
+    <div style="max-width: 840px; margin: 0 auto; background: #FFFFFF; border-radius: 16px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3); overflow: hidden;">
+      
+      <div style="background: var(--dark-header); color: #FFFFFF; padding: 20px 28px; display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <div style="font-family: 'Space Grotesk', sans-serif; font-size: 18px; font-weight: 700;">Registro & Onboarding Oficial de Empresa</div>
+          <div style="font-size: 12px; color: var(--text-light);">Fide Zero-Knowledge Enterprise Registration</div>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button class="btn btn-secondary" style="font-size: 11px; padding: 5px 10px;" onclick="loadPreset('ES')">🇪🇸 Ejemplo España</button>
+          <button class="btn btn-secondary" style="font-size: 11px; padding: 5px 10px;" onclick="loadPreset('IT')">🇮🇹 Ejemplo Italia</button>
+          <button style="background: none; border: none; color: #94A3B8; font-size: 20px; cursor: pointer; margin-left: 10px;" onclick="closeOnboardingView()">✕</button>
+        </div>
+      </div>
+
+      <div class="stepper">
+        <div class="step-tab active" id="ob-nav-1" onclick="setObStep(1)">
+          <span class="step-num">1</span>
+          <span>Datos Fiscales</span>
+        </div>
+        <div class="step-tab" id="ob-nav-2" onclick="setObStep(2)">
+          <span class="step-num">2</span>
+          <span>Sede & Geovalla</span>
+        </div>
+        <div class="step-tab" id="ob-nav-3" onclick="setObStep(3)">
+          <span class="step-num">3</span>
+          <span>FIDO2 & Criptografía</span>
+        </div>
+        <div class="step-tab" id="ob-nav-4" onclick="setObStep(4)">
+          <span class="step-num">4</span>
+          <span>Plantilla & Activación</span>
+        </div>
+      </div>
+
+      <div style="padding: 28px;">
+        <!-- Step 1 -->
+        <div id="ob-content-1">
+          <div class="form-grid">
+            <div class="field-group">
+              <label>País Principal</label>
+              <select id="reg-country" onchange="loadPreset(this.value)">
+                <option value="ES">🇪🇸 España (RDL 8/2019)</option>
+                <option value="IT">🇮🇹 Italia (CCNL & D.Lgs 81/2008)</option>
+              </select>
+            </div>
+            <div class="field-group">
+              <label>Razón Social / Nombre Legal</label>
+              <input type="text" id="reg-name" value="Acme Soluciones Tecnológicas S.L.">
+            </div>
+            <div class="field-group">
+              <label>CIF / NIF / Partita IVA</label>
+              <input type="text" id="reg-vat" value="B88349201">
+            </div>
+            <div class="field-group">
+              <label>Email Oficial / PEC</label>
+              <input type="email" id="reg-pec" value="administracion@acmetech.es">
+            </div>
+            <div class="field-group">
+              <label>Código Cuenta Cotización / SDI</label>
+              <input type="text" id="reg-sdi" value="28/1234567/89">
+            </div>
+            <div class="field-group">
+              <label>Convenio Colectivo Aplicable</label>
+              <select id="reg-ccnl">
+                <option>Convenio Colectivo de Oficinas y Despachos</option>
+                <option>Convenio Colectivo de la Industria del Metal</option>
+                <option>Convenio de Comercio General y Logística</option>
+              </select>
+            </div>
+            <div class="field-group" style="grid-column: span 2;">
+              <label>Domicilio Social Central</label>
+              <input type="text" id="reg-address" value="Paseo de la Castellana 200, 28046 Madrid, España">
+            </div>
+          </div>
+          <div style="display: flex; justify-content: flex-end; margin-top: 20px;">
+            <button class="btn btn-primary" onclick="setObStep(2)">Continuar: Configurar Sede →</button>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div id="ob-content-2" style="display: none;">
+          <div class="form-grid">
+            <div class="field-group">
+              <label>Nombre de la Sede</label>
+              <input type="text" id="site-name" value="Sede Central Madrid">
+            </div>
+            <div class="field-group">
+              <label>Radio de Geovalla en RAM</label>
+              <select id="site-radius">
+                <option value="50">50 metros (Oficina muy compacta)</option>
+                <option value="100">100 metros (Planta corporativa estándar)</option>
+                <option value="150" selected>150 metros (Recomendado estándar GDPR / Precisión GPS)</option>
+                <option value="250">250 metros (Polígono o nave industrial)</option>
+              </select>
+            </div>
+            <div class="field-group" style="grid-column: span 2;">
+              <label>Dirección Física</label>
+              <input type="text" id="site-address" value="Paseo de la Castellana 200, Madrid">
+            </div>
+            <div class="field-group">
+              <label>Latitud</label>
+              <input type="number" step="0.000001" id="site-lat" value="40.468200">
+            </div>
+            <div class="field-group">
+              <label>Longitud</label>
+              <input type="number" step="0.000001" id="site-lon" value="-3.689000">
+            </div>
+          </div>
+          <div style="background: #F8FAFC; border: 1px solid var(--border-card); padding: 12px; border-radius: 8px; font-size: 12.5px; color: #475569; margin-bottom: 20px;">
+            🛡️ <strong>Garantía de Privacidad en RAM:</strong> La geovalla se evalúa en el hardware del teléfono al fichar. Ninguna coordenada de ubicación se guarda en el servidor.
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <button class="btn btn-secondary" onclick="setObStep(1)">← Anterior</button>
+            <button class="btn btn-primary" onclick="setObStep(3)">Continuar: Claves Criptográficas →</button>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div id="ob-content-3" style="display: none;">
+          <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">
+            Fide genera el par asimétrico empresarial <strong>X25519 / Ed25519</strong> para cifrar nóminas y firmar registros de jornada sin contraseñas vulnerables.
+          </p>
+          <div style="background: #F8FAFC; border: 1px solid var(--border-card); padding: 16px; border-radius: 10px; margin-bottom: 20px;">
+            <div style="font-size: 11px; font-weight: 600; color: #475569; text-transform: uppercase;">Huella SHA-256 de la Empresa:</div>
+            <div style="font-family: monospace; font-size: 12px; color: var(--accent); margin-top: 6px; word-break: break-all;" id="reg-fingerprint">
+              SHA256:7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069
+            </div>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <button class="btn btn-secondary" onclick="setObStep(2)">← Anterior</button>
+            <button class="btn btn-primary" onclick="setObStep(4)">Continuar: Añadir Empleado y Guardar →</button>
+          </div>
+        </div>
+
+        <!-- Step 4 -->
+        <div id="ob-content-4" style="display: none;">
+          <div class="form-grid">
+            <div class="field-group">
+              <label>Primer Empleado</label>
+              <input type="text" id="emp-name" value="Marco Rossi">
+            </div>
+            <div class="field-group">
+              <label>Departamento</label>
+              <input type="text" id="emp-dept" value="Logística & Almacén">
+            </div>
+            <div class="field-group">
+              <label>Horario</label>
+              <input type="text" id="emp-shift" value="08:30 - 17:30">
+            </div>
+          </div>
+
+          <div style="margin-top: 10px;">
+            <button class="btn btn-primary" id="btn-save-company-db" onclick="saveCompanyToSupabase()" style="width: 100%; justify-content: center; padding: 12px;">
+              🚀 Guardar y Activar Empresa en Supabase
+            </button>
+          </div>
+
+          <div id="invite-result-box" style="display: none; margin-top: 20px; background: var(--accent-muted); border: 1px solid var(--accent-border); padding: 16px; border-radius: 10px;">
+            <div style="font-weight: 700; color: var(--accent); margin-bottom: 4px;">✓ ¡Empresa Guardada con Éxito en Supabase!</div>
+            <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;" id="created-company-id-text">ID: ...</div>
+            <div style="font-size: 12px; font-weight: 600; margin-bottom: 4px;">Enlace de Activación Móvil generado:</div>
+            <div style="background: #FFFFFF; border: 1px solid var(--border-card); padding: 8px; border-radius: 6px; font-family: monospace; font-size: 11px; word-break: break-all; margin-bottom: 10px;" id="invite-url-text"></div>
+            <div style="display: flex; gap: 8px;">
+              <button class="btn btn-secondary" style="font-size: 11px; padding: 5px 10px;" onclick="copyInviteUrl(this)">📋 Copiar</button>
+              <button class="btn btn-primary" style="font-size: 11px; padding: 5px 10px;" onclick="completeOnboardingAndEnterDashboard()">Entrar al Panel de Control →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
-    // Navigation Controller
-    function showTab(tabId) {
+    // State management: Session / Company gate
+    let activeCompany = null;
+
+    function checkActiveSession() {
+      const stored = localStorage.getItem('fide_active_company');
+      if (stored) {
+        try {
+          activeCompany = JSON.parse(stored);
+          renderAuthenticatedDashboard();
+          return;
+        } catch (e) {
+          localStorage.removeItem('fide_active_company');
+        }
+      }
+      renderGateScreen();
+    }
+
+    function renderGateScreen() {
+      document.getElementById('gate-screen').style.display = 'block';
+      document.getElementById('authenticated-app').style.display = 'none';
+      document.getElementById('header-company-name').innerText = 'Sin empresa seleccionada';
+      document.getElementById('btn-session-toggle').innerText = 'Acceder con Passkey';
+    }
+
+    function renderAuthenticatedDashboard() {
+      document.getElementById('gate-screen').style.display = 'none';
+      document.getElementById('authenticated-app').style.display = 'flex';
+      const name = activeCompany?.legal_name || 'Acme Soluciones Tecnológicas S.L.';
+      document.getElementById('header-company-name').innerText = name + ' · Activa';
+      document.getElementById('btn-session-toggle').innerText = 'Cerrar Sesión';
+      fetchRecentPunches();
+    }
+
+    function handleSessionToggle() {
+      if (activeCompany) {
+        localStorage.removeItem('fide_active_company');
+        activeCompany = null;
+        renderGateScreen();
+      } else {
+        authenticateWithPasskey();
+      }
+    }
+
+    function authenticateWithPasskey() {
+      // Simulate WebAuthn / Passkey validation
+      const sampleCompany = {
+        id: '47d512a2-cb3e-4621-8208-8e6ca6f4c9c1',
+        legal_name: 'Acme Soluciones Tecnológicas S.L.',
+        country: 'ES'
+      };
+      localStorage.setItem('fide_active_company', JSON.stringify(sampleCompany));
+      activeCompany = sampleCompany;
+      renderAuthenticatedDashboard();
+    }
+
+    function openOnboardingView() {
+      document.getElementById('onboarding-modal').style.display = 'block';
+      setObStep(1);
+    }
+
+    function closeOnboardingView() {
+      document.getElementById('onboarding-modal').style.display = 'none';
+    }
+
+    function completeOnboardingAndEnterDashboard() {
+      closeOnboardingView();
+      renderAuthenticatedDashboard();
+    }
+
+    // Tab Navigation
+    function switchPortalTab(tabKey) {
       document.querySelectorAll('main > section').forEach(s => s.style.display = 'none');
-      const target = document.getElementById('tab-' + tabId);
+      const target = document.getElementById('view-' + tabKey);
       if (target) target.style.display = 'block';
 
       document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-      const activeBtn = Array.from(document.querySelectorAll('.nav-btn')).find(b => b.getAttribute('onclick')?.includes(tabId));
+      const activeBtn = Array.from(document.querySelectorAll('.nav-btn')).find(b => b.getAttribute('onclick')?.includes(tabKey));
       if (activeBtn) activeBtn.classList.add('active');
     }
 
-    // Step Controller for Onboarding
-    function setStep(stepNum) {
+    // Onboarding Step Controller
+    function setObStep(stepNum) {
       for (let i = 1; i <= 4; i++) {
-        const content = document.getElementById('step-content-' + i);
-        const nav = document.getElementById('step-nav-' + i);
+        const content = document.getElementById('ob-content-' + i);
+        const nav = document.getElementById('ob-nav-' + i);
         if (content) content.style.display = (i === stepNum ? 'block' : 'none');
         if (nav) {
           if (i === stepNum) {
-            nav.className = 'step-item active';
-          } else if (i < stepNum) {
-            nav.className = 'step-item completed';
+            nav.className = 'step-tab active';
           } else {
-            nav.className = 'step-item';
+            nav.className = 'step-tab';
           }
         }
       }
     }
 
-    // Presets for instant 1-click testing
     function loadPreset(country) {
-      showTab('wizard');
-      setStep(1);
-
       if (country === 'ES') {
         document.getElementById('reg-country').value = 'ES';
         document.getElementById('reg-name').value = 'Acme Soluciones Tecnológicas S.L.';
@@ -853,23 +1048,9 @@
         document.getElementById('site-lat').value = '45.451800';
         document.getElementById('site-lon').value = '9.162400';
       }
-
-      regenerateKeys();
     }
 
-    function handleCountrySelectorChange() {
-      const c = document.getElementById('reg-country').value;
-      loadPreset(c);
-    }
-
-    function regenerateKeys() {
-      const array = new Uint8Array(32);
-      window.crypto.getRandomValues(array);
-      const hex = Array.from(array).map(b => b.toString(16).padStart(2, '0')).join('');
-      document.getElementById('reg-fingerprint').innerText = 'SHA256:' + hex;
-    }
-
-    // Real Supabase Onboarding Insertion
+    // Supabase Integration
     const supabaseUrl = 'https://saehchpgnbcciqimrqsj.supabase.co';
     const supabaseKey = 'sb_publishable_4p1NyO7FWXx_vGEDgJ8b0Q_xDxp_WUx';
     let supabaseClient = null;
@@ -878,7 +1059,6 @@
       if (window.supabase) {
         supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-        // Realtime subscription for attendance punches
         supabaseClient
           .channel('public:attendance_punches')
           .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'attendance_punches' }, (payload) => {
@@ -896,7 +1076,7 @@
     async function saveCompanyToSupabase() {
       const btn = document.getElementById('btn-save-company-db');
       btn.disabled = true;
-      btn.innerText = '⏳ Guardando en Supabase EU...';
+      btn.innerText = '⏳ Guardando en Supabase...';
 
       const legalName = document.getElementById('reg-name').value;
       const country = document.getElementById('reg-country').value;
@@ -918,7 +1098,6 @@
 
       let companyId = null;
 
-      // 1. Insert into public.companies
       try {
         const payload = {
           legal_name: legalName,
@@ -956,7 +1135,11 @@
         companyId = 'c0000000-0000-4000-a000-' + Math.random().toString(16).substring(2, 14);
       }
 
-      // 2. Insert into public.company_sites
+      // Save company in local session
+      activeCompany = { id: companyId, legal_name: legalName, country: country };
+      localStorage.setItem('fide_active_company', JSON.stringify(activeCompany));
+
+      // Insert Site
       try {
         const sitePayload = {
           company_id: companyId,
@@ -981,11 +1164,10 @@
         console.warn('Site insert fallback:', err);
       }
 
-      // 3. Generate invitation url
       const code = 'FIDE-' + country + '-' + Math.floor(1000 + Math.random() * 9000);
       const inviteUrl = `fide://invite?code=${code}&company=${encodeURIComponent(legalName)}&name=${encodeURIComponent(empName)}&dept=${encodeURIComponent(empDept)}`;
 
-      document.getElementById('created-company-id-text').innerText = `ID Organización Supabase: ${companyId}`;
+      document.getElementById('created-company-id-text').innerText = `ID Supabase: ${companyId}`;
       document.getElementById('invite-url-text').innerText = inviteUrl;
 
       btn.disabled = false;
@@ -993,7 +1175,6 @@
 
       const resultBox = document.getElementById('invite-result-box');
       resultBox.style.display = 'block';
-      resultBox.scrollIntoView({ behavior: 'smooth' });
     }
 
     function copyInviteUrl(btn) {
@@ -1004,38 +1185,6 @@
       setTimeout(() => { btn.innerText = original; }, 2000);
     }
 
-    function approveRow(btn, name) {
-      btn.parentElement.innerHTML = `<span style="color: var(--success); font-weight: 600;">✓ Aprobado</span>`;
-    }
-
-    function simulatePayrollUpload() {
-      const progress = document.getElementById('payroll-progress');
-      progress.style.display = 'block';
-    }
-
-    let isItaly = false;
-    function switchCountry() {
-      isItaly = !isItaly;
-      const label = document.getElementById('countryLabel');
-      if (isItaly) {
-        label.innerText = '🇮🇹 Italia (CCNL)';
-        loadPreset('IT');
-      } else {
-        label.innerText = '🇪🇸 España (Convenio)';
-        loadPreset('ES');
-      }
-    }
-
-    // 30s Kiosk countdown
-    let secondsLeft = 30;
-    setInterval(() => {
-      secondsLeft--;
-      if (secondsLeft <= 0) secondsLeft = 30;
-      const timerEl = document.getElementById('kioskTimer');
-      if (timerEl) timerEl.innerText = secondsLeft + 's';
-    }, 1000);
-
-    // Fetch punches on startup
     async function fetchRecentPunches() {
       const tbody = document.getElementById('live-punches-body');
       try {
@@ -1052,7 +1201,7 @@
           const syncEl = document.getElementById('last-sync-time');
           if (syncEl) syncEl.innerText = `Sincronizado: ${punches.length} eventos a las ${new Date().toLocaleTimeString()}`;
         } else {
-          tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #6C8279; padding: 20px;">No hay eventos registrados aún. Pulsa en "⚡ Simular Fichaje Live" para probar.</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 20px;">No hay eventos registrados aún. Pulsa en "Simular Fichaje Live".</td></tr>';
         }
       } catch (err) {
         console.error('Fetch error:', err);
@@ -1065,7 +1214,7 @@
 
       const tr = document.createElement('tr');
       if (isNew) {
-        tr.style.backgroundColor = 'rgba(72, 180, 120, 0.25)';
+        tr.style.backgroundColor = 'rgba(72, 180, 120, 0.2)';
         tr.style.transition = 'background-color 2s ease';
       }
 
@@ -1074,31 +1223,31 @@
 
       const isEntry = punch.punch_type === 'Entrada';
       const badgeClass = isEntry ? 'badge-online' : 'badge-offline';
-      const badgeText = isEntry ? 'Entrada Verificada' : 'Salida Registrada';
+      const badgeText = isEntry ? 'Entrada' : 'Salida';
 
       const methodLabel = punch.verification_method === 'geo' 
-        ? '📍 Geovalla RAM (150 m)' 
-        : (punch.verification_method === 'qr' ? '⚡ QR Dinámico Kiosk (30s)' : '🏷️ Tag NFC');
+        ? 'Geovalla RAM (150 m)' 
+        : (punch.verification_method === 'qr' ? 'QR Dinámico (30s)' : 'Tag NFC');
 
       const receipt = punch.receipt_code || punch.device_signature?.slice(0, 16) || 'FIDE-OK-2026';
 
       tr.innerHTML = `
         <td>
-          <div style="font-weight: 700; color: var(--text-dark);">${punch.employee_name || 'Trabajador Verificado'}</div>
-          <div style="font-size: 11px; color: #6C8279; font-family: monospace;">UID: ${punch.user_id ? punch.user_id.slice(0, 8) + '...' : 'ANON-APP'}</div>
+          <div style="font-weight: 600;">${punch.employee_name || 'Trabajador'}</div>
+          <div style="font-size: 11px; color: var(--text-muted); font-family: monospace;">UID: ${punch.user_id ? punch.user_id.slice(0, 8) + '...' : 'ANON'}</div>
         </td>
         <td>
           <span style="font-weight: 600; color: ${isEntry ? 'var(--success)' : 'var(--danger)'};">
-            ${isEntry ? '🟢 ENTRADA' : '🔴 SALIDA'}
+            ${isEntry ? 'ENTRADA' : 'SALIDA'}
           </span>
         </td>
         <td>
           <div style="font-weight: 600;">${timeStr}</div>
-          <div style="font-size: 11px; color: #6C8279;">${dateObj.toLocaleDateString()}</div>
+          <div style="font-size: 11px; color: var(--text-muted);">${dateObj.toLocaleDateString()}</div>
         </td>
         <td>${methodLabel}</td>
         <td>
-          <code style="background: #EBF5F0; color: var(--accent); padding: 4px 8px; border-radius: 6px; font-family: monospace; font-size: 11px; font-weight: 600;">
+          <code style="background: #F1F5F9; color: var(--accent); padding: 3px 6px; border-radius: 4px; font-family: monospace; font-size: 11px; font-weight: 600;">
             ${receipt}
           </code>
         </td>
@@ -1114,7 +1263,7 @@
     }
 
     async function simulateLivePunch() {
-      const names = ['Carlos Mendoza (Logística)', 'Elena Conti (Administración)', 'Javier Romero (Producción)', 'Laura Gómez (Comercial)'];
+      const names = ['Carlos Mendoza', 'Elena Conti', 'Javier Romero', 'Laura Gómez'];
       const methods = ['geo', 'qr', 'nfc'];
       const types = ['Entrada', 'Salida'];
 
@@ -1157,8 +1306,31 @@
       }
     }
 
+    function approveRow(btn) {
+      btn.parentElement.innerHTML = '<span style="color: var(--success); font-weight: 600;">✓ Aprobado</span>';
+    }
+
+    function simulatePayrollUpload() {
+      const progress = document.getElementById('payroll-progress');
+      progress.style.display = 'block';
+    }
+
+    function exportReport() {
+      alert('📄 INFORME LEGAL GENERADO:\n\nRegistro Oficial de Jornada conforme al Real Decreto-ley 8/2019 (España) y D.Lgs. 81/2008 (Italia).\nExportación PDF/A auditable.');
+    }
+
+    // 30s Kiosk Countdown
+    let secondsLeft = 30;
+    setInterval(() => {
+      secondsLeft--;
+      if (secondsLeft <= 0) secondsLeft = 30;
+      const timerEl = document.getElementById('kioskTimer');
+      if (timerEl) timerEl.innerText = secondsLeft + 's';
+    }, 1000);
+
+    // Initial check
     window.addEventListener('DOMContentLoaded', () => {
-      fetchRecentPunches();
+      checkActiveSession();
     });
   </script>
 </body>
