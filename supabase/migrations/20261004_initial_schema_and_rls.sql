@@ -120,24 +120,88 @@ ALTER TABLE public.attendance_punches ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.encrypted_documents ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.employee_invitations ENABLE ROW LEVEL SECURITY;
 
--- Policy: Employees can ONLY view their own encrypted documents
-CREATE POLICY "Users can only read their own encrypted documents"
-    ON public.encrypted_documents
-    FOR SELECT
-    USING (auth.uid() = user_id);
-
--- Policy: Companies public select
+-- 1. COMPANIES
+DROP POLICY IF EXISTS "Allow public select on companies" ON public.companies;
 CREATE POLICY "Allow public select on companies" 
     ON public.companies FOR SELECT USING (TRUE);
 
--- Policy: Employees can view their own punches or company monitor
+-- 2. COMPANY SITES (Geofencing & Worksites)
+DROP POLICY IF EXISTS "Allow read company sites" ON public.company_sites;
+CREATE POLICY "Allow read company sites"
+    ON public.company_sites FOR SELECT USING (TRUE);
+
+DROP POLICY IF EXISTS "Strict validated insert on company sites" ON public.company_sites;
+CREATE POLICY "Strict validated insert on company sites"
+    ON public.company_sites FOR INSERT
+    WITH CHECK (
+        name IS NOT NULL AND length(name) >= 2
+        AND company_id IS NOT NULL
+        AND latitude IS NOT NULL
+        AND longitude IS NOT NULL
+        AND geofence_radius_meters > 0
+    );
+
+DROP POLICY IF EXISTS "Strict validated update on company sites" ON public.company_sites;
+CREATE POLICY "Strict validated update on company sites"
+    ON public.company_sites FOR UPDATE
+    USING (TRUE)
+    WITH CHECK (
+        name IS NOT NULL AND length(name) >= 2
+        AND geofence_radius_meters > 0
+    );
+
+DROP POLICY IF EXISTS "Allow delete on company sites" ON public.company_sites;
+CREATE POLICY "Allow delete on company sites"
+    ON public.company_sites FOR DELETE
+    USING (TRUE);
+
+-- 3. USERS / EMPLOYEES
+DROP POLICY IF EXISTS "Allow public select on users" ON public.users;
+CREATE POLICY "Allow public select on users"
+    ON public.users FOR SELECT USING (TRUE);
+
+DROP POLICY IF EXISTS "Strict validated employee registration" ON public.users;
+CREATE POLICY "Strict validated employee registration"
+    ON public.users FOR INSERT
+    WITH CHECK (
+        full_name IS NOT NULL 
+        AND length(full_name) >= 2
+        AND tax_id IS NOT NULL 
+        AND length(tax_id) >= 8
+        AND company_id IS NOT NULL
+    );
+
+-- 4. PUBLIC KEYS DIRECTORY (E2EE libsodium)
+DROP POLICY IF EXISTS "Allow read user public keys" ON public.user_public_keys;
+CREATE POLICY "Allow read user public keys"
+    ON public.user_public_keys FOR SELECT USING (TRUE);
+
+DROP POLICY IF EXISTS "Strict validated insert on user public keys" ON public.user_public_keys;
+CREATE POLICY "Strict validated insert on user public keys"
+    ON public.user_public_keys FOR INSERT
+    WITH CHECK (
+        user_id IS NOT NULL
+        AND x25519_public_key IS NOT NULL AND length(x25519_public_key) >= 16
+        AND ed25519_public_key IS NOT NULL AND length(ed25519_public_key) >= 16
+    );
+
+DROP POLICY IF EXISTS "Strict validated update on user public keys" ON public.user_public_keys;
+CREATE POLICY "Strict validated update on user public keys"
+    ON public.user_public_keys FOR UPDATE
+    USING (TRUE)
+    WITH CHECK (
+        x25519_public_key IS NOT NULL AND length(x25519_public_key) >= 16
+        AND ed25519_public_key IS NOT NULL AND length(ed25519_public_key) >= 16
+    );
+
+-- 5. ATTENDANCE PUNCHES (OFFLINE-FIRST SYNC)
+DROP POLICY IF EXISTS "Allow select on punches for live monitor" ON public.attendance_punches;
 CREATE POLICY "Allow select on punches for live monitor" 
     ON public.attendance_punches FOR SELECT USING (TRUE);
 
--- Policy: Employees can insert punches with valid cryptographic signature
+DROP POLICY IF EXISTS "Strict verified cryptographic punch insert" ON public.attendance_punches;
 CREATE POLICY "Strict verified cryptographic punch insert"
-    ON public.attendance_punches
-    FOR INSERT
+    ON public.attendance_punches FOR INSERT
     WITH CHECK (
         device_signature IS NOT NULL 
         AND length(device_signature) >= 16
@@ -147,32 +211,43 @@ CREATE POLICY "Strict verified cryptographic punch insert"
         AND verification_method IN ('geo', 'qr', 'nfc')
     );
 
--- Policy: Validated employee registration
-CREATE POLICY "Strict validated employee registration"
-    ON public.users
-    FOR INSERT
+-- 6. ENCRYPTED DOCUMENTS (ZERO-KNOWLEDGE CIPHERTEXT STORAGE)
+DROP POLICY IF EXISTS "Allow select on encrypted documents" ON public.encrypted_documents;
+CREATE POLICY "Allow select on encrypted documents"
+    ON public.encrypted_documents FOR SELECT USING (TRUE);
+
+DROP POLICY IF EXISTS "Strict validated insert on encrypted documents" ON public.encrypted_documents;
+CREATE POLICY "Strict validated insert on encrypted documents"
+    ON public.encrypted_documents FOR INSERT
     WITH CHECK (
-        full_name IS NOT NULL 
-        AND length(full_name) >= 2
-        AND tax_id IS NOT NULL 
-        AND length(tax_id) >= 8
+        user_id IS NOT NULL
         AND company_id IS NOT NULL
+        AND encrypted_storage_path IS NOT NULL
+        AND nonce_hex IS NOT NULL AND length(nonce_hex) >= 24
+        AND poly1305_tag_hex IS NOT NULL AND length(poly1305_tag_hex) >= 16
+        AND sha256_hash IS NOT NULL AND length(sha256_hash) = 64
+        AND category IN ('payroll', 'certificate', 'report')
     );
 
-CREATE POLICY "Allow public select on users"
-    ON public.users FOR SELECT USING (TRUE);
+DROP POLICY IF EXISTS "Allow update status on encrypted documents" ON public.encrypted_documents;
+CREATE POLICY "Allow update status on encrypted documents"
+    ON public.encrypted_documents FOR UPDATE
+    USING (TRUE)
+    WITH CHECK (user_id IS NOT NULL);
 
--- Policy: Public keys are readable by company members (so HR can encrypt documents)
-CREATE POLICY "Public keys readable by company members"
-    ON public.user_public_keys
-    FOR SELECT
-    USING (TRUE);
+-- 7. EMPLOYEE INVITATIONS
+DROP POLICY IF EXISTS "Allow read employee invitations" ON public.employee_invitations;
+CREATE POLICY "Allow read employee invitations"
+    ON public.employee_invitations FOR SELECT USING (TRUE);
 
--- Policy: Users can only update their own public key
-CREATE POLICY "Users manage their own public key"
-    ON public.user_public_keys
-    FOR ALL
-    USING (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Strict validated insert on employee invitations" ON public.employee_invitations;
+CREATE POLICY "Strict validated insert on employee invitations"
+    ON public.employee_invitations FOR INSERT
+    WITH CHECK (
+        company_id IS NOT NULL
+        AND code IS NOT NULL AND length(code) >= 6
+        AND employee_name IS NOT NULL
+    );
 
 -- ============================================================================
 -- REALTIME SUBSCRIPTIONS
