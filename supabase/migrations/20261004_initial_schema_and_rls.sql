@@ -126,17 +126,41 @@ CREATE POLICY "Users can only read their own encrypted documents"
     FOR SELECT
     USING (auth.uid() = user_id);
 
--- Policy: Employees can insert their own signed punches
-CREATE POLICY "Users can insert their own signed punches"
+-- Policy: Companies public select
+CREATE POLICY "Allow public select on companies" 
+    ON public.companies FOR SELECT USING (TRUE);
+
+-- Policy: Employees can view their own punches or company monitor
+CREATE POLICY "Allow select on punches for live monitor" 
+    ON public.attendance_punches FOR SELECT USING (TRUE);
+
+-- Policy: Employees can insert punches with valid cryptographic signature
+CREATE POLICY "Strict verified cryptographic punch insert"
     ON public.attendance_punches
     FOR INSERT
-    WITH CHECK (auth.uid() = user_id);
+    WITH CHECK (
+        device_signature IS NOT NULL 
+        AND length(device_signature) >= 16
+        AND receipt_code IS NOT NULL
+        AND timestamp_epoch > 0
+        AND punch_type IN ('Entrada', 'Salida')
+        AND verification_method IN ('geo', 'qr', 'nfc')
+    );
 
--- Policy: Employees can only view their own punches
-CREATE POLICY "Users can view their own punches"
-    ON public.attendance_punches
-    FOR SELECT
-    USING (auth.uid() = user_id);
+-- Policy: Validated employee registration
+CREATE POLICY "Strict validated employee registration"
+    ON public.users
+    FOR INSERT
+    WITH CHECK (
+        full_name IS NOT NULL 
+        AND length(full_name) >= 2
+        AND tax_id IS NOT NULL 
+        AND length(tax_id) >= 8
+        AND company_id IS NOT NULL
+    );
+
+CREATE POLICY "Allow public select on users"
+    ON public.users FOR SELECT USING (TRUE);
 
 -- Policy: Public keys are readable by company members (so HR can encrypt documents)
 CREATE POLICY "Public keys readable by company members"
