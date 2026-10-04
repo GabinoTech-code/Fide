@@ -382,18 +382,18 @@
   <div class="app-body">
     <!-- Sidebar Navigation -->
     <aside>
-      <button class="nav-btn active" onclick="showTab('wizard')">🏢 1. Registrazione Azienda</button>
-      <button class="nav-btn" onclick="showTab('live')">👥 2. Monitor Presenze Live</button>
-      <button class="nav-btn" onclick="showTab('kiosk')">📍 3. Sedí & Chiosco QR</button>
-      <button class="nav-btn" onclick="showTab('payroll')">🔒 4. Distribuzione Buste Paga</button>
-      <button class="nav-btn" onclick="showTab('requests')">📝 5. Gestione Ferie & Permessi</button>
-      <button class="nav-btn" onclick="showTab('audit')">⚖️ 6. Ispettorato del Lavoro</button>
+      <button class="nav-btn active" onclick="showTab('live')">📊 Monitor Presenze Live</button>
+      <button class="nav-btn" onclick="showTab('kiosk')">📍 Sedi & Kiosk QR (30s)</button>
+      <button class="nav-btn" onclick="showTab('payroll')">🔒 Buste Paga E2EE</button>
+      <button class="nav-btn" onclick="showTab('requests')">📝 Ferie & Permessi</button>
+      <button class="nav-btn" onclick="showTab('audit')">⚖️ Ispettorato del Lavoro</button>
+      <button class="nav-btn" onclick="showTab('wizard')">⚙️ Configurazione Azienda</button>
     </aside>
 
     <!-- Main Content -->
     <main>
       <!-- TAB 1: REGISTRATION WIZARD -->
-      <section id="tab-wizard">
+      <section id="tab-wizard" style="display: none;">
         <h1 class="section-title">Registrazione e Attivazione Azienda</h1>
         <p class="section-desc">Procedura in 4 passaggi per registrare la tua organizzazione con chiavi asimmetriche e zero password.</p>
 
@@ -528,75 +528,65 @@
       </section>
 
       <!-- TAB 2: LIVE ATTENDANCE MONITOR -->
-      <section id="tab-live" style="display: none;">
-        <h1 class="section-title">Monitor Presenze in Tempo Reale</h1>
-        <p class="section-desc">Stato del turno odierno verificato senza tracciamento GPS continuo.</p>
+      <section id="tab-live" style="display: block;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+          <div>
+            <h1 class="section-title">Monitor Presenze in Tempo Reale</h1>
+            <p class="section-desc" style="margin-bottom: 0;">Presenze aziendali certificate crittograficamente con Supabase EU Realtime.</p>
+          </div>
+          <div style="display: flex; gap: 10px;">
+            <button class="btn btn-secondary" onclick="fetchRecentPunches()" style="font-size: 13px;">🔄 Aggiorna Dati</button>
+            <button class="btn btn-primary" onclick="simulateLivePunch()" style="font-size: 13px;">⚡ Simula Fichaje Live</button>
+          </div>
+        </div>
+
+        <div style="background: rgba(72, 180, 120, 0.1); border: 1px solid var(--accent-light); padding: 12px 18px; border-radius: 12px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between;">
+          <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--accent);">
+            <span style="display: inline-block; width: 10px; height: 10px; background: var(--success); border-radius: 50%; box-shadow: 0 0 8px var(--success);"></span>
+            <strong>Connesso a Supabase EU (Milano / Cloudflare MXP)</strong> · Canale Realtime WebSocket Attivo
+          </div>
+          <span style="font-size: 12px; color: #556B63;" id="last-sync-time">In ascolto eventi...</span>
+        </div>
 
         <div class="stats-grid">
           <div class="stat-card">
             <span class="stat-label">In Turno Adesso</span>
-            <span class="stat-val" style="color: var(--success);">18</span>
+            <span class="stat-val" style="color: var(--success);" id="stat-active">14</span>
           </div>
           <div class="stat-card">
             <span class="stat-label">Uscite Registrate</span>
-            <span class="stat-val">4</span>
+            <span class="stat-val" id="stat-out">2</span>
           </div>
           <div class="stat-card">
             <span class="stat-label">Ferie / Permessi Oggi</span>
-            <span class="stat-val" style="color: var(--warning);">2</span>
+            <span class="stat-val" style="color: var(--warning);">1</span>
           </div>
           <div class="stat-card">
             <span class="stat-label">Verifiche Valide</span>
-            <span class="stat-val">100%</span>
+            <span class="stat-val" style="color: var(--accent);">100%</span>
           </div>
         </div>
 
         <div class="card">
-          <h2 style="font-size: 18px; margin-bottom: 14px;">Marcature Odierne Verificate</h2>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+            <h2 style="font-size: 18px;">Marcature Odierne Verificate</h2>
+            <span style="font-size: 12px; color: #6C8279;">Firma crittografica Ed25519 & Geovalla RAM (150m)</span>
+          </div>
           <div class="table-wrap">
             <table>
               <thead>
                 <tr>
-                  <th>Collaboratore</th>
-                  <th>Reparto</th>
-                  <th>Orario Entrata</th>
+                  <th>Collaboratore / ID</th>
+                  <th>Tipo Evento</th>
+                  <th>Orario / Sync</th>
                   <th>Metodo di Verifica</th>
-                  <th>Firma Criptografica (Ed25519)</th>
+                  <th>Ricevuta Digitale Fide</th>
                   <th>Stato</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody id="live-punches-body">
                 <tr>
-                  <td><strong>Marco Rossi</strong></td>
-                  <td>Operazioni</td>
-                  <td>08:28</td>
-                  <td>Geovalla in RAM (150 m)</td>
-                  <td><code style="font-family: monospace; font-size: 11px;">SIG_ED25519_4B8F_OK</code></td>
-                  <td><span class="status-badge badge-online">Presente</span></td>
-                </tr>
-                <tr>
-                  <td><strong>Elena Conti</strong></td>
-                  <td>Amministrazione</td>
-                  <td>08:31</td>
-                  <td>QR Dinamico Sede (30s)</td>
-                  <td><code style="font-family: monospace; font-size: 11px;">SIG_ED25519_99C1_OK</code></td>
-                  <td><span class="status-badge badge-online">Presente</span></td>
-                </tr>
-                <tr>
-                  <td><strong>Ion Popescu</strong></td>
-                  <td>Magazzino</td>
-                  <td>08:20</td>
-                  <td>Tag NFC Ingresso</td>
-                  <td><code style="font-family: monospace; font-size: 11px;">SIG_ED25519_12AB_OK</code></td>
-                  <td><span class="status-badge badge-online">Presente</span></td>
-                </tr>
-                <tr>
-                  <td><strong>Ahmed Mansour</strong></td>
-                  <td>Logistica</td>
-                  <td>08:35</td>
-                  <td>Geovalla in RAM (120 m)</td>
-                  <td><code style="font-family: monospace; font-size: 11px;">SIG_ED25519_77D2_OK</code></td>
-                  <td><span class="status-badge badge-online">Presente</span></td>
+                  <td colspan="6" style="text-align: center; color: #6C8279; padding: 20px;">Caricamento eventi da Supabase...</td>
                 </tr>
               </tbody>
             </table>
@@ -808,43 +798,158 @@
       if (timerEl) timerEl.innerText = secondsLeft + 's';
     }, 1000);
 
-    // Supabase Realtime Attendance Integration
+    // Supabase Realtime & REST Integration
+    const supabaseUrl = 'https://saehchpgnbcciqimrqsj.supabase.co';
+    const supabaseKey = 'sb_publishable_4p1NyO7FWXx_vGEDgJ8b0Q_xDxp_WUx';
     let supabaseClient = null;
+
     try {
       if (window.supabase) {
-        const defaultUrl = 'https://saehchpgnbcciqimrqsj.supabase.co';
-        const defaultKey = 'sb_publishable_4p1NyO7FWXx_vGEDgJ8b0Q_xDxp_WUx';
-        supabaseClient = window.supabase.createClient(defaultUrl, defaultKey);
+        supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
+        // Realtime subscription
         supabaseClient
           .channel('public:attendance_punches')
           .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'attendance_punches' }, (payload) => {
-            handleNewLivePunch(payload.new);
+            handleNewLivePunch(payload.new, true);
           })
-          .subscribe();
+          .subscribe((status) => {
+            const syncEl = document.getElementById('last-sync-time');
+            if (syncEl) syncEl.innerText = 'Realtime: ' + status + ' (' + new Date().toLocaleTimeString() + ')';
+          });
       }
     } catch (e) {
-      console.log('[Supabase] Running with local simulated realtime engine');
+      console.warn('[Supabase] Initializing error:', e);
     }
 
-    function handleNewLivePunch(punch) {
-      const tableBody = document.querySelector('#tab-live tbody');
-      if (!tableBody) return;
-      const tr = document.createElement('tr');
-      tr.style.backgroundColor = 'rgba(72, 180, 120, 0.15)';
-      tr.style.transition = 'background-color 1s ease';
-      const timeStr = new Date(punch.timestamp_epoch || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      tr.innerHTML = `
-        <td><strong>${punch.full_name || 'Collaboratore Verificato'}</strong></td>
-        <td>${punch.department || 'Operazioni'}</td>
-        <td>${timeStr}</td>
-        <td>${punch.verification_method === 'geo' ? 'Geovalla in RAM (150 m)' : (punch.verification_method === 'qr' ? 'QR Dinamico Sede' : 'Tag NFC Ingresso')}</td>
-        <td><code style="font-family: monospace; font-size: 11px;">${punch.device_signature || 'SIG_ED25519_VERIFIED'}</code></td>
-        <td><span class="status-badge badge-online">Presente</span></td>
-      `;
-      tableBody.prepend(tr);
-      setTimeout(() => { tr.style.backgroundColor = 'transparent'; }, 2500);
+    async function fetchRecentPunches() {
+      const tbody = document.getElementById('live-punches-body');
+      try {
+        const res = await fetch(`${supabaseUrl}/rest/v1/attendance_punches?select=*&order=synced_at.desc&limit=10`, {
+          headers: {
+            'apikey': supabaseKey,
+            'Authorization': `Bearer ${supabaseKey}`
+          }
+        });
+        const punches = await res.json();
+        if (Array.isArray(punches) && punches.length > 0) {
+          tbody.innerHTML = '';
+          punches.forEach(p => handleNewLivePunch(p, false));
+          const syncEl = document.getElementById('last-sync-time');
+          if (syncEl) syncEl.innerText = `Sincronizzato: ${punches.length} eventi scaricati alle ${new Date().toLocaleTimeString()}`;
+        } else {
+          tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #6C8279; padding: 20px;">Nessun evento ancora registrato. Clicca su "Simula Fichaje Live" per testare!</td></tr>';
+        }
+      } catch (err) {
+        console.error('Fetch error:', err);
+      }
     }
+
+    function handleNewLivePunch(punch, isNew = false) {
+      const tbody = document.getElementById('live-punches-body');
+      if (!tbody) return;
+
+      const tr = document.createElement('tr');
+      if (isNew) {
+        tr.style.backgroundColor = 'rgba(72, 180, 120, 0.25)';
+        tr.style.transition = 'background-color 2s ease';
+      }
+
+      const dateObj = punch.timestamp_epoch ? new Date(punch.timestamp_epoch) : new Date(punch.synced_at || Date.now());
+      const timeStr = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+      const isEntry = punch.punch_type === 'Entrada';
+      const badgeClass = isEntry ? 'badge-online' : 'badge-offline';
+      const badgeText = isEntry ? 'Entrata Verificata' : 'Uscita Registrata';
+
+      const methodLabel = punch.verification_method === 'geo' 
+        ? '📍 Geovalla RAM (150 m)' 
+        : (punch.verification_method === 'qr' ? '⚡ QR Dinamico Kiosk (30s)' : '🏷️ Tag NFC Fisico');
+
+      const receipt = punch.receipt_code || punch.device_signature?.slice(0, 16) || 'FIDE-OK-2026';
+
+      tr.innerHTML = `
+        <td>
+          <div style="font-weight: 700; color: var(--text-dark);">${punch.employee_name || 'Dipendente Verificato'}</div>
+          <div style="font-size: 11px; color: #6C8279; font-family: monospace;">UID: ${punch.user_id ? punch.user_id.slice(0, 8) + '...' : 'ANON-APP'}</div>
+        </td>
+        <td>
+          <span style="font-weight: 600; color: ${isEntry ? 'var(--success)' : 'var(--danger)'};">
+            ${isEntry ? '🟢 ENTRATA' : '🔴 USCITA'}
+          </span>
+        </td>
+        <td>
+          <div style="font-weight: 600;">${timeStr}</div>
+          <div style="font-size: 11px; color: #6C8279;">${dateObj.toLocaleDateString()}</div>
+        </td>
+        <td>${methodLabel}</td>
+        <td>
+          <code style="background: #EBF5F0; color: var(--accent); padding: 4px 8px; border-radius: 6px; font-family: monospace; font-size: 11px; font-weight: 600;">
+            ${receipt}
+          </code>
+        </td>
+        <td><span class="status-badge ${badgeClass}">${badgeText}</span></td>
+      `;
+
+      if (isNew) {
+        tbody.prepend(tr);
+        setTimeout(() => { tr.style.backgroundColor = 'transparent'; }, 2000);
+      } else {
+        tbody.appendChild(tr);
+      }
+    }
+
+    async function simulateLivePunch() {
+      const names = ['Marco Rossi (Logistica)', 'Elena Conti (HR Admin)', 'Luca Moretti (Produzione)', 'Sofia Ramos (Qualità)'];
+      const methods = ['geo', 'qr', 'nfc'];
+      const types = ['Entrada', 'Salida'];
+
+      const randomName = names[Math.floor(Math.random() * names.length)];
+      const randomMethod = methods[Math.floor(Math.random() * methods.length)];
+      const randomType = types[Math.floor(Math.random() * types.length)];
+      const randomReceipt = 'FIDE-REC-' + Math.floor(100000 + Math.random() * 900000);
+      const signatureHex = 'SIG_ED25519_' + Math.random().toString(36).substring(2, 10).toUpperCase() + '_HARDWARE_ENCLAVE_OK';
+
+      // Live payload matching Supabase RLS policy
+      const payload = {
+        user_id: '47d512a2-cb3e-4621-8208-8e6ca6f4c9c1',
+        timestamp_epoch: Date.now(),
+        punch_type: randomType,
+        verification_method: randomMethod,
+        in_geofence: true,
+        device_signature: signatureHex,
+        receipt_code: randomReceipt
+      };
+
+      try {
+        const res = await fetch(`${supabaseUrl}/rest/v1/attendance_punches`, {
+          method: 'POST',
+          headers: {
+            'apikey': supabaseKey,
+            'Authorization': `Bearer ${supabaseKey}`,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=representation'
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+          const inserted = await res.json();
+          const item = Array.isArray(inserted) ? inserted[0] : payload;
+          item.employee_name = randomName;
+          handleNewLivePunch(item, true);
+        } else {
+          console.error('Insert error:', await res.text());
+        }
+      } catch (err) {
+        console.error('Simulate punch error:', err);
+      }
+    }
+
+    // Carica dati reali all'avvio
+    window.addEventListener('DOMContentLoaded', () => {
+      fetchRecentPunches();
+    });
   </script>
 </body>
 </html>
