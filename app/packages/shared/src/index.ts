@@ -1,4 +1,5 @@
 export * from './italy';
+export * from './protocol';
 
 // B2B Company & Organization Types
 export type SupportedCountry = 'IT' | 'ES';

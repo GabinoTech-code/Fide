@@ -87,3 +87,7 @@ max_enrolled_factors = 10
 [edge_runtime]
 enabled = true
 policy = "per_worker"
+
+# The kiosk tablet has no user session when it pairs.
+[functions.kiosk-pair]
+verify_jwt = false

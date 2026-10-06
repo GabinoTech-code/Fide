@@ -10,11 +10,13 @@
     "typecheck": "npm --workspaces --if-present run typecheck",
     "lint": "npm --workspaces --if-present run lint",
     "test": "vitest run",
-    "audit": "node scripts/audit.mjs"
+    "audit": "node scripts/audit.mjs",
+    "sync-shared": "node scripts/sync-shared.mjs"
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.8",
     "@types/node": "^26.6.4",
+    "deno": "^2.9.6",
     "typescript": "~6.0.3",
     "vitest": "^5.0.3"
   },

@@ -2,12 +2,16 @@
   "name": "@fide/payroll-parser",
   "version": "1.0.0",
   "private": true,
-  "description": "Mass payroll PDF parsing and E2EE encryption pipeline for Fide",
+  "description": "Splits bulk payroll PDFs (page texts) into per-employee documents by codice fiscale",
   "main": "src/index.ts",
   "scripts": {
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@fide/shared": "*"
+  },
+  "devDependencies": {
+    "pdf-lib": "^1.17.1",
+    "pdfjs-dist": "^6.4.299"
   }
 }

@@ -19,8 +19,10 @@
 1. Añadir las dependencias con `npx expo install ...` en `app/apps/mobile`.
 2. Ejecutar `eas build --profile development` para iOS y Android, e instalar la build en los móviles.
 3. En una pantalla oculta de diagnóstico:
-   - generar un par Ed25519 con una semilla fija;
-   - firmar `"FIDE-PUNCH-v1\n{...}"` y comparar la firma en hex con la que da `libsodium-wrappers` en Node para la misma semilla;
+   - generar un par Ed25519 con `crypto_sign_seed_keypair(32 bytes a 0x02)`;
+   - firmar con `signPunch()` de `@fide/crypto` el fichaje de ejemplo de `app/packages/crypto/src/crypto.test.ts`. Ed25519 es determinista, así que la firma tiene que ser exactamente:
+     `Znl2cjw9TbXt9G+Lzw1WMnc3pL2pl6xCYa8lJ33c+xaFue6N2LjYeZbWsOKtlANins+HtpF87395itE6xPngCA==`
+     (es el snapshot de `crypto.test.ts`; la verifica también WebCrypto, que es lo que usa `punch-sync` en Deno);
    - hacer el round-trip `crypto_box_seal` / `crypto_box_seal_open` y XChaCha20-Poly1305;
    - guardar y leer la clave privada en SecureStore con `WHEN_UNLOCKED_THIS_DEVICE_ONLY`, detrás de `LocalAuthentication.authenticateAsync()`.
 

@@ -14,13 +14,16 @@ Hay que comprobar:
 
 ## Procedimiento
 
-Usar el script `app/packages/payroll-parser/scripts/spike-extract.mjs`, que llega en la Fase 2 junto con el validador de CF de `@fide/shared/italy`. Se ejecuta **en local**, y los PDFs nunca salen del ordenador:
+Ejecutar el script **en local**; los PDFs nunca salen del ordenador:
 
 ```bash
-node app/packages/payroll-parser/scripts/spike-extract.mjs ruta/a/cedolini.pdf
+cd app && npm install
+node packages/payroll-parser/scripts/spike-extract.mjs ruta/a/cedolini.pdf --employer <P.IVA o CF de la empresa>
 ```
 
-El script lista, por página, los candidatos a CF con un carácter de control válido.
+El script lista, por página, los CF con carácter de control válido, enmascarados para poder pegar el resultado en este ADR sin datos personales. También indica si el CF solo aparece al unir trozos de texto y si una página no tiene capa de texto (escaneada). Con `--text` muestra además el principio del texto de cada página.
+
+`splitPayroll()` de `@fide/payroll-parser` ya cubre los CF partidos, las páginas de continuación, el CF del empleador (incluidas las ditte individuali) y las páginas ambiguas. El test `pdf-pipeline.test.ts` lo prueba de punta a punta con un PDF sintético.
 
 ## Criterio go/no-go
 

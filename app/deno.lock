@@ -1,0 +1,80 @@
+{
+  "version": "5",
+  "specifiers": {
+    "jsr:@supabase/supabase-js@2": "2.117.2"
+  },
+  "jsr": {
+    "@supabase/supabase-js@2.117.2": {
+      "integrity": "25d69a2a93810fc5a396d40bc55b5a948ed0a44c5a7ed8e2da793c09240e77f1"
+    }
+  },
+  "workspace": {
+    "packageJson": {
+      "dependencies": [
+        "npm:@electric-sql/pglite@~0.5.8",
+        "npm:@supabase/supabase-js@^2.117.2",
+        "npm:@types/node@^26.6.4",
+        "npm:deno@^2.9.6",
+        "npm:typescript@~6.0.3",
+        "npm:vitest@^5.0.3"
+      ]
+    },
+    "members": {
+      "apps/mobile": {
+        "packageJson": {
+          "dependencies": [
+            "npm:@expo-google-fonts/ibm-plex-mono@~0.4.1",
+            "npm:@expo-google-fonts/ibm-plex-sans@~0.4.1",
+            "npm:@expo-google-fonts/space-grotesk@~0.4.1",
+            "npm:@react-native-async-storage/async-storage@2.2.0",
+            "npm:@types/react@~19.2.2",
+            "npm:eslint-config-expo@~57.0.2",
+            "npm:eslint@^9.39.5",
+            "npm:expo-constants@~57.0.20",
+            "npm:expo-font@~57.0.4",
+            "npm:expo-linking@~57.0.11",
+            "npm:expo-router@~57.0.24",
+            "npm:expo-splash-screen@~57.0.9",
+            "npm:expo-status-bar@~57.0.1",
+            "npm:expo@~57.0.26",
+            "npm:react-dom@19.2.3",
+            "npm:react-native-safe-area-context@5.7",
+            "npm:react-native-screens@4.26",
+            "npm:react-native-svg@15.15.4",
+            "npm:react-native-web@~0.21.2",
+            "npm:react-native@0.86.3",
+            "npm:react@19.2.3",
+            "npm:typescript@~6.0.3"
+          ]
+        }
+      },
+      "packages/crypto": {
+        "packageJson": {
+          "dependencies": [
+            "npm:@fide/shared@*",
+            "npm:@noble/hashes@^2.4.0",
+            "npm:@types/libsodium-wrappers@~0.7.14",
+            "npm:libsodium-wrappers@~0.8.4"
+          ]
+        }
+      },
+      "packages/db-tests": {
+        "packageJson": {
+          "dependencies": [
+            "npm:@fide/crypto@*",
+            "npm:@fide/shared@*"
+          ]
+        }
+      },
+      "packages/payroll-parser": {
+        "packageJson": {
+          "dependencies": [
+            "npm:@fide/shared@*",
+            "npm:pdf-lib@^1.17.1",
+            "npm:pdfjs-dist@^6.4.299"
+          ]
+        }
+      }
+    }
+  }
+}

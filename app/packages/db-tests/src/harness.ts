@@ -106,6 +106,19 @@ export class Session {
     return Object.values(row)[0] as T;
   }
 
+  /** Runs `fn` inside a savepoint: on error the savepoint is rolled back and the error rethrown. */
+  async savepoint<T>(fn: () => Promise<T>): Promise<T> {
+    await this.db.exec('savepoint call');
+    try {
+      const result = await fn();
+      await this.db.exec('release savepoint call');
+      return result;
+    } catch (err) {
+      await this.db.exec('rollback to savepoint call');
+      throw err;
+    }
+  }
+
   /** Runs `sql` expecting it to fail; returns the error. Keeps the transaction usable. */
   async error(sql: string, params: unknown[] = []): Promise<{ code?: string; message: string }> {
     await this.db.exec('savepoint expect_error');
