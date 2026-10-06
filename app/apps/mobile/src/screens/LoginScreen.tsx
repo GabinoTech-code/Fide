@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Image } from 'react-native';
 import { Colors } from '../theme/colors';
 import { useApp } from '../context/AppContext';
-import { ShieldLogo, PasskeyIcon, EditIcon, GlobeIcon } from '../components/common/Icons';
+import { PasskeyIcon, EditIcon } from '../components/common/Icons';
 import { LANGUAGES } from '../i18n';
 import { InvitationModal } from '../components/modals/InvitationModal';
 

@@ -1,16 +1,28 @@
 import React from 'react';
 import Svg, { Path, Rect, Circle, SvgProps } from 'react-native-svg';
+import { brandColors, iconStroke, icons, logo, type IconName } from '@fide/shared';
 
 interface IconProps extends SvgProps {
   size?: number;
   color?: string;
 }
 
-export function ShieldLogo({ size = 34, color = '#7FD8B2', ...props }: IconProps) {
+/** The Fide symbol: a key whose bit draws an F and whose bow is a clock (see @fide/shared brand). */
+export function FideLogo({ size = 34, color = brandColors.mint, hands = true, ...props }: IconProps & { hands?: boolean }) {
   return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" {...props}>
-      <Path d="M12 2l8 3v6c0 5-3.4 9.3-8 11-4.6-1.7-8-6-8-11V5l8-3z" />
-      <Path d="M8.5 12l2.5 2.5 4.5-5" />
+    <Svg width={size} height={size} viewBox={logo.viewBox} fill="none" stroke={color} strokeWidth={logo.strokeWidth} strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <Circle cx={logo.bow.cx} cy={logo.bow.cy} r={logo.bow.r} />
+      <Path d={logo.bit} />
+      {hands ? <Path d={logo.hands} strokeWidth={logo.handsStrokeWidth} /> : null}
+    </Svg>
+  );
+}
+
+/** One of the 24 brand icons (24 × 24 grid, stroke 1.75, thicker at small sizes). */
+export function BrandIcon({ name, size = 24, color = brandColors.slate, ...props }: IconProps & { name: IconName }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={iconStroke(size)} strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <Path d={icons[name]} />
     </Svg>
   );
 }
