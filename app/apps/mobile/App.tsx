@@ -27,6 +27,7 @@ import { Toast } from './src/components/common/Toast';
 import { ProfileModal } from './src/components/modals/ProfileModal';
 import { NewRequestModal } from './src/components/modals/NewRequestModal';
 import { LanguageSelectorModal } from './src/components/modals/LanguageSelectorModal';
+import { DiagnosticsModal } from './src/components/modals/DiagnosticsModal';
 
 import { LoginScreen } from './src/screens/LoginScreen';
 import { HomeScreen } from './src/screens/HomeScreen';
@@ -52,6 +53,7 @@ function MainApp() {
   const [profileModalVisible, setProfileModalVisible] = useState(false);
   const [languageModalVisible, setLanguageModalVisible] = useState(false);
   const [newRequestModalVisible, setNewRequestModalVisible] = useState(false);
+  const [diagnosticsVisible, setDiagnosticsVisible] = useState(false);
   const [initialCategory, setInitialCategory] = useState<RequestCategory>('vac');
 
   const remainingVacation = Math.max(0, user.vacationQuotaDays - user.vacationUsedDays);
@@ -115,6 +117,7 @@ function MainApp() {
         <Header
           onOpenProfile={() => setProfileModalVisible(true)}
           onOpenLanguage={() => setLanguageModalVisible(true)}
+          onOpenDiagnostics={() => setDiagnosticsVisible(true)}
         />
 
         <View style={styles.screenContainer}>{renderScreen()}</View>
@@ -148,6 +151,8 @@ function MainApp() {
             addRequest(category, detail, impact, note);
           }}
         />
+
+        <DiagnosticsModal visible={diagnosticsVisible} onClose={() => setDiagnosticsVisible(false)} />
 
         <Toast message={toast} />
       </View>

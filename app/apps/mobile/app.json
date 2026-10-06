@@ -8,29 +8,22 @@
     "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.fide.app",
-      "infoPlist": {
-        "NSFaceIDUsageDescription": "Usa Face ID / Touch ID per autenticarti in modo sicuro con passkey FIDO2 crittografiche.",
-        "NSLocationWhenInUseUsageDescription": "La tua posizione viene verificata esclusivamente sul dispositivo per confermare la presenza in sede, senza tracciamento GPS continuo.",
-        "NSCameraUsageDescription": "Necessaria per scansionare il codice QR dinamico della sede."
-      }
+      "bundleIdentifier": "it.fidework.app"
     },
     "android": {
-      "package": "com.fide.app",
+      "package": "it.fidework.app",
       "adaptiveIcon": {
         "backgroundColor": "#0F1A17",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "permissions": [
-        "USE_BIOMETRIC",
-        "USE_FINGERPRINT",
-        "ACCESS_COARSE_LOCATION",
-        "ACCESS_FINE_LOCATION",
-        "CAMERA"
-      ],
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "blockedPermissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.ACCESS_BACKGROUND_LOCATION",
+        "android.permission.USE_FINGERPRINT"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -39,7 +32,45 @@
       "expo-router",
       "expo-status-bar",
       "expo-font",
-      "expo-splash-screen"
-    ]
+      "expo-splash-screen",
+      [
+        "expo-secure-store",
+        {
+          "configureAndroidBackup": true,
+          "faceIDPermission": "Fide usa Face ID per proteggere le chiavi crittografiche salvate su questo telefono."
+        }
+      ],
+      [
+        "expo-local-authentication",
+        {
+          "faceIDPermission": "Fide usa Face ID (o il codice del telefono) per firmare le timbrature e aprire i tuoi cedolini."
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Fide usa la fotocamera solo per leggere il codice QR della sede quando timbri.",
+          "recordAudioAndroid": false,
+          "barcodeScannerEnabled": true
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Fide controlla sul telefono se sei in sede nel momento in cui timbri. Le coordinate non vengono mai inviate né salvate.",
+          "isAndroidBackgroundLocationEnabled": false,
+          "isIosBackgroundLocationEnabled": false
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "color": "#1D6F42"
+        }
+      ],
+      "expo-sqlite",
+      "react-native-libsodium"
+    ],
+    "scheme": "fide"
   }
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Pressable } from 'react-native';
 import { Colors } from '../../theme/colors';
 import { useApp } from '../../context/AppContext';
 import { ShieldPrivacyIcon, EditIcon, GlobeIcon } from './Icons';
@@ -8,9 +8,11 @@ import { formatLocalizedDate, LANGUAGES } from '../../i18n';
 interface HeaderProps {
   onOpenProfile: () => void;
   onOpenLanguage: () => void;
+  /** Long press on the title: device diagnostics (spike S1). */
+  onOpenDiagnostics?: () => void;
 }
 
-export function Header({ onOpenProfile, onOpenLanguage }: HeaderProps) {
+export function Header({ onOpenProfile, onOpenLanguage, onOpenDiagnostics }: HeaderProps) {
   const { currentScreen, setCurrentScreen, user, language, t } = useApp();
 
   const currentLangMeta = LANGUAGES.find((l) => l.code === language) || LANGUAGES[0];
@@ -57,12 +59,12 @@ export function Header({ onOpenProfile, onOpenLanguage }: HeaderProps) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.textContainer}>
+      <Pressable style={styles.textContainer} onLongPress={onOpenDiagnostics} delayLongPress={1200}>
         <Text style={styles.subtitle}>{subtitle}</Text>
         <Text style={styles.title} numberOfLines={1}>
           {title}
         </Text>
-      </View>
+      </Pressable>
 
       <View style={styles.actions}>
         {/* Language selector button */}

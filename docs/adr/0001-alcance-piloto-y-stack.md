@@ -15,7 +15,8 @@ La auditoría de octubre de 2026 mostró que Fide era una demo: login, firmas, g
 5. **Móvil:** Expo SDK 57 con expo-router y una dev build. Las claves X25519 y Ed25519 se generan en el dispositivo y se guardan en expo-secure-store (el Secure Enclave solo admite P-256).
 6. **Cifrado de nóminas:** se cifran en el navegador de HR. Ninguna función del servidor ve el PDF en claro.
 7. **Fichaje:** primero por QR. La geovalla se desactiva por sede hasta tener el dictamen legal (art. 4 L. 300/1970).
-8. **Fuera del MVP:** NFC, asistente IA, push cifrado, firma del emisor en nóminas, re-wrap de claves entre dispositivos y SSO/SCIM.
+8. **Dominio e identificadores:** `fide-work.it` (también tenéis `fide-work.online`). Será el RP ID de las passkeys, con el portal en `app.fide-work.it`. El identificador de la app es `it.fidework.app` en iOS y Android: Android no admite guiones.
+9. **Fuera del MVP:** NFC, asistente IA, push cifrado, firma del emisor en nóminas, re-wrap de claves entre dispositivos y SSO/SCIM.
 
 ## Consecuencias
 

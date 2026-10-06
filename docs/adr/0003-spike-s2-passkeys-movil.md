@@ -10,9 +10,9 @@ Docs: https://supabase.com/docs/guides/auth/passkeys
 
 ## Prerrequisitos
 
-- **RP ID:** el dominio raíz, decidido una sola vez (por ejemplo `fide-work.eu`, si es tuyo).
+- **RP ID:** `fide-work.it`. Se decide una sola vez, porque cambiarlo invalida todas las passkeys.
 - **Ficheros en el dominio:**
-  - `https://<rp_id>/.well-known/apple-app-site-association` con `webcredentials` → `<TEAMID>.<bundle id>`.
+  - `https://<rp_id>/.well-known/apple-app-site-association` con `webcredentials` → `<TEAMID>.it.fidework.app`.
   - `https://<rp_id>/.well-known/assetlinks.json` con `delegate_permission/common.get_login_creds`.
 - **`app.json`:** `ios.associatedDomains: ["webcredentials:<rp_id>"]`, más los `intentFilters` de Android.
 - **`[auth.webauthn].rp_origins`:** incluir `android:apk-key-hash:<sha256 base64url del certificado>`.

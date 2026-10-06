@@ -196,3 +196,5 @@ export function decryptDocument(
     fileKey.fill(0);
   }
 }
+
+export { runCryptoSelfTest, VECTOR_PUNCH, type SelfTestResult, type SelfTestSodium } from './selftest';

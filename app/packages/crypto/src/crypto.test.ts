@@ -3,6 +3,7 @@ import { beforeAll, describe, expect, it } from 'vitest';
 import { fromBase64, toBase64, utf8, type PunchFields } from '@fide/shared';
 import {
   DocumentIntegrityError,
+  runCryptoSelfTest,
   decryptDocument,
   encryptDocument,
   generateDeviceKeys,
@@ -119,5 +120,11 @@ describe('fide-doc-v1 documents', () => {
     tampered[3] ^= 1;
     expect(attempt({ ciphertext: tampered })).toThrow(/checksum mismatch/);
     expect(attempt({ ciphertext: tampered, ciphertextSha256: undefined })).toThrow(/authentication failed/);
+  });
+});
+
+describe('cross-platform self-test', () => {
+  it('passes every vector on libsodium-wrappers', () => {
+    expect(runCryptoSelfTest(sodium).filter((r) => !r.ok)).toEqual([]);
   });
 });
