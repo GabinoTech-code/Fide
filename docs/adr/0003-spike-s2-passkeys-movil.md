@@ -20,7 +20,12 @@ Docs: https://supabase.com/docs/guides/auth/passkeys
 ## Procedimiento
 
 1. Sesión por OTP de email en la app.
-2. Con `react-native-passkeys`, pedir el challenge de registro a los endpoints de passkeys de GoTrue, crear la credencial y enviar la respuesta. Hay que ver qué expone supabase-js o llamar a la REST directamente.
+2. supabase-js 2.117 expone una API de bajo nivel independiente del navegador:
+   - `auth.passkey.startRegistration()` → opciones de WebAuthn y `challengeId`;
+   - `react-native-passkeys` `create(options)` → credencial nativa (iCloud Keychain / Google Password Manager);
+   - `auth.passkey.verifyRegistration({ challengeId, credential })`.
+
+   El inicio de sesión es igual con `startAuthentication()` / `verifyAuthentication()`. Así no hace falta llamar a la REST de GoTrue a mano.
 3. Cerrar sesión e iniciar con la passkey de forma discoverable.
 4. Repetirlo en iOS (iCloud Keychain) y Android (Google Password Manager).
 
