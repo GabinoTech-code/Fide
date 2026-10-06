@@ -2,6 +2,7 @@
   "expo": {
     "name": "Fide",
     "slug": "fide",
+    "owner": "aegislinkspejo3s-team",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -23,6 +24,13 @@
         "android.permission.RECORD_AUDIO",
         "android.permission.ACCESS_BACKGROUND_LOCATION",
         "android.permission.USE_FINGERPRINT"
+      ],
+      "permissions": [
+        "android.permission.USE_BIOMETRIC",
+        "android.permission.USE_FINGERPRINT",
+        "android.permission.CAMERA",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION"
       ]
     },
     "web": {
@@ -71,6 +79,12 @@
       "expo-sqlite",
       "react-native-libsodium"
     ],
-    "scheme": "fide"
+    "scheme": "fide",
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "b12a402e-cb59-4e26-b938-a6767d878790"
+      }
+    }
   }
 }
