@@ -1,0 +1,10 @@
+{
+  "name": "@fide/db-tests",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Runs supabase/migrations + seed.sql in PGlite and tests RLS, grants and RPCs",
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  }
+}

@@ -46,5 +46,32 @@ jobs:
       - run: npx expo export --no-bytecode --output-dir dist
         working-directory: app/apps/mobile
 
-  # Phase 1 adds a `db` job (supabase start → db reset → supabase test db → gen types drift check),
-  # Phase 2 a `functions` job (deno check/test) and Phase 3 the portal `vite build`.
+  # RLS/grant/RPC behaviour is tested in the `js` job (app/packages/db-tests, PGlite).
+  # This job checks the same migrations against the real Supabase images.
+  db:
+    name: Supabase migrations on the real stack
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Start Postgres, Auth and Storage (applies migrations + seed)
+        run: supabase start -x studio,imgproxy,inbucket,edge-runtime,logflare,vector,supavisor
+
+      - name: Lint schema
+        run: supabase db lint --local --level error --fail-on error
+
+      - name: Generate TypeScript types
+        run: supabase gen types typescript --local > database.types.ts
+
+      # Becomes a drift check (git diff --exit-code) once the file is committed
+      # to app/packages/shared/src/database.types.ts.
+      - uses: actions/upload-artifact@v4
+        with:
+          name: database-types
+          path: database.types.ts
+
+  # Phase 2 adds a `functions` job (deno check/test) and Phase 3 the portal `vite build`.

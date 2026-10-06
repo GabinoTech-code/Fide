@@ -13,6 +13,7 @@
     "audit": "node scripts/audit.mjs"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.8",
     "@types/node": "^26.6.4",
     "typescript": "~6.0.3",
     "vitest": "^5.0.3"
