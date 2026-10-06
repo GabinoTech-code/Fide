@@ -9,9 +9,5 @@
   },
   "dependencies": {
     "@fide/shared": "*"
-  },
-  "devDependencies": {
-    "@types/node": "^20.17.0",
-    "typescript": "^5.3.3"
   }
 }

@@ -1,6 +1,3 @@
-export * from '../../apps/mobile/src/types';
-export * from '../../apps/mobile/src/theme/colors';
-
 // B2B Company & Organization Types
 export type SupportedCountry = 'IT' | 'ES';
 

@@ -198,7 +198,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const [clockedIn, setClockedIn] = useState<boolean>(false);
   const [clockStart, setClockStart] = useState<number>(0);
-  const [elapsedSeconds, setElapsedSeconds] = useState<number>(0);
+  const [tickSeconds, setTickSeconds] = useState<number>(0);
   const [selectedMethod, setSelectedMethod] = useState<VerificationMethod>('geo');
   const [offlineMode, setOfflineMode] = useState<boolean>(false);
   const [punches, setPunches] = useState<PunchRecord[]>([]);
@@ -292,17 +292,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (clockedIn && clockStart > 0) {
       const updateElapsed = () => {
         const diff = Math.max(0, Math.floor((Date.now() - clockStart) / 1000));
-        setElapsedSeconds(diff);
+        setTickSeconds(diff);
       };
       updateElapsed();
       interval = setInterval(updateElapsed, 1000);
-    } else {
-      setElapsedSeconds(0);
     }
     return () => {
       if (interval) clearInterval(interval);
     };
   }, [clockedIn, clockStart]);
+
+  const elapsedSeconds = clockedIn && clockStart > 0 ? tickSeconds : 0;
 
   // Format Elapsed Time
   const formatTime = (totalSecs: number) => {

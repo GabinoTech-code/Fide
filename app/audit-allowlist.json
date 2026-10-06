@@ -1,0 +1,14 @@
+{
+  "advisories": [
+    {
+      "id": "GHSA-vfj7-8cjw-p6xm",
+      "package": "braces",
+      "reason": "Pulled in by Expo CLI/Metro build tooling (micromatch); only processes our own glob patterns at build time, never user input. Revisit on each Expo SDK upgrade."
+    },
+    {
+      "id": "GHSA-86w9-cpqp-85rv",
+      "package": "node-forge",
+      "reason": "Pulled in by @expo/config-plugins for build-time code signing helpers; not shipped in the app bundle and not used to verify untrusted signatures. Revisit on each Expo SDK upgrade."
+    }
+  ]
+}

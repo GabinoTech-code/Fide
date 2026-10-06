@@ -7,11 +7,15 @@
   ],
   "scripts": {
     "mobile": "npm --workspace apps/mobile run start",
-    "web": "npm --workspace apps/mobile run web",
-    "typecheck": "npm --workspaces --if-present run typecheck"
+    "typecheck": "npm --workspaces --if-present run typecheck",
+    "lint": "npm --workspaces --if-present run lint",
+    "test": "vitest run",
+    "audit": "node scripts/audit.mjs"
   },
   "devDependencies": {
-    "@types/node": "^26.6.4"
+    "@types/node": "^26.6.4",
+    "typescript": "~6.0.3",
+    "vitest": "^5.0.3"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.117.2"

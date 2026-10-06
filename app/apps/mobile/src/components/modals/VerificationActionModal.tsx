@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { View, Text, StyleSheet, Modal, TouchableOpacity } from 'react-native';
 import { Colors } from '../../theme/colors';
 import { CloseIcon, ShieldPrivacyIcon, CheckIcon } from '../common/Icons';
@@ -18,16 +18,13 @@ export function VerificationActionModal({
   onClose,
   onConfirm,
 }: VerificationActionModalProps) {
-  const [geofenceData, setGeofenceData] = useState<GeofenceResult | null>(null);
   const [rotatingQr, setRotatingQr] = useState<RotatingQrCode | null>(null);
   const [qrCountdown, setQrCountdown] = useState(30);
 
-  useEffect(() => {
-    if (visible && method === 'geo') {
-      const result = GeofenceService.evaluateOnDeviceGeofence();
-      setGeofenceData(result);
-    }
-  }, [visible, method]);
+  const geofenceData = useMemo<GeofenceResult | null>(
+    () => (visible && method === 'geo' ? GeofenceService.evaluateOnDeviceGeofence() : null),
+    [visible, method]
+  );
 
   useEffect(() => {
     let interval: ReturnType<typeof setInterval> | null = null;
