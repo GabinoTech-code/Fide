@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="it">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fide Business — Plataforma de Gestión y Cumplimiento Laboral</title>
+  <title>Fide Business — Piattaforma Aziendale & Gestione HR Zero-Knowledge</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
@@ -102,7 +102,7 @@
     .header-actions {
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 12px;
     }
     .badge-fido {
       display: flex;
@@ -122,6 +122,22 @@
       background: var(--accent-light);
       border-radius: 50%;
       box-shadow: 0 0 8px var(--accent-light);
+    }
+
+    .lang-picker {
+      background: rgba(255, 255, 255, 0.08);
+      color: #FFFFFF;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      cursor: pointer;
+      outline: none;
+      font-weight: 500;
+    }
+    .lang-picker option {
+      background: var(--dark-header);
+      color: #FFFFFF;
     }
 
     /* Layout */
@@ -444,17 +460,31 @@
           Fide Business
           <span class="badge-enterprise">Enterprise</span>
         </div>
-        <div class="brand-subtitle" id="header-company-name">Sin empresa seleccionada</div>
+        <div class="brand-subtitle" id="header-company-name">Nessuna azienda selezionata</div>
       </div>
     </div>
 
     <div class="header-actions">
+      <!-- 9-Language Switcher (Italian Default) -->
+      <select id="portal-lang-select" class="lang-picker" onchange="changeLanguage(this.value)">
+        <option value="it" selected>🇮🇹 Italiano</option>
+        <option value="es">🇪🇸 Español</option>
+        <option value="en">🇬🇧 English</option>
+        <option value="ro">🇷🇴 Română</option>
+        <option value="fr">🇫🇷 Français</option>
+        <option value="sq">🇦🇱 Shqip</option>
+        <option value="uk">🇺🇦 Українська</option>
+        <option value="ar">🇲🇦 العربية</option>
+        <option value="zh">🇨🇳 中文</option>
+      </select>
+
       <div class="badge-fido">
         <span class="dot"></span>
-        <span id="fido-status-text">FIDO2 WebAuthn Activo</span>
+        <span id="fido-status-text">FIDO2 Passkey Attiva</span>
       </div>
+
       <button class="btn btn-secondary" id="btn-session-toggle" onclick="handleSessionToggle()" style="font-size: 12px; padding: 6px 14px;">
-        Acceder con Passkey
+        Accedi con Passkey
       </button>
     </div>
   </header>
@@ -466,27 +496,27 @@
         <svg class="icon-svg" style="width: 24px; height: 24px;" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
       </div>
 
-      <h1 style="font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 700; margin-bottom: 8px;">
-        Centro de Control Empresarial Fide
+      <h1 style="font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 700; margin-bottom: 8px;" id="txt-gate-title">
+        Centro di Controllo Aziendale Fide
       </h1>
-      <p style="font-size: 13.5px; color: var(--text-muted); line-height: 1.5; margin-bottom: 24px;">
-        Para acceder a los registros de presencia, quioscos y nóminas de tu organización, debes dar de alta tu empresa o autenticarte con tu llave FIDO2.
+      <p style="font-size: 13.5px; color: var(--text-muted); line-height: 1.5; margin-bottom: 24px;" id="txt-gate-desc">
+        Per accedere ai registri delle presenze, al chiosco e alla distribuzione buste paga della tua organizzazione, registra la tua azienda o autenticati con la tua chiave FIDO2.
       </p>
 
       <div style="display: flex; flex-direction: column; gap: 12px;">
-        <button class="btn btn-primary" style="justify-content: center; padding: 12px;" onclick="openOnboardingView()">
+        <button class="btn btn-primary" style="justify-content: center; padding: 12px;" onclick="openOnboardingView()" id="btn-gate-register">
           <svg class="icon-svg" viewBox="0 0 24 24"><path d="M3 21h18M3 7v14M21 7v14M6 7V3h12v4M9 11h2M13 11h2M9 15h2M13 15h2"/></svg>
-          Registrar Nueva Empresa (Onboarding Oficial)
+          Registra Nuova Azienda (Onboarding Ufficiale)
         </button>
 
-        <button class="btn btn-secondary" style="justify-content: center; padding: 12px;" onclick="authenticateWithPasskey()">
+        <button class="btn btn-secondary" style="justify-content: center; padding: 12px;" onclick="authenticateWithPasskey()" id="btn-gate-login">
           <svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
-          Iniciar Sesión de Administrador con Passkey
+          Accedi con FIDO2 Passkey Amministratore
         </button>
       </div>
 
-      <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border-card); font-size: 12px; color: var(--text-muted);">
-        🔒 Cumplimiento estricto con el <strong>Real Decreto-ley 8/2019</strong> (España) y <strong>D.Lgs. 81/2008</strong> (Italia).
+      <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border-card); font-size: 12px; color: var(--text-muted);" id="txt-gate-footer">
+        🔒 Conformità rigorosa con il <strong>D.Lgs. 81/2008</strong> (Italia) e <strong>Real Decreto-ley 8/2019</strong> (Spagna).
       </div>
     </div>
   </div>
@@ -495,34 +525,34 @@
   <div class="app-body" id="authenticated-app" style="display: none;">
     <!-- Sidebar -->
     <aside>
-      <div class="nav-section-title">Control Operativo</div>
-      <button class="nav-btn active" onclick="switchPortalTab('presence')">
+      <div class="nav-section-title" id="nav-sec-ops">Controllo Operativo</div>
+      <button class="nav-btn active" onclick="switchPortalTab('presence')" id="nav-btn-presence">
         <svg class="icon-svg" viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
-        Presencia en Directo
+        Presenze in Tempo Reale
       </button>
-      <button class="nav-btn" onclick="switchPortalTab('kiosk')">
+      <button class="nav-btn" onclick="switchPortalTab('kiosk')" id="nav-btn-kiosk">
         <svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-        Sedes & Quiosco QR
+        Sedi & Chiosco QR (30s)
       </button>
-      <button class="nav-btn" onclick="switchPortalTab('requests')">
+      <button class="nav-btn" onclick="switchPortalTab('requests')" id="nav-btn-requests">
         <svg class="icon-svg" viewBox="0 0 24 24"><path d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/></svg>
-        Permisos & Vacaciones
+        Ferie & Permessi
       </button>
 
-      <div class="nav-section-title">Seguridad & Nóminas</div>
-      <button class="nav-btn" onclick="switchPortalTab('payroll')">
+      <div class="nav-section-title" id="nav-sec-sec">Sicurezza & Retribuzioni</div>
+      <button class="nav-btn" onclick="switchPortalTab('payroll')" id="nav-btn-payroll">
         <svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-        Distribución Nóminas E2EE
+        Buste Paga E2EE
       </button>
-      <button class="nav-btn" onclick="switchPortalTab('audit')">
+      <button class="nav-btn" onclick="switchPortalTab('audit')" id="nav-btn-audit">
         <svg class="icon-svg" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-        Inspección de Trabajo
+        Ispettorato del Lavoro
       </button>
 
-      <div class="nav-section-title">Configuración</div>
-      <button class="nav-btn" onclick="openOnboardingView()">
+      <div class="nav-section-title" id="nav-sec-cfg">Configurazione</div>
+      <button class="nav-btn" onclick="openOnboardingView()" id="nav-btn-settings">
         <svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-        Ajustes & Nueva Sede
+        Impostazioni & Sede
       </button>
     </aside>
 
@@ -533,17 +563,17 @@
       <section id="view-presence">
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
           <div>
-            <h1 class="section-title">Monitor de Presencia en Directo</h1>
-            <p class="section-desc" style="margin-bottom: 0;">Presencias certificadas crittograficamente con Supabase EU Realtime.</p>
+            <h1 class="section-title" id="txt-presence-title">Monitor Presenze in Tempo Reale</h1>
+            <p class="section-desc" style="margin-bottom: 0;" id="txt-presence-desc">Timbrature certificate con crittografia asimmetrica su Supabase EU Realtime.</p>
           </div>
           <div style="display: flex; gap: 10px;">
             <button class="btn btn-secondary" onclick="fetchRecentPunches()">
               <svg class="icon-svg" viewBox="0 0 24 24"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
-              Actualizar
+              <span id="btn-refresh-text">Aggiorna</span>
             </button>
             <button class="btn btn-primary" onclick="simulateLivePunch()">
               <svg class="icon-svg" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-              Simular Fichaje Live
+              <span id="btn-simulate-text">Simula Timbratura Live</span>
             </button>
           </div>
         </div>
@@ -551,50 +581,50 @@
         <div style="background: var(--accent-muted); border: 1px solid var(--accent-border); padding: 12px 18px; border-radius: 10px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between;">
           <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--accent); font-weight: 500;">
             <span style="display: inline-block; width: 8px; height: 8px; background: var(--success); border-radius: 50%; box-shadow: 0 0 8px var(--success);"></span>
-            <strong>Conectado a Supabase EU (Milán / Cloudflare MXP)</strong> · Canal Realtime WebSocket Activo
+            <strong id="txt-status-connection">Connesso a Supabase EU (Milano / Cloudflare MXP)</strong> · Canale Realtime WebSocket Attivo
           </div>
-          <span style="font-size: 12px; color: var(--text-muted);" id="last-sync-time">En escucha de eventos...</span>
+          <span style="font-size: 12px; color: var(--text-muted);" id="last-sync-time">In ascolto eventi...</span>
         </div>
 
         <div class="stats-grid">
           <div class="stat-card">
-            <span class="stat-label">En Turno Ahora</span>
+            <span class="stat-label" id="kpi-in-shift-label">In Turno Adesso</span>
             <span class="stat-val" style="color: var(--success);" id="stat-active">14</span>
           </div>
           <div class="stat-card">
-            <span class="stat-label">Salidas Registradas</span>
+            <span class="stat-label" id="kpi-out-shift-label">Uscite Registrate</span>
             <span class="stat-val" id="stat-out">2</span>
           </div>
           <div class="stat-card">
-            <span class="stat-label">Permisos Hoy</span>
+            <span class="stat-label" id="kpi-permits-label">Permessi / Ferie Oggi</span>
             <span class="stat-val" style="color: var(--warning);">1</span>
           </div>
           <div class="stat-card">
-            <span class="stat-label">Firmas Válidas</span>
+            <span class="stat-label" id="kpi-signatures-label">Firme Valide</span>
             <span class="stat-val" style="color: var(--accent);">100%</span>
           </div>
         </div>
 
         <div class="card">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
-            <h2 style="font-size: 16px; font-weight: 700;">Registro de Marcajes de Hoy</h2>
-            <span style="font-size: 12px; color: var(--text-muted);">Firmas Ed25519 & Geovallas en RAM (150m)</span>
+            <h2 style="font-size: 16px; font-weight: 700;" id="txt-today-punches">Marcature Odierne Verificate</h2>
+            <span style="font-size: 12px; color: var(--text-muted);">Ed25519 & Geovalla RAM (150m)</span>
           </div>
           <div class="table-wrap">
             <table>
               <thead>
                 <tr>
-                  <th>Trabajador / ID</th>
-                  <th>Evento</th>
-                  <th>Hora / Sincronización</th>
-                  <th>Método de Validación</th>
-                  <th>Recibo Criptográfico Fide</th>
-                  <th>Estado</th>
+                  <th id="th-col-worker">Collaboratore / ID</th>
+                  <th id="th-col-event">Evento</th>
+                  <th id="th-col-time">Orario / Sincronizzazione</th>
+                  <th id="th-col-method">Metodo di Verifica</th>
+                  <th id="th-col-receipt">Ricevuta Digitale Fide</th>
+                  <th id="th-col-status">Stato</th>
                 </tr>
               </thead>
               <tbody id="live-punches-body">
                 <tr>
-                  <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 20px;">Cargando eventos desde Supabase...</td>
+                  <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 20px;">Caricamento eventi da Supabase...</td>
                 </tr>
               </tbody>
             </table>
@@ -604,15 +634,15 @@
 
       <!-- ==================== VIEW 2: QUIOSCO QR ==================== -->
       <section id="view-kiosk" style="display: none;">
-        <h1 class="section-title">Quiosco de Entrada — QR Dinámico Rotativo (30s)</h1>
-        <p class="section-desc">Pantalla para tablet instalada en recepción o tornos. El código QR rota cada 30 segundos firmado con HMAC.</p>
+        <h1 class="section-title" id="txt-kiosk-title">Chiosco d'Ingresso — QR Dinamico Rotativo (30s)</h1>
+        <p class="section-desc" id="txt-kiosk-desc">Schermata per tablet installata all'ingresso o tornelli. Il codice QR ruota ogni 30 secondi con firma HMAC.</p>
 
         <div class="kiosk-card">
           <div style="font-size: 13px; color: #4ADE80; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;" id="kiosk-site-name">
-            Fide Business · Sede Central
+            Fide Business · Sede Operativa
           </div>
-          <div style="font-size: 20px; font-weight: 700; margin-top: 6px;">
-            Enfoca con tu App Fide para Fichar
+          <div style="font-size: 20px; font-weight: 700; margin-top: 6px;" id="txt-kiosk-headline">
+            Inquadra con l'App Fide per Timbrare
           </div>
 
           <div class="kiosk-qr-box">
@@ -641,8 +671,8 @@
             </svg>
           </div>
 
-          <div style="font-size: 13px; color: var(--text-light); margin-bottom: 8px;">
-            El código se renueva automáticamente para impedir fotos o fichajes fraudulentos:
+          <div style="font-size: 13px; color: var(--text-light); margin-bottom: 8px;" id="txt-kiosk-sub">
+            Il codice si rinnova automaticamente per impedire foto o timbrature fraudolente:
           </div>
           <div class="kiosk-countdown" id="kioskTimer">30s</div>
         </div>
@@ -650,28 +680,28 @@
 
       <!-- ==================== VIEW 3: NÓMINAS E2EE ==================== -->
       <section id="view-payroll" style="display: none;">
-        <h1 class="section-title">Distribución de Nóminas Cifradas (Zero-Knowledge)</h1>
-        <p class="section-desc">Carga por lotes de nóminas en PDF con cifrado asimétrico X25519 en el navegador antes de almacenar.</p>
+        <h1 class="section-title" id="txt-payroll-title">Distribuzione Buste Paga Cifrate (Zero-Knowledge)</h1>
+        <p class="section-desc" id="txt-payroll-desc">Caricamento massivo di cedolini PDF con cifratura asimmetrica X25519 nel browser prima dell'archiviazione.</p>
 
         <div class="card">
           <div style="border: 2px dashed #94A3B8; padding: 40px 20px; border-radius: 12px; text-align: center; background: #F8FAFC; cursor: pointer;" onclick="simulatePayrollUpload()">
             <div style="width: 48px; height: 48px; background: var(--accent-muted); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px auto; color: var(--accent);">
               <svg class="icon-svg" style="width: 24px; height: 24px;" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
             </div>
-            <div style="font-weight: 700; font-size: 15px; margin-bottom: 4px;">Arrastra aquí los archivos PDF de las nóminas</div>
-            <div style="font-size: 13px; color: var(--text-muted); max-width: 520px; margin: 0 auto;">El navegador resolverá la clave pública X25519 de cada trabajador y cifrará cada documento de forma local.</div>
+            <div style="font-weight: 700; font-size: 15px; margin-bottom: 4px;" id="txt-payroll-drop-title">Trascina qui i file PDF delle buste paga</div>
+            <div style="font-size: 13px; color: var(--text-muted); max-width: 520px; margin: 0 auto;" id="txt-payroll-drop-sub">Il browser risolverà la chiave pubblica X25519 di ogni dipendente e cifrerà ciascun documento localmente.</div>
           </div>
 
           <div id="payroll-progress" style="display: none; margin-top: 20px;">
             <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; margin-bottom: 6px;">
-              <span>Cifrado asimétrico en curso (libsodium)...</span>
-              <span style="color: var(--accent);">100% Completado</span>
+              <span id="txt-payroll-encrypting">Cifratura asimmetrica in corso (libsodium)...</span>
+              <span style="color: var(--accent);">100% Completato</span>
             </div>
             <div style="background: #E2E8F0; height: 8px; border-radius: 4px; overflow: hidden;">
               <div style="background: var(--accent); width: 100%; height: 100%;"></div>
             </div>
-            <div style="margin-top: 12px; font-size: 12px; color: var(--success); font-weight: 600;">
-              ✓ 14 Nóminas cifradas con X25519 + Poly1305. Almacenadas en Supabase Storage sin clave de descifrado en el servidor.
+            <div style="margin-top: 12px; font-size: 12px; color: var(--success); font-weight: 600;" id="txt-payroll-done">
+              ✓ 14 Buste paga cifrate con X25519 + Poly1305. Archiviate su Supabase Storage senza chiave di decifratura sul server.
             </div>
           </div>
         </div>
@@ -679,38 +709,38 @@
 
       <!-- ==================== VIEW 4: VACACIONES Y PERMISOS ==================== -->
       <section id="view-requests" style="display: none;">
-        <h1 class="section-title">Gestión de Vacaciones y Permisos</h1>
-        <p class="section-desc">Solicitudes enviadas desde la aplicación móvil de los trabajadores.</p>
+        <h1 class="section-title" id="txt-requests-title">Gestione Ferie e Permessi</h1>
+        <p class="section-desc" id="txt-requests-desc">Richieste inviate dall'applicazione mobile dei collaboratori.</p>
 
         <div class="card">
           <div class="table-wrap">
             <table>
               <thead>
                 <tr>
-                  <th>Trabajador</th>
-                  <th>Tipología</th>
-                  <th>Periodo Solicitado</th>
-                  <th>Saldo Restante</th>
-                  <th>Acción</th>
+                  <th id="th-req-worker">Dipendente</th>
+                  <th id="th-req-type">Tipologia</th>
+                  <th id="th-req-period">Periodo Richiesto</th>
+                  <th id="th-req-balance">Saldo Residuo</th>
+                  <th id="th-req-action">Azione</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
                   <td><strong>Marco Rossi</strong></td>
-                  <td>Vacaciones Anuales</td>
-                  <td>15 - 20 Julio (5 días laborables)</td>
-                  <td>14,5 días disponibles</td>
+                  <td>Ferie Annuali</td>
+                  <td>15 - 20 Luglio (5 giorni lavorativi)</td>
+                  <td>14,5 giorni rimasti</td>
                   <td>
-                    <button class="btn btn-primary" style="padding: 5px 12px; font-size: 12px;" onclick="approveRow(this)">✓ Aprobar</button>
+                    <button class="btn btn-primary" style="padding: 5px 12px; font-size: 12px;" onclick="approveRow(this)">✓ Approva</button>
                   </td>
                 </tr>
                 <tr>
                   <td><strong>Elena Conti</strong></td>
-                  <td>Permiso Retribuido (Médico)</td>
-                  <td>Mañana 09:00 - 11:00 (Visita especialista)</td>
-                  <td>24 horas disponibles</td>
+                  <td>Permesso Retribuito (ROL)</td>
+                  <td>Domani 09:00 - 11:00 (Visita medica)</td>
+                  <td>24 ore rimaste</td>
                   <td>
-                    <button class="btn btn-primary" style="padding: 5px 12px; font-size: 12px;" onclick="approveRow(this)">✓ Aprobar</button>
+                    <button class="btn btn-primary" style="padding: 5px 12px; font-size: 12px;" onclick="approveRow(this)">✓ Approva</button>
                   </td>
                 </tr>
               </tbody>
@@ -721,22 +751,22 @@
 
       <!-- ==================== VIEW 5: INSPECCIÓN LABORAL ==================== -->
       <section id="view-audit" style="display: none;">
-        <h1 class="section-title">Exportación Oficial para la Inspección de Trabajo</h1>
-        <p class="section-desc">Registro de jornada conforme al Real Decreto-ley 8/2019 (España) y D.Lgs. 81/2008 (Italia).</p>
+        <h1 class="section-title" id="txt-audit-title">Esportazione Ufficiale per Ispettorato del Lavoro</h1>
+        <p class="section-desc" id="txt-audit-desc">Registro di presenza conforme al D.Lgs. 81/2008 (Italia) e RDL 8/2019 (Spagna).</p>
 
         <div class="card">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <div>
-              <div style="font-size: 16px; font-weight: 700;">Registro Mensual Vidimado Digitalmente</div>
-              <div style="font-size: 13px; color: var(--text-muted);">Firma digital certificada con marca temporal inmutable</div>
+              <div style="font-size: 16px; font-weight: 700;" id="txt-audit-card-title">Registro Mensile Vidimato Digitalmente</div>
+              <div style="font-size: 13px; color: var(--text-muted);" id="txt-audit-card-sub">Firma digitale certificata con marca temporale immutabile</div>
             </div>
             <button class="btn btn-primary" onclick="exportReport()">
               <svg class="icon-svg" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-              Descargar Registro Oficial (PDF/A)
+              <span id="btn-export-text">Scarica Registro Ufficiale (PDF/A)</span>
             </button>
           </div>
-          <div style="background: #F8FAFC; border: 1px solid var(--border-card); padding: 16px; border-radius: 10px; font-size: 13px; color: #334155; line-height: 1.6;">
-            <strong>Garantía de Conformidad Legal:</strong> El registro Fide contiene para cada evento la marca temporal exacta, el método de validación (sin coordenadas GPS continuas) y la huella digital del dispositivo del empleado, excluyendo cualquier alteración retroactiva.
+          <div style="background: #F8FAFC; border: 1px solid var(--border-card); padding: 16px; border-radius: 10px; font-size: 13px; color: #334155; line-height: 1.6;" id="txt-audit-legal-note">
+            <strong>Garanzia di Conformità Legale:</strong> Il registro Fide contiene per ciascun evento di marcatura la marca temporale esatta, il metodo di convalida (senza coordinate GPS continue) e l'impronta crittografica del dispositivo del dipendente, escludendo contestazioni su alterazioni retroattive.
           </div>
         </div>
       </section>
@@ -750,12 +780,12 @@
       
       <div style="background: var(--dark-header); color: #FFFFFF; padding: 20px 28px; display: flex; justify-content: space-between; align-items: center;">
         <div>
-          <div style="font-family: 'Space Grotesk', sans-serif; font-size: 18px; font-weight: 700;">Registro & Onboarding Oficial de Empresa</div>
+          <div style="font-family: 'Space Grotesk', sans-serif; font-size: 18px; font-weight: 700;" id="ob-modal-title">Registrazione & Onboarding Ufficiale Azienda</div>
           <div style="font-size: 12px; color: var(--text-light);">Fide Zero-Knowledge Enterprise Registration</div>
         </div>
         <div style="display: flex; gap: 8px;">
-          <button class="btn btn-secondary" style="font-size: 11px; padding: 5px 10px;" onclick="loadPreset('ES')">🇪🇸 Ejemplo España</button>
-          <button class="btn btn-secondary" style="font-size: 11px; padding: 5px 10px;" onclick="loadPreset('IT')">🇮🇹 Ejemplo Italia</button>
+          <button class="btn btn-secondary" style="font-size: 11px; padding: 5px 10px;" onclick="loadPreset('IT')">🇮🇹 Esempio Italia</button>
+          <button class="btn btn-secondary" style="font-size: 11px; padding: 5px 10px;" onclick="loadPreset('ES')">🇪🇸 Esempio Spagna</button>
           <button style="background: none; border: none; color: #94A3B8; font-size: 20px; cursor: pointer; margin-left: 10px;" onclick="closeOnboardingView()">✕</button>
         </div>
       </div>
@@ -763,19 +793,19 @@
       <div class="stepper">
         <div class="step-tab active" id="ob-nav-1" onclick="setObStep(1)">
           <span class="step-num">1</span>
-          <span>Datos Fiscales</span>
+          <span id="ob-nav-tab-1">Dati Fiscali</span>
         </div>
         <div class="step-tab" id="ob-nav-2" onclick="setObStep(2)">
           <span class="step-num">2</span>
-          <span>Sede & Geovalla</span>
+          <span id="ob-nav-tab-2">Sede & Geovalla</span>
         </div>
         <div class="step-tab" id="ob-nav-3" onclick="setObStep(3)">
           <span class="step-num">3</span>
-          <span>FIDO2 & Criptografía</span>
+          <span id="ob-nav-tab-3">FIDO2 & Crittografia</span>
         </div>
         <div class="step-tab" id="ob-nav-4" onclick="setObStep(4)">
           <span class="step-num">4</span>
-          <span>Plantilla & Activación</span>
+          <span id="ob-nav-tab-4">Organico & Attivazione</span>
         </div>
       </div>
 
@@ -784,43 +814,44 @@
         <div id="ob-content-1">
           <div class="form-grid">
             <div class="field-group">
-              <label>País Principal</label>
+              <label id="lbl-country">Paese Principale</label>
               <select id="reg-country" onchange="loadPreset(this.value)">
-                <option value="ES">🇪🇸 España (RDL 8/2019)</option>
-                <option value="IT">🇮🇹 Italia (CCNL & D.Lgs 81/2008)</option>
+                <option value="IT" selected>🇮🇹 Italia (CCNL & D.Lgs 81/2008)</option>
+                <option value="ES">🇪🇸 Spagna (RDL 8/2019)</option>
               </select>
             </div>
             <div class="field-group">
-              <label>Razón Social / Nombre Legal</label>
-              <input type="text" id="reg-name" value="Acme Soluciones Tecnológicas S.L.">
+              <label id="lbl-company-name">Ragione Sociale / Nome Legale</label>
+              <input type="text" id="reg-name" value="Officine Aurora S.r.l.">
             </div>
             <div class="field-group">
-              <label>CIF / NIF / Partita IVA</label>
-              <input type="text" id="reg-vat" value="B88349201">
+              <label id="lbl-vat">Partita IVA / Codice Fiscale</label>
+              <input type="text" id="reg-vat" value="IT09876543210">
             </div>
             <div class="field-group">
-              <label>Email Oficial / PEC</label>
-              <input type="email" id="reg-pec" value="administracion@acmetech.es">
+              <label id="lbl-pec">Posta Elettronica Certificata (PEC)</label>
+              <input type="email" id="reg-pec" value="amministrazione@pec.aurora.it">
             </div>
             <div class="field-group">
-              <label>Código Cuenta Cotización / SDI</label>
-              <input type="text" id="reg-sdi" value="28/1234567/89">
+              <label id="lbl-sdi">Codice SDI (Fatturazione Elettronica)</label>
+              <input type="text" id="reg-sdi" value="M5UXCR1">
             </div>
             <div class="field-group">
-              <label>Convenio Colectivo Aplicable</label>
+              <label id="lbl-ccnl">CCNL / Contratto Collettivo</label>
               <select id="reg-ccnl">
-                <option>Convenio Colectivo de Oficinas y Despachos</option>
-                <option>Convenio Colectivo de la Industria del Metal</option>
-                <option>Convenio de Comercio General y Logística</option>
+                <option>CCNL Metalmeccanico Industria</option>
+                <option>CCNL Commercio e Terziario</option>
+                <option>CCNL Logistica, Trasporto Merci e Spedizioni</option>
+                <option>CCNL Edilizia e Affini</option>
               </select>
             </div>
             <div class="field-group" style="grid-column: span 2;">
-              <label>Domicilio Social Central</label>
-              <input type="text" id="reg-address" value="Paseo de la Castellana 200, 28046 Madrid, España">
+              <label id="lbl-address">Sede Legale</label>
+              <input type="text" id="reg-address" value="Via Tortona 31, 20144 Milano MI, Italia">
             </div>
           </div>
           <div style="display: flex; justify-content: flex-end; margin-top: 20px;">
-            <button class="btn btn-primary" onclick="setObStep(2)">Continuar: Configurar Sede →</button>
+            <button class="btn btn-primary" onclick="setObStep(2)" id="btn-ob-step1-next">Continua: Configura Sede →</button>
           </div>
         </div>
 
@@ -828,54 +859,54 @@
         <div id="ob-content-2" style="display: none;">
           <div class="form-grid">
             <div class="field-group">
-              <label>Nombre de la Sede</label>
-              <input type="text" id="site-name" value="Sede Central Madrid">
+              <label id="lbl-site-name">Nome della Sede</label>
+              <input type="text" id="site-name" value="Sede Operativa Milano">
             </div>
             <div class="field-group">
-              <label>Radio de Geovalla en RAM</label>
+              <label id="lbl-site-radius">Raggio Geovalla in RAM</label>
               <select id="site-radius">
-                <option value="50">50 metros (Oficina muy compacta)</option>
-                <option value="100">100 metros (Planta corporativa estándar)</option>
-                <option value="150" selected>150 metros (Recomendado estándar GDPR / Precisión GPS)</option>
-                <option value="250">250 metros (Polígono o nave industrial)</option>
+                <option value="50">50 metri (Ufficio compatto)</option>
+                <option value="100">100 metri (Palazzina aziendale)</option>
+                <option value="150" selected>150 metri (Standard GDPR consigliato)</option>
+                <option value="250">250 metri (Polo logistico o stabilimento)</option>
               </select>
             </div>
             <div class="field-group" style="grid-column: span 2;">
-              <label>Dirección Física</label>
-              <input type="text" id="site-address" value="Paseo de la Castellana 200, Madrid">
+              <label id="lbl-site-address">Indirizzo Fisico</label>
+              <input type="text" id="site-address" value="Via Tortona 31, Milano">
             </div>
             <div class="field-group">
-              <label>Latitud</label>
-              <input type="number" step="0.000001" id="site-lat" value="40.468200">
+              <label>Latitudine</label>
+              <input type="number" step="0.000001" id="site-lat" value="45.451800">
             </div>
             <div class="field-group">
-              <label>Longitud</label>
-              <input type="number" step="0.000001" id="site-lon" value="-3.689000">
+              <label>Longitudine</label>
+              <input type="number" step="0.000001" id="site-lon" value="9.162400">
             </div>
           </div>
-          <div style="background: #F8FAFC; border: 1px solid var(--border-card); padding: 12px; border-radius: 8px; font-size: 12.5px; color: #475569; margin-bottom: 20px;">
-            🛡️ <strong>Garantía de Privacidad en RAM:</strong> La geovalla se evalúa en el hardware del teléfono al fichar. Ninguna coordenada de ubicación se guarda en el servidor.
+          <div style="background: #F8FAFC; border: 1px solid var(--border-card); padding: 12px; border-radius: 8px; font-size: 12.5px; color: #475569; margin-bottom: 20px;" id="txt-geofence-guarantee">
+            🛡️ <strong>Garanzia Garante Privacy:</strong> La geovalla viene verificata esclusivamente nella memoria RAM del telefono al momento della timbratura. Nessuna coordinata di posizione viene salvata sul server.
           </div>
           <div style="display: flex; justify-content: space-between;">
-            <button class="btn btn-secondary" onclick="setObStep(1)">← Anterior</button>
-            <button class="btn btn-primary" onclick="setObStep(3)">Continuar: Claves Criptográficas →</button>
+            <button class="btn btn-secondary" onclick="setObStep(1)">← Indietro</button>
+            <button class="btn btn-primary" onclick="setObStep(3)">Continua: Chiavi Crittografiche →</button>
           </div>
         </div>
 
         <!-- Step 3 -->
         <div id="ob-content-3" style="display: none;">
-          <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">
-            Fide genera el par asimétrico empresarial <strong>X25519 / Ed25519</strong> para cifrar nóminas y firmar registros de jornada sin contraseñas vulnerables.
+          <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;" id="txt-crypto-expl">
+            Fide genera la coppia asimmetrica aziendale <strong>X25519 / Ed25519</strong> per cifrare le buste paga e firmare i registri senza password deboli.
           </p>
           <div style="background: #F8FAFC; border: 1px solid var(--border-card); padding: 16px; border-radius: 10px; margin-bottom: 20px;">
-            <div style="font-size: 11px; font-weight: 600; color: #475569; text-transform: uppercase;">Huella SHA-256 de la Empresa:</div>
+            <div style="font-size: 11px; font-weight: 600; color: #475569; text-transform: uppercase;">Impronta Digitale SHA-256 dell'Azienda:</div>
             <div style="font-family: monospace; font-size: 12px; color: var(--accent); margin-top: 6px; word-break: break-all;" id="reg-fingerprint">
               SHA256:7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069
             </div>
           </div>
           <div style="display: flex; justify-content: space-between;">
-            <button class="btn btn-secondary" onclick="setObStep(2)">← Anterior</button>
-            <button class="btn btn-primary" onclick="setObStep(4)">Continuar: Añadir Empleado y Guardar →</button>
+            <button class="btn btn-secondary" onclick="setObStep(2)">← Indietro</button>
+            <button class="btn btn-primary" onclick="setObStep(4)">Continua: Aggiungi Lavoratore e Salva →</button>
           </div>
         </div>
 
@@ -883,33 +914,33 @@
         <div id="ob-content-4" style="display: none;">
           <div class="form-grid">
             <div class="field-group">
-              <label>Primer Empleado</label>
+              <label id="lbl-first-worker">Primo Collaboratore</label>
               <input type="text" id="emp-name" value="Marco Rossi">
             </div>
             <div class="field-group">
-              <label>Departamento</label>
-              <input type="text" id="emp-dept" value="Logística & Almacén">
+              <label id="lbl-first-dept">Reparto</label>
+              <input type="text" id="emp-dept" value="Logistica & Magazzino">
             </div>
             <div class="field-group">
-              <label>Horario</label>
+              <label id="lbl-first-shift">Orario di Lavoro</label>
               <input type="text" id="emp-shift" value="08:30 - 17:30">
             </div>
           </div>
 
           <div style="margin-top: 10px;">
             <button class="btn btn-primary" id="btn-save-company-db" onclick="saveCompanyToSupabase()" style="width: 100%; justify-content: center; padding: 12px;">
-              🚀 Guardar y Activar Empresa en Supabase
+              🚀 Salva e Attiva Azienda su Supabase
             </button>
           </div>
 
           <div id="invite-result-box" style="display: none; margin-top: 20px; background: var(--accent-muted); border: 1px solid var(--accent-border); padding: 16px; border-radius: 10px;">
-            <div style="font-weight: 700; color: var(--accent); margin-bottom: 4px;">✓ ¡Empresa Guardada con Éxito en Supabase!</div>
+            <div style="font-weight: 700; color: var(--accent); margin-bottom: 4px;">✓ Azienda Salvata con Successo su Supabase!</div>
             <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;" id="created-company-id-text">ID: ...</div>
-            <div style="font-size: 12px; font-weight: 600; margin-bottom: 4px;">Enlace de Activación Móvil generado:</div>
+            <div style="font-size: 12px; font-weight: 600; margin-bottom: 4px;">Link di Attivazione Mobile generato:</div>
             <div style="background: #FFFFFF; border: 1px solid var(--border-card); padding: 8px; border-radius: 6px; font-family: monospace; font-size: 11px; word-break: break-all; margin-bottom: 10px;" id="invite-url-text"></div>
             <div style="display: flex; gap: 8px;">
-              <button class="btn btn-secondary" style="font-size: 11px; padding: 5px 10px;" onclick="copyInviteUrl(this)">📋 Copiar</button>
-              <button class="btn btn-primary" style="font-size: 11px; padding: 5px 10px;" onclick="completeOnboardingAndEnterDashboard()">Entrar al Panel de Control →</button>
+              <button class="btn btn-secondary" style="font-size: 11px; padding: 5px 10px;" onclick="copyInviteUrl(this)">📋 Copia</button>
+              <button class="btn btn-primary" style="font-size: 11px; padding: 5px 10px;" onclick="completeOnboardingAndEnterDashboard()">Accedi al Pannello di Controllo →</button>
             </div>
           </div>
         </div>
@@ -918,6 +949,566 @@
   </div>
 
   <script>
+    // ==================== MULTILINGUAL DICTIONARY (9 LANGUAGES) ====================
+    const i18nDict = {
+      it: {
+        appSubtitleNoCompany: 'Nessuna azienda selezionata',
+        appSubtitleActive: 'Attiva',
+        fidoActive: 'FIDO2 Passkey Attiva',
+        btnAccessPasskey: 'Accedi con Passkey',
+        btnLogout: 'Disconnetti',
+        gateTitle: 'Centro di Controllo Aziendale Fide',
+        gateDesc: 'Per accedere ai registri delle presenze, al chiosco e alla distribuzione buste paga della tua organizzazione, registra la tua azienda o autenticati con la tua chiave FIDO2.',
+        gateRegister: 'Registra Nuova Azienda (Onboarding Ufficiale)',
+        gateLogin: 'Accedi con FIDO2 Passkey Amministratore',
+        gateFooter: '🔒 Conformità rigorosa con il D.Lgs. 81/2008 (Italia) e Real Decreto-ley 8/2019 (Spagna).',
+        navOps: 'Controllo Operativo',
+        navPresence: 'Presenze in Tempo Reale',
+        navKiosk: 'Sedi & Chiosco QR (30s)',
+        navRequests: 'Ferie & Permessi',
+        navSec: 'Sicurezza & Retribuzioni',
+        navPayroll: 'Buste Paga E2EE',
+        navAudit: 'Ispettorato del Lavoro',
+        navCfg: 'Configurazione',
+        navSettings: 'Impostazioni & Sede',
+        presenceTitle: 'Monitor Presenze in Tempo Reale',
+        presenceDesc: 'Timbrature certificate con crittografia asimmetrica su Supabase EU Realtime.',
+        btnRefresh: 'Aggiorna',
+        btnSimulate: 'Simula Timbratura Live',
+        kpiInShift: 'In Turno Adesso',
+        kpiOutShift: 'Uscite Registrate',
+        kpiPermits: 'Permessi / Ferie Oggi',
+        kpiSignatures: 'Firme Valide',
+        todayPunches: 'Marcature Odierne Verificate',
+        thWorker: 'Collaboratore / ID',
+        thEvent: 'Evento',
+        thTime: 'Orario / Sincronizzazione',
+        thMethod: 'Metodo di Verifica',
+        thReceipt: 'Ricevuta Digitale Fide',
+        thStatus: 'Stato',
+        kioskTitle: 'Chiosco d\'Ingresso — QR Dinamico Rotativo (30s)',
+        kioskDesc: 'Schermata per tablet installata all\'ingresso o tornelli. Il codice QR ruota ogni 30 secondi con firma HMAC.',
+        kioskHeadline: 'Inquadra con l\'App Fide per Timbrare',
+        kioskSub: 'Il codice si rinnova automaticamente per impedire foto o timbrature fraudolente:',
+        payrollTitle: 'Distribuzione Buste Paga Cifrate (Zero-Knowledge)',
+        payrollDesc: 'Caricamento massivo di cedolini PDF con cifratura asimmetrica X25519 nel browser prima dell\'archiviazione.',
+        payrollDropTitle: 'Trascina qui i file PDF delle buste paga',
+        payrollDropSub: 'Il browser risolverà la chiave pubblica X25519 di ogni dipendente e cifrerà ciascun documento localmente.',
+        payrollEncrypting: 'Cifratura asimmetrica in corso (libsodium)...',
+        payrollDone: '✓ 14 Buste paga cifrate con X25519 + Poly1305. Archiviate su Supabase Storage senza chiave di decifratura sul server.',
+        requestsTitle: 'Gestione Ferie e Permessi',
+        requestsDesc: 'Richieste inviate dall\'applicazione mobile dei collaboratori.',
+        auditTitle: 'Esportazione Ufficiale per Ispettorato del Lavoro',
+        auditDesc: 'Registro di presenza conforme al D.Lgs. 81/2008 (Italia) e RDL 8/2019 (Spagna).',
+        btnExport: 'Scarica Registro Ufficiale (PDF/A)'
+      },
+      es: {
+        appSubtitleNoCompany: 'Sin empresa seleccionada',
+        appSubtitleActive: 'Activa',
+        fidoActive: 'FIDO2 Passkey Activa',
+        btnAccessPasskey: 'Acceder con Passkey',
+        btnLogout: 'Cerrar Sesión',
+        gateTitle: 'Centro de Control Empresarial Fide',
+        gateDesc: 'Para acceder a los registros de presencia, quioscos y nóminas de tu organización, da de alta tu empresa o autentícate con tu llave FIDO2.',
+        gateRegister: 'Registrar Nueva Empresa (Onboarding Oficial)',
+        gateLogin: 'Acceder con FIDO2 Passkey Administrador',
+        gateFooter: '🔒 Cumplimiento estricto con el Real Decreto-ley 8/2019 (España) y D.Lgs. 81/2008 (Italia).',
+        navOps: 'Control Operativo',
+        navPresence: 'Presencia en Directo',
+        navKiosk: 'Sedes & Quiosco QR (30s)',
+        navRequests: 'Permisos & Vacaciones',
+        navSec: 'Seguridad & Nóminas',
+        navPayroll: 'Distribución Nóminas E2EE',
+        navAudit: 'Inspección de Trabajo',
+        navCfg: 'Configuración',
+        navSettings: 'Ajustes & Sede',
+        presenceTitle: 'Monitor de Presencia en Directo',
+        presenceDesc: 'Fichajes certificados con criptografía asimétrica en Supabase EU Realtime.',
+        btnRefresh: 'Actualizar',
+        btnSimulate: 'Simular Fichaje Live',
+        kpiInShift: 'En Turno Ahora',
+        kpiOutShift: 'Salidas Registradas',
+        kpiPermits: 'Permisos / Vacaciones Hoy',
+        kpiSignatures: 'Firmas Válidas',
+        todayPunches: 'Registro de Marcajes de Hoy',
+        thWorker: 'Trabajador / ID',
+        thEvent: 'Evento',
+        thTime: 'Hora / Sincronización',
+        thMethod: 'Método de Validación',
+        thReceipt: 'Recibo Criptográfico Fide',
+        thStatus: 'Estado',
+        kioskTitle: 'Quiosco de Entrada — QR Dinámico Rotativo (30s)',
+        kioskDesc: 'Pantalla para tablet instalada en recepción o tornos. El código QR rota cada 30 segundos firmado con HMAC.',
+        kioskHeadline: 'Enfoca con tu App Fide para Fichar',
+        kioskSub: 'El código se renueva automáticamente para impedir fotos o fichajes fraudulentos:',
+        payrollTitle: 'Distribución de Nóminas Cifradas (Zero-Knowledge)',
+        payrollDesc: 'Carga por lotes de nóminas en PDF con cifrado asimétrico X25519 en el navegador antes de almacenar.',
+        payrollDropTitle: 'Arrastra aquí los archivos PDF de las nóminas',
+        payrollDropSub: 'El navegador resolverá la clave pública X25519 de cada trabajador y cifrará cada documento de forma local.',
+        payrollEncrypting: 'Cifrado asimétrico en curso (libsodium)...',
+        payrollDone: '✓ 14 Nóminas cifradas con X25519 + Poly1305. Almacenadas en Supabase Storage sin clave de descifrado en el servidor.',
+        requestsTitle: 'Gestión de Vacaciones y Permisos',
+        requestsDesc: 'Solicitudes enviadas desde la aplicación móvil de los trabajadores.',
+        auditTitle: 'Exportación Oficial para la Inspección de Trabajo',
+        auditDesc: 'Registro de jornada conforme al Real Decreto-ley 8/2019 (España) y D.Lgs. 81/2008 (Italia).',
+        btnExport: 'Descargar Registro Oficial (PDF/A)'
+      },
+      en: {
+        appSubtitleNoCompany: 'No company selected',
+        appSubtitleActive: 'Active',
+        fidoActive: 'FIDO2 Passkey Active',
+        btnAccessPasskey: 'Login with Passkey',
+        btnLogout: 'Log Out',
+        gateTitle: 'Fide Enterprise Control Center',
+        gateDesc: 'To access attendance logs, reception kiosks, and payroll distribution, register your enterprise or authenticate with your FIDO2 passkey.',
+        gateRegister: 'Register New Enterprise (Official Onboarding)',
+        gateLogin: 'Login with Admin FIDO2 Passkey',
+        gateFooter: '🔒 Strict compliance with EU GDPR, D.Lgs. 81/2008 (Italy), and RDL 8/2019 (Spain).',
+        navOps: 'Operations',
+        navPresence: 'Live Attendance',
+        navKiosk: 'Sites & Kiosk QR (30s)',
+        navRequests: 'Time Off & Leaves',
+        navSec: 'Security & Payroll',
+        navPayroll: 'E2EE Payroll Distribution',
+        navAudit: 'Labor Inspectorate',
+        navCfg: 'Settings',
+        navSettings: 'Settings & Worksites',
+        presenceTitle: 'Live Attendance Monitor',
+        presenceDesc: 'Cryptographically certified clock-ins powered by Supabase EU Realtime.',
+        btnRefresh: 'Refresh',
+        btnSimulate: 'Simulate Live Clock-in',
+        kpiInShift: 'On Duty Now',
+        kpiOutShift: 'Clocked Out',
+        kpiPermits: 'Leaves / Permits Today',
+        kpiSignatures: 'Valid Signatures',
+        todayPunches: 'Today\'s Certified Clock-in Events',
+        thWorker: 'Employee / ID',
+        thEvent: 'Event',
+        thTime: 'Time / Sync',
+        thMethod: 'Verification Method',
+        thReceipt: 'Fide Digital Receipt',
+        thStatus: 'Status',
+        kioskTitle: 'Reception Kiosk — Rotating Dynamic QR (30s)',
+        kioskDesc: 'Tablet terminal installed at reception or turnstiles. The QR code rotates every 30 seconds with HMAC signature.',
+        kioskHeadline: 'Scan with Fide App to Clock In',
+        kioskSub: 'The QR token refreshes automatically to prevent photo tampering:',
+        payrollTitle: 'Encrypted Payroll Distribution (Zero-Knowledge)',
+        payrollDesc: 'Batch upload payslip PDFs with client-side X25519 asymmetric encryption before cloud storage.',
+        payrollDropTitle: 'Drop employee payslip PDFs here',
+        payrollDropSub: 'The browser resolves each worker\'s X25519 public key and encrypts the document locally.',
+        payrollEncrypting: 'Asymmetric encryption in progress (libsodium)...',
+        payrollDone: '✓ 14 Payslips encrypted with X25519 + Poly1305. Stored on Supabase Storage with zero server-side decrypt capability.',
+        requestsTitle: 'Leaves & Absence Management',
+        requestsDesc: 'Requests submitted directly from workers\' mobile devices.',
+        auditTitle: 'Official Labor Inspection Export',
+        auditDesc: 'Attendance audit records compliant with European labor regulations.',
+        btnExport: 'Download Official Audit (PDF/A)'
+      },
+      ro: {
+        appSubtitleNoCompany: 'Nicio companie selectată',
+        appSubtitleActive: 'Activă',
+        fidoActive: 'FIDO2 Passkey Activ',
+        btnAccessPasskey: 'Conectare cu Passkey',
+        btnLogout: 'Deconectare',
+        gateTitle: 'Centrul de Control al Companiei Fide',
+        gateDesc: 'Pentru a accesa evidența pontajului și distribuirea fluturașilor de salariu, înregistrați compania sau autentificați-vă cu cheia FIDO2.',
+        gateRegister: 'Înregistrare Companie Nouă (Onboarding)',
+        gateLogin: 'Autentificare cu Passkey FIDO2',
+        gateFooter: '🔒 Conformitate strictă cu legislația muncii UE.',
+        navOps: 'Control Operațional',
+        navPresence: 'Prezență în Timp Real',
+        navKiosk: 'Sedii & Kiosk QR (30s)',
+        navRequests: 'Concedii & Permise',
+        navSec: 'Securitate & Salarii',
+        navPayroll: 'Distribuire Fluturași E2EE',
+        navAudit: 'Inspecția Muncii',
+        navCfg: 'Configurare',
+        navSettings: 'Setări & Sediu',
+        presenceTitle: 'Monitorizare Prezență Live',
+        presenceDesc: 'Pontaje certificate criptografic pe Supabase EU Realtime.',
+        btnRefresh: 'Actualizează',
+        btnSimulate: 'Simulează Pontaj Live',
+        kpiInShift: 'În Tură Acum',
+        kpiOutShift: 'Ieșiri Înregistrate',
+        kpiPermits: 'Concedii Astăzi',
+        kpiSignatures: 'Semnături Valide',
+        todayPunches: 'Pontaje Verificate Astăzi',
+        thWorker: 'Angajat / ID',
+        thEvent: 'Eveniment',
+        thTime: 'Ora / Sincronizare',
+        thMethod: 'Metodă de Verificare',
+        thReceipt: 'Chitanță Digitală Fide',
+        thStatus: 'Stare',
+        kioskTitle: 'Kiosk Recepție — QR Rotativ (30s)',
+        kioskDesc: 'Ecran pentru tabletă la intrare. Codul QR se rotește la fiecare 30 de secunde cu semnătură HMAC.',
+        kioskHeadline: 'Scanează cu Aplicația Fide pentru Pontaj',
+        kioskSub: 'Codul se reînnoiește automat pentru a preveni fraudele:',
+        payrollTitle: 'Distribuire Salarii Criptate (Zero-Knowledge)',
+        payrollDesc: 'Încărcare de fluturași PDF cu criptare asimetrică X25519 în browser.',
+        payrollDropTitle: 'Trageți aici fișierele PDF cu fluturașii de salariu',
+        payrollDropSub: 'Browserul criptează local documentele înainte de trimitere.',
+        payrollEncrypting: 'Criptare asimetrică în curs (libsodium)...',
+        payrollDone: '✓ 14 Fluturași de salariu criptați cu X25519 + Poly1305.',
+        requestsTitle: 'Gestionare Concedii & Învoiri',
+        requestsDesc: 'Cereri primite din aplicația mobilă a lucrătorilor.',
+        auditTitle: 'Export Oficial pentru Inspecția Muncii',
+        auditDesc: 'Registru de pontaj conform reglementărilor UE.',
+        btnExport: 'Descarcă Registrul Oficial (PDF/A)'
+      },
+      fr: {
+        appSubtitleNoCompany: 'Aucune entreprise sélectionnée',
+        appSubtitleActive: 'Active',
+        fidoActive: 'Passkey FIDO2 Active',
+        btnAccessPasskey: 'Connexion par Passkey',
+        btnLogout: 'Déconnexion',
+        gateTitle: 'Centre de Contrôle Entreprise Fide',
+        gateDesc: 'Pour accéder aux registres de présence et aux fiches de paie chiffrées, enregistrez votre entreprise ou authentifiez-vous avec FIDO2.',
+        gateRegister: 'Enregistrer une Nouvelle Entreprise',
+        gateLogin: 'Connexion avec Passkey FIDO2',
+        gateFooter: '🔒 Conformité stricte aux exigences légales du travail de l\'UE.',
+        navOps: 'Opérations',
+        navPresence: 'Présence en Direct',
+        navKiosk: 'Sites & Kiosque QR (30s)',
+        navRequests: 'Congés & Permissions',
+        navSec: 'Sécurité & Paie',
+        navPayroll: 'Fiches de Paie E2EE',
+        navAudit: 'Inspection du Travail',
+        navCfg: 'Configuration',
+        navSettings: 'Paramètres & Sites',
+        presenceTitle: 'Suivi des Présences en Direct',
+        presenceDesc: 'Pointages certifiés par cryptographie sur Supabase EU Realtime.',
+        btnRefresh: 'Actualiser',
+        btnSimulate: 'Simuler un Pointage Live',
+        kpiInShift: 'En Poste Maintenant',
+        kpiOutShift: 'Sorties Enregistrées',
+        kpiPermits: 'Congés Aujourd\'hui',
+        kpiSignatures: 'Signatures Valides',
+        todayPunches: 'Pointages Certifiés Aujourd\'hui',
+        thWorker: 'Collaborateur / ID',
+        thEvent: 'Événement',
+        thTime: 'Heure / Sync',
+        thMethod: 'Méthode de Vérification',
+        thReceipt: 'Reçu Numérique Fide',
+        thStatus: 'Statut',
+        kioskTitle: 'Borne d\'Accueil — QR Rotatif (30s)',
+        kioskDesc: 'Écran pour tablette d\'accueil. Le code QR change toutes les 30 secondes avec signature HMAC.',
+        kioskHeadline: 'Scannez avec l\'App Fide pour Pointer',
+        kioskSub: 'Le code se renouvelle automatiquement pour éviter les fraudes:',
+        payrollTitle: 'Distribution des Bulletins de Paie Chiffrés',
+        payrollDesc: 'Téléversement par lot de fiches de paie PDF avec chiffrement asymétrique X25519 local.',
+        payrollDropTitle: 'Glissez les fichiers PDF des bulletins de paie ici',
+        payrollDropSub: 'Le navigateur chiffre chaque document localement avec la clé publique du salarié.',
+        payrollEncrypting: 'Chiffrement asymétrique en cours (libsodium)...',
+        payrollDone: '✓ 14 Bulletins chiffrés avec X25519 + Poly1305 stockés en toute sécurité.',
+        requestsTitle: 'Gestion des Congés & Absences',
+        requestsDesc: 'Demandes soumises depuis l\'application mobile des salariés.',
+        auditTitle: 'Export Officiel pour l\'Inspection du Travail',
+        auditDesc: 'Registre de pointage conforme aux normes européennes.',
+        btnExport: 'Télécharger le Registre (PDF/A)'
+      },
+      sq: {
+        appSubtitleNoCompany: 'Asnjë kompani e zgjedhur',
+        appSubtitleActive: 'Aktive',
+        fidoActive: 'Passkey FIDO2 Aktive',
+        btnAccessPasskey: 'Hyr me Passkey',
+        btnLogout: 'Dil',
+        gateTitle: 'Qendra e Kontrollit të Ndërmarrjes Fide',
+        gateDesc: 'Për të hyrë në regjistrat e pranisë dhe pagat e punonjësve, regjistroni kompaninë ose hyni me çelësin FIDO2.',
+        gateRegister: 'Regjistro Kompani të Re',
+        gateLogin: 'Hyr me Passkey FIDO2 Administrator',
+        gateFooter: '🔒 Përputhshmëri rigoroze me ligjet evropiane të punës.',
+        navOps: 'Kontrolli Operativ',
+        navPresence: 'Prania në Kohë Reale',
+        navKiosk: 'Kioska QR (30s)',
+        navRequests: 'Pushime & Leje',
+        navSec: 'Siguria & Pagat',
+        navPayroll: 'Shpërndarja e Pagave E2EE',
+        navAudit: 'Inspektoriati i Punës',
+        navCfg: 'Konfigurimi',
+        navSettings: 'Cilësimet & Zyra',
+        presenceTitle: 'Monitorimi i Pranisë në Kohë Reale',
+        presenceDesc: 'Regjistrime të certifikuara në mënyrë kriptografike me Supabase EU.',
+        btnRefresh: 'Përditëso',
+        btnSimulate: 'Simulo Regjistrim Live',
+        kpiInShift: 'Në Punë Tani',
+        kpiOutShift: 'Dalje të Regjistruara',
+        kpiPermits: 'Leje Sot',
+        kpiSignatures: 'Firma të Vlefshme',
+        todayPunches: 'Regjistrimet e Verifikuara Sot',
+        thWorker: 'Punonjës / ID',
+        thEvent: 'Ngjarje',
+        thTime: 'Koha / Sinkronizimi',
+        thMethod: 'Metoda e Verifikimit',
+        thReceipt: 'Faturë Digjitale Fide',
+        thStatus: 'Gjendja',
+        kioskTitle: 'Kioska në Hyrje — QR Dinamik (30s)',
+        kioskDesc: 'Ekran për tablet në hyrje. Kodi QR ndryshon çdo 30 sekonda me firmë HMAC.',
+        kioskHeadline: 'Skanoni me Aplikacionin Fide për të Regjistruar Orarin',
+        kioskSub: 'Kodi rinovohet automatikisht për të parandaluar mashtrimet:',
+        payrollTitle: 'Shpërndarja e Pagave të Kriptuara',
+        payrollDesc: 'Ngarkim i fletëpagave me kriptim asimetrik X25519 në shfletues.',
+        payrollDropTitle: 'Tërhiqni skedarët PDF të pagave këtu',
+        payrollDropSub: 'Dokumentet kriptohen lokalisht me çelësin publik të punonjësit.',
+        payrollEncrypting: 'Kriptimi në proces (libsodium)...',
+        payrollDone: '✓ 14 Fletëpaga të kriptuara me sukses me X25519 + Poly1305.',
+        requestsTitle: 'Menaxhimi i Pushimeve & Lejeve',
+        requestsDesc: 'Kërkesa të dërguara nga aplikacioni celular i punonjësve.',
+        auditTitle: 'Eksport Zyrtar për Inspektoriatin e Punës',
+        auditDesc: 'Regjistër i ligjshëm i orëve të punës sipas standardeve të BE.',
+        btnExport: 'Shkarko Regjistrin Zyrtar (PDF/A)'
+      },
+      uk: {
+        appSubtitleNoCompany: 'Компанія не вибрана',
+        appSubtitleActive: 'Активна',
+        fidoActive: 'FIDO2 Passkey Активний',
+        btnAccessPasskey: 'Увійти з Passkey',
+        btnLogout: 'Вийти',
+        gateTitle: 'Центр Керування Підприємством Fide',
+        gateDesc: 'Для доступу до обліку робочого часу та шифрованих розрахункових листів зареєструйте компанію або увійдіть за допомогою FIDO2.',
+        gateRegister: 'Зареєструвати Нову Компанію',
+        gateLogin: 'Вхід з Passkey FIDO2',
+        gateFooter: '🔒 Суворе дотримання норм трудового законодавства ЄС.',
+        navOps: 'Операційний Контроль',
+        navPresence: 'Присутність у Реальному Часі',
+        navKiosk: 'Кіоск QR (30с)',
+        navRequests: 'Відпустки та Дозволи',
+        navSec: 'Безпека та Зарплата',
+        navPayroll: 'Розподіл Зарплат E2EE',
+        navAudit: 'Інспекція Праці',
+        navCfg: 'Налаштування',
+        navSettings: 'Параметри та Офіси',
+        presenceTitle: 'Моніторинг Присутності Live',
+        presenceDesc: 'Відмітки часу, засвідчені асиметричною криптографією на Supabase EU.',
+        btnRefresh: 'Оновити',
+        btnSimulate: 'Симулювати Відмітку',
+        kpiInShift: 'Зараз на Зміні',
+        kpiOutShift: 'Зареєстровано Виходів',
+        kpiPermits: 'Відпустки Сьогодні',
+        kpiSignatures: 'Дійсні Підписи',
+        todayPunches: 'Сьогоднішні Завірені Відмітки',
+        thWorker: 'Працівник / ID',
+        thEvent: 'Подія',
+        thTime: 'Час / Синхронізація',
+        thMethod: 'Метод Перевірки',
+        thReceipt: 'Квитанція Fide',
+        thStatus: 'Статус',
+        kioskTitle: 'Вхідний Кіоск — Динамічний QR (30с)',
+        kioskDesc: 'Екран для планшета на прохідній. QR-код змінюється кожні 30 секунд.',
+        kioskHeadline: 'Скануйте в Додатку Fide для Відмітки',
+        kioskSub: 'Код оновлюється автоматично для запобігання шахрайству:',
+        payrollTitle: 'Розподіл Шифрованих Зарплатних Листів',
+        payrollDesc: 'Масове завантаження розрахункових листів з асиметричним шифруванням X25519.',
+        payrollDropTitle: 'Перетягніть PDF розрахункових листів сюди',
+        payrollDropSub: 'Браузер шифрує документи локально відкритим ключем працівника.',
+        payrollEncrypting: 'Шифрування виконується (libsodium)...',
+        payrollDone: '✓ 14 Листів зашифровано за стандартом X25519 + Poly1305.',
+        requestsTitle: 'Керування Відпустками',
+        requestsDesc: 'Запити, надіслані з мобільного додатка працівників.',
+        auditTitle: 'Офіційний Звіт для Інспекції Праці',
+        auditDesc: 'Журнал обліку робочого часу відповідно до вимог ЄС.',
+        btnExport: 'Завантажити Звіт (PDF/A)'
+      },
+      ar: {
+        appSubtitleNoCompany: 'لم يتم تحديد أي شركة',
+        appSubtitleActive: 'نشطة',
+        fidoActive: 'مفتاح FIDO2 نشط',
+        btnAccessPasskey: 'تسجيل الدخول بمفتاح المرور',
+        btnLogout: 'تسجيل الخروج',
+        gateTitle: 'مركز التحكم في المؤسسة Fide',
+        gateDesc: 'للوصول إلى سجلات الحضور وتوزيع قسائم الرواتب المشفرة، يرجى تسجيل شركتك أو المصادقة بمفتاح FIDO2.',
+        gateRegister: 'تسجيل شركة جديدة (التهيئة الرسمية)',
+        gateLogin: 'الدخول بمفتاح FIDO2 للمشرف',
+        gateFooter: '🔒 الامتثال الصارم لقوانين العمل في الاتحاد الأوروبي.',
+        navOps: 'التحكم التشغيلي',
+        navPresence: 'الحضور في الوقت الفعلي',
+        navKiosk: 'المواقع وكشك QR (30 ثانية)',
+        navRequests: 'الإجازات والأذونات',
+        navSec: 'الأمان والرواتب',
+        navPayroll: 'توزيع الرواتب المشفرة E2EE',
+        navAudit: 'تفتيش العمل',
+        navCfg: 'الإعدادات',
+        navSettings: 'الإعدادات والمقر',
+        presenceTitle: 'مراقبة الحضور المباشر',
+        presenceDesc: 'تسجيلات حضور موثقة تشفيرياً عبر خوادم Supabase EU.',
+        btnRefresh: 'تحديث',
+        btnSimulate: 'محاكاة تسجيل الحضور',
+        kpiInShift: 'في الدوام الآن',
+        kpiOutShift: 'تسجيلات المغادرة',
+        kpiPermits: 'إجازات اليوم',
+        kpiSignatures: 'توقيعات صالحة',
+        todayPunches: 'تسجيلات الحضور المعتمدة اليوم',
+        thWorker: 'الموظف / المعرف',
+        thEvent: 'الحدث',
+        thTime: 'الوقت / المزامنة',
+        thMethod: 'طريقة التحقق',
+        thReceipt: 'الإيصال الرقمي Fide',
+        thStatus: 'الحالة',
+        kioskTitle: 'كشك المدخل — رمز QR متجدد (30 ثانية)',
+        kioskDesc: 'شاشة للأجهزة اللوحية عند المدخل. يتغير رمز QR كل 30 ثانية بتوقيع HMAC.',
+        kioskHeadline: 'امسح الرمز عبر تطبيق Fide لتسجيل الحضور',
+        kioskSub: 'يتجدد الرمز تلقائياً لمنع التلاعب والتصوير:',
+        payrollTitle: 'توزيع قسائم الرواتب المشفرة (Zero-Knowledge)',
+        payrollDesc: 'رفع جماعي لملفات الرواتب PDF مع تشفير X25519 في المتصفح قبل التخزين.',
+        payrollDropTitle: 'اسحب ملفات PDF لقسائم الرواتب هنا',
+        payrollDropSub: 'يقوم المتصفح بتشفير المستندات محلياً بالمفتاح العام لكل موظف.',
+        payrollEncrypting: 'جاري التشفير غير المتماثل (libsodium)...',
+        payrollDone: '✓ تم تشفير 14 قسيمة راتب بنجاح عبر X25519 + Poly1305.',
+        requestsTitle: 'إدارة الإجازات والأذونات',
+        requestsDesc: 'الطلبات المرسلة مباشرة من تطبيق الهاتف للموظفين.',
+        auditTitle: 'تصدير رسمي لهيئة تفتيش العمل',
+        auditDesc: 'سجل حضور متوافق مع لوائح ومعايير العمل الأوروبية.',
+        btnExport: 'تنزيل السجل الرسمي (PDF/A)'
+      },
+      zh: {
+        appSubtitleNoCompany: '未选择任何企业',
+        appSubtitleActive: '已激活',
+        fidoActive: 'FIDO2 通行密钥已启用',
+        btnAccessPasskey: '使用通行密钥登录',
+        btnLogout: '退出登录',
+        gateTitle: 'Fide 企业智能控制中心',
+        gateDesc: '要访问考勤打卡记录、前台终端和端到端加密薪资发放，请注册您的企业或使用 FIDO2 密钥验证。',
+        gateRegister: '注册新企业（官方入职流程）',
+        gateLogin: '使用管理员 FIDO2 密钥登录',
+        gateFooter: '🔒 严格遵守欧盟 GDPR、意大利 D.Lgs. 81/2008 及西班牙劳工法律标准。',
+        navOps: '运营管理',
+        navPresence: '实时考勤监控',
+        navKiosk: '站点与前台动态 QR (30秒)',
+        navRequests: '请假与休假审批',
+        navSec: '安全与薪酬',
+        navPayroll: '端到端加密工资条发放',
+        navAudit: '劳动监察合规审计',
+        navCfg: '系统配置',
+        navSettings: '企业设置与分支机构',
+        presenceTitle: '实时在线考勤监控面板',
+        presenceDesc: '基于 Supabase 欧盟节点实时加密验证的上下班打卡事件。',
+        btnRefresh: '刷新数据',
+        btnSimulate: '模拟员工打卡',
+        kpiInShift: '当前在岗人数',
+        kpiOutShift: '今日已下班',
+        kpiPermits: '今日请假人数',
+        kpiSignatures: '硬件签名有效率',
+        todayPunches: '今日已认证打卡明细',
+        thWorker: '员工姓名 / 编号',
+        thEvent: '打卡类型',
+        thTime: '精确时间 / 同步',
+        thMethod: '验证方式',
+        thReceipt: 'Fide 电子凭证编号',
+        thStatus: '合规状态',
+        kioskTitle: '前台打卡终端 — 30秒动态旋转 QR 码',
+        kioskDesc: '适用于公司前台或闸机平板电脑。二维码每 30 秒自动由 HMAC 签名刷新。',
+        kioskHeadline: '请打开 Fide 手机应用扫码完成考勤',
+        kioskSub: '动态防伪技术，防止拍照代打卡或篡改：',
+        payrollTitle: '零知识端到端加密工资条分发',
+        payrollDesc: '在上传前利用员工的 X25519 公钥直接在本地浏览器进行高强度非对称加密。',
+        payrollDropTitle: '将工资单 PDF 批量拖拽至此处',
+        payrollDropSub: '浏览器将解析员工公钥并在本地内存中加密，云端服务器无权查看明文。',
+        payrollEncrypting: '非对称加密进行中 (libsodium)...',
+        payrollDone: '✓ 14 份工资条已成功采用 X25519 + Poly1305 加密并安全归档。',
+        requestsTitle: '假期与外勤请假申请',
+        requestsDesc: '来自员工手机客户端提交的审批流程。',
+        auditTitle: '官方劳动监察合规数据导出',
+        auditDesc: '符合欧盟劳工法令的不可篡改电子存证。',
+        btnExport: '导出官方审计记录 (PDF/A)'
+      }
+    };
+
+    let currentLanguage = localStorage.getItem('fide_portal_lang') || 'it';
+
+    function changeLanguage(langKey) {
+      if (!i18nDict[langKey]) langKey = 'it';
+      currentLanguage = langKey;
+      localStorage.setItem('fide_portal_lang', langKey);
+      document.getElementById('portal-lang-select').value = langKey;
+      document.documentElement.lang = langKey;
+
+      const t = i18nDict[langKey];
+
+      // Update text in DOM
+      const updateEl = (id, text) => {
+        const el = document.getElementById(id);
+        if (el) el.innerText = text;
+      };
+
+      if (!activeCompany) {
+        updateEl('header-company-name', t.appSubtitleNoCompany);
+      } else {
+        updateEl('header-company-name', (activeCompany.legal_name || 'Acme S.r.l.') + ' · ' + t.appSubtitleActive);
+      }
+
+      updateEl('fido-status-text', t.fidoActive);
+      if (activeCompany) {
+        updateEl('btn-session-toggle', t.btnLogout);
+      } else {
+        updateEl('btn-session-toggle', t.btnAccessPasskey);
+      }
+
+      // Gate screen
+      updateEl('txt-gate-title', t.gateTitle);
+      updateEl('txt-gate-desc', t.gateDesc);
+      const btnReg = document.getElementById('btn-gate-register');
+      if (btnReg) btnReg.innerHTML = `<svg class="icon-svg" viewBox="0 0 24 24"><path d="M3 21h18M3 7v14M21 7v14M6 7V3h12v4M9 11h2M13 11h2M9 15h2M13 15h2"/></svg> ${t.gateRegister}`;
+      const btnLog = document.getElementById('btn-gate-login');
+      if (btnLog) btnLog.innerHTML = `<svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg> ${t.gateLogin}`;
+      updateEl('txt-gate-footer', t.gateFooter);
+
+      // Nav section titles & buttons
+      updateEl('nav-sec-ops', t.navOps);
+      updateEl('nav-sec-sec', t.navSec);
+      updateEl('nav-sec-cfg', t.navCfg);
+
+      const updateNavBtn = (id, iconSvg, text) => {
+        const btn = document.getElementById(id);
+        if (btn) btn.innerHTML = `${iconSvg} ${text}`;
+      };
+
+      updateNavBtn('nav-btn-presence', '<svg class="icon-svg" viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>', t.navPresence);
+      updateNavBtn('nav-btn-kiosk', '<svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>', t.navKiosk);
+      updateNavBtn('nav-btn-requests', '<svg class="icon-svg" viewBox="0 0 24 24"><path d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/></svg>', t.navRequests);
+      updateNavBtn('nav-btn-payroll', '<svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>', t.navPayroll);
+      updateNavBtn('nav-btn-audit', '<svg class="icon-svg" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>', t.navAudit);
+      updateNavBtn('nav-btn-settings', '<svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>', t.navSettings);
+
+      // Presence
+      updateEl('txt-presence-title', t.presenceTitle);
+      updateEl('txt-presence-desc', t.presenceDesc);
+      updateEl('btn-refresh-text', t.btnRefresh);
+      updateEl('btn-simulate-text', t.btnSimulate);
+      updateEl('kpi-in-shift-label', t.kpiInShift);
+      updateEl('kpi-out-shift-label', t.kpiOutShift);
+      updateEl('kpi-permits-label', t.kpiPermits);
+      updateEl('kpi-signatures-label', t.kpiSignatures);
+      updateEl('txt-today-punches', t.todayPunches);
+      updateEl('th-col-worker', t.thWorker);
+      updateEl('th-col-event', t.thEvent);
+      updateEl('th-col-time', t.thTime);
+      updateEl('th-col-method', t.thMethod);
+      updateEl('th-col-receipt', t.thReceipt);
+      updateEl('th-col-status', t.thStatus);
+
+      // Kiosk
+      updateEl('txt-kiosk-title', t.kioskTitle);
+      updateEl('txt-kiosk-desc', t.kioskDesc);
+      updateEl('txt-kiosk-headline', t.kioskHeadline);
+      updateEl('txt-kiosk-sub', t.kioskSub);
+
+      // Payroll
+      updateEl('txt-payroll-title', t.payrollTitle);
+      updateEl('txt-payroll-desc', t.payrollDesc);
+      updateEl('txt-payroll-drop-title', t.payrollDropTitle);
+      updateEl('txt-payroll-drop-sub', t.payrollDropSub);
+      updateEl('txt-payroll-encrypting', t.payrollEncrypting);
+      updateEl('txt-payroll-done', t.payrollDone);
+
+      // Requests
+      updateEl('txt-requests-title', t.requestsTitle);
+      updateEl('txt-requests-desc', t.requestsDesc);
+
+      // Audit
+      updateEl('txt-audit-title', t.auditTitle);
+      updateEl('txt-audit-desc', t.auditDesc);
+      updateEl('btn-export-text', t.btnExport);
+    }
+
     // State management: Session / Company gate
     let activeCompany = null;
 
@@ -938,16 +1529,13 @@
     function renderGateScreen() {
       document.getElementById('gate-screen').style.display = 'block';
       document.getElementById('authenticated-app').style.display = 'none';
-      document.getElementById('header-company-name').innerText = 'Sin empresa seleccionada';
-      document.getElementById('btn-session-toggle').innerText = 'Acceder con Passkey';
+      changeLanguage(currentLanguage);
     }
 
     function renderAuthenticatedDashboard() {
       document.getElementById('gate-screen').style.display = 'none';
       document.getElementById('authenticated-app').style.display = 'flex';
-      const name = activeCompany?.legal_name || 'Acme Soluciones Tecnológicas S.L.';
-      document.getElementById('header-company-name').innerText = name + ' · Activa';
-      document.getElementById('btn-session-toggle').innerText = 'Cerrar Sesión';
+      changeLanguage(currentLanguage);
       fetchRecentPunches();
     }
 
@@ -962,11 +1550,10 @@
     }
 
     function authenticateWithPasskey() {
-      // Simulate WebAuthn / Passkey validation
       const sampleCompany = {
         id: '47d512a2-cb3e-4621-8208-8e6ca6f4c9c1',
-        legal_name: 'Acme Soluciones Tecnológicas S.L.',
-        country: 'ES'
+        legal_name: currentLanguage === 'es' ? 'Acme Soluciones Tecnológicas S.L.' : 'Officine Aurora S.r.l.',
+        country: currentLanguage === 'es' ? 'ES' : 'IT'
       };
       localStorage.setItem('fide_active_company', JSON.stringify(sampleCompany));
       activeCompany = sampleCompany;
@@ -1015,7 +1602,24 @@
     }
 
     function loadPreset(country) {
-      if (country === 'ES') {
+      if (country === 'IT') {
+        document.getElementById('reg-country').value = 'IT';
+        document.getElementById('reg-name').value = 'Officine Aurora S.r.l.';
+        document.getElementById('reg-vat').value = 'IT09876543210';
+        document.getElementById('reg-pec').value = 'amministrazione@pec.aurora.it';
+        document.getElementById('reg-sdi').value = 'M5UXCR1';
+        document.getElementById('reg-address').value = 'Via Tortona 31, 20144 Milano MI, Italia';
+        document.getElementById('reg-ccnl').innerHTML = `
+          <option>CCNL Metalmeccanico Industria</option>
+          <option>CCNL Commercio e Terziario</option>
+          <option>CCNL Logistica, Trasporto Merci e Spedizioni</option>
+          <option>CCNL Edilizia e Affini</option>
+        `;
+        document.getElementById('site-name').value = 'Sede Operativa Milano';
+        document.getElementById('site-address').value = 'Via Tortona 31, Milano';
+        document.getElementById('site-lat').value = '45.451800';
+        document.getElementById('site-lon').value = '9.162400';
+      } else {
         document.getElementById('reg-country').value = 'ES';
         document.getElementById('reg-name').value = 'Acme Soluciones Tecnológicas S.L.';
         document.getElementById('reg-vat').value = 'B88349201';
@@ -1031,22 +1635,6 @@
         document.getElementById('site-address').value = 'Paseo de la Castellana 200, Madrid';
         document.getElementById('site-lat').value = '40.468200';
         document.getElementById('site-lon').value = '-3.689000';
-      } else {
-        document.getElementById('reg-country').value = 'IT';
-        document.getElementById('reg-name').value = 'Officine Aurora S.r.l.';
-        document.getElementById('reg-vat').value = 'IT09876543210';
-        document.getElementById('reg-pec').value = 'amministrazione@pec.aurora.it';
-        document.getElementById('reg-sdi').value = 'M5UXCR1';
-        document.getElementById('reg-address').value = 'Via Tortona 31, 20144 Milano MI, Italia';
-        document.getElementById('reg-ccnl').innerHTML = `
-          <option>CCNL Metalmeccanico Industria</option>
-          <option>CCNL Commercio e Terziario</option>
-          <option>CCNL Logistica, Trasporto Merci e Spedizioni</option>
-        `;
-        document.getElementById('site-name').value = 'Sede Operativa Milano';
-        document.getElementById('site-address').value = 'Via Tortona 31, Milano';
-        document.getElementById('site-lat').value = '45.451800';
-        document.getElementById('site-lon').value = '9.162400';
       }
     }
 
@@ -1076,7 +1664,7 @@
     async function saveCompanyToSupabase() {
       const btn = document.getElementById('btn-save-company-db');
       btn.disabled = true;
-      btn.innerText = '⏳ Guardando en Supabase...';
+      btn.innerText = '⏳ Salvataggio su Supabase...';
 
       const legalName = document.getElementById('reg-name').value;
       const country = document.getElementById('reg-country').value;
@@ -1089,12 +1677,12 @@
 
       const siteName = document.getElementById('site-name').value;
       const siteAddress = document.getElementById('site-address').value;
-      const siteLat = parseFloat(document.getElementById('site-lat').value) || 40.4682;
-      const siteLon = parseFloat(document.getElementById('site-lon').value) || -3.6890;
+      const siteLat = parseFloat(document.getElementById('site-lat').value) || 45.4518;
+      const siteLon = parseFloat(document.getElementById('site-lon').value) || 9.1624;
       const siteRadius = parseInt(document.getElementById('site-radius').value, 10) || 150;
 
       const empName = document.getElementById('emp-name').value || 'Marco Rossi';
-      const empDept = document.getElementById('emp-dept').value || 'Logística';
+      const empDept = document.getElementById('emp-dept').value || 'Logistica';
 
       let companyId = null;
 
@@ -1171,7 +1759,7 @@
       document.getElementById('invite-url-text').innerText = inviteUrl;
 
       btn.disabled = false;
-      btn.innerText = '✓ Guardado con Éxito';
+      btn.innerText = '✓ Salvato con Successo';
 
       const resultBox = document.getElementById('invite-result-box');
       resultBox.style.display = 'block';
@@ -1181,7 +1769,7 @@
       const text = document.getElementById('invite-url-text').innerText;
       navigator.clipboard.writeText(text);
       const original = btn.innerText;
-      btn.innerText = '✓ ¡Copiado!';
+      btn.innerText = '✓ Copiato!';
       setTimeout(() => { btn.innerText = original; }, 2000);
     }
 
@@ -1199,9 +1787,9 @@
           tbody.innerHTML = '';
           punches.forEach(p => handleNewLivePunch(p, false));
           const syncEl = document.getElementById('last-sync-time');
-          if (syncEl) syncEl.innerText = `Sincronizado: ${punches.length} eventos a las ${new Date().toLocaleTimeString()}`;
+          if (syncEl) syncEl.innerText = `Sincronizzato: ${punches.length} eventi alle ${new Date().toLocaleTimeString()}`;
         } else {
-          tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 20px;">No hay eventos registrados aún. Pulsa en "Simular Fichaje Live".</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 20px;">Nessun evento registrato. Clicca su "Simula Timbratura Live".</td></tr>';
         }
       } catch (err) {
         console.error('Fetch error:', err);
@@ -1223,22 +1811,22 @@
 
       const isEntry = punch.punch_type === 'Entrada';
       const badgeClass = isEntry ? 'badge-online' : 'badge-offline';
-      const badgeText = isEntry ? 'Entrada' : 'Salida';
+      const badgeText = isEntry ? 'Entrata' : 'Uscita';
 
       const methodLabel = punch.verification_method === 'geo' 
         ? 'Geovalla RAM (150 m)' 
-        : (punch.verification_method === 'qr' ? 'QR Dinámico (30s)' : 'Tag NFC');
+        : (punch.verification_method === 'qr' ? 'QR Dinamico (30s)' : 'Tag NFC');
 
       const receipt = punch.receipt_code || punch.device_signature?.slice(0, 16) || 'FIDE-OK-2026';
 
       tr.innerHTML = `
         <td>
-          <div style="font-weight: 600;">${punch.employee_name || 'Trabajador'}</div>
+          <div style="font-weight: 600;">${punch.employee_name || 'Collaboratore'}</div>
           <div style="font-size: 11px; color: var(--text-muted); font-family: monospace;">UID: ${punch.user_id ? punch.user_id.slice(0, 8) + '...' : 'ANON'}</div>
         </td>
         <td>
           <span style="font-weight: 600; color: ${isEntry ? 'var(--success)' : 'var(--danger)'};">
-            ${isEntry ? 'ENTRADA' : 'SALIDA'}
+            ${isEntry ? 'ENTRATA' : 'USCITA'}
           </span>
         </td>
         <td>
@@ -1263,7 +1851,7 @@
     }
 
     async function simulateLivePunch() {
-      const names = ['Carlos Mendoza', 'Elena Conti', 'Javier Romero', 'Laura Gómez'];
+      const names = ['Marco Rossi', 'Elena Conti', 'Luca Moretti', 'Sofia Ramos'];
       const methods = ['geo', 'qr', 'nfc'];
       const types = ['Entrada', 'Salida'];
 
@@ -1307,7 +1895,7 @@
     }
 
     function approveRow(btn) {
-      btn.parentElement.innerHTML = '<span style="color: var(--success); font-weight: 600;">✓ Aprobado</span>';
+      btn.parentElement.innerHTML = '<span style="color: var(--success); font-weight: 600;">✓ Approvato</span>';
     }
 
     function simulatePayrollUpload() {
@@ -1316,7 +1904,7 @@
     }
 
     function exportReport() {
-      alert('📄 INFORME LEGAL GENERADO:\n\nRegistro Oficial de Jornada conforme al Real Decreto-ley 8/2019 (España) y D.Lgs. 81/2008 (Italia).\nExportación PDF/A auditable.');
+      alert('📄 REPORT LEGALE GENERATO:\n\nRegistro Ufficiale Presenze conforme a D.Lgs. 81/2008 (Italia) e RDL 8/2019 (Spagna).\nEsportazione PDF/A verificata con marca temporale.');
     }
 
     // 30s Kiosk Countdown
