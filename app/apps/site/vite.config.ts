@@ -47,8 +47,29 @@ function securityHeaders(): Plugin {
   };
 }
 
+// /invite/<token> is served by invite.html: a Cloudflare Pages `_redirects`
+// rewrite in production and the same rewrite for `vite dev` / `vite preview`.
+function inviteRoute(): Plugin {
+  const rewrite = (req: { url?: string }, _res: unknown, next: () => void) => {
+    if (req.url && /^\/invite\/[^/?#]+\/?(\?.*)?$/.test(req.url)) req.url = '/invite.html';
+    next();
+  };
+  return {
+    name: 'fide-invite-route',
+    configureServer(server) {
+      server.middlewares.use(rewrite);
+    },
+    configurePreviewServer(server) {
+      server.middlewares.use(rewrite);
+    },
+    generateBundle() {
+      this.emitFile({ type: 'asset', fileName: '_redirects', source: '/invite/*  /invite  200\n' });
+    },
+  };
+}
+
 export default defineConfig({
-  plugins: [brandSvgs(), securityHeaders()],
+  plugins: [brandSvgs(), securityHeaders(), inviteRoute()],
   server: { headers: devServerHeaders(siteHeaders) },
   preview: { headers: previewHeaders(siteHeaders) },
   build: {
@@ -57,6 +78,7 @@ export default defineConfig({
       input: {
         index: resolve(import.meta.dirname, 'index.html'),
         privacy: resolve(import.meta.dirname, 'privacy.html'),
+        invite: resolve(import.meta.dirname, 'invite.html'),
       },
     },
   },

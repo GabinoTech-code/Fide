@@ -208,3 +208,18 @@ a:hover { color: var(--forest-hover); }
 .doc h2 { font-size: 26px; margin-top: 16px; }
 .doc p, .doc li { color: var(--text-2); }
 .notice { border-radius: 14px; padding: 14px 16px; background: #fbefd9; color: #6d3a12; font-size: 15px; }
+
+/* Invitation fallback page (invite.html): dark, one card, one action. */
+[hidden] { display: none !important; }
+.invite-page { background: var(--slate); color: var(--mist); }
+.invite { min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; padding: 32px 16px; box-sizing: border-box; }
+.invite-card { width: min(100%, 460px); box-sizing: border-box; background: var(--slate-2); border: 1px solid var(--slate-3); border-radius: 20px; padding: 28px 24px; display: flex; flex-direction: column; gap: 14px; }
+.invite-card h1 { font-size: clamp(26px, 7vw, 32px); line-height: 1.15; color: #fff; }
+.invite-card p { margin: 0; }
+.invite-muted { color: var(--muted); }
+.invite-body { display: flex; flex-direction: column; gap: 12px; }
+.invite-body .btn { white-space: normal; text-align: center; }
+.invite-steps { margin: 4px 0 0; padding-left: 20px; display: grid; gap: 8px; font-size: 15px; }
+.invite-qr { margin: 4px 0 0; display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; }
+.invite-qr img { border-radius: 12px; background: #fff; padding: 8px; }
+.invite-foot a { color: inherit; }

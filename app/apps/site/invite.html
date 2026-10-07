@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Invito · Fide</title>
+    <meta name="description" content="Apri il tuo invito nell’app Fide." />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="referrer" content="no-referrer" />
+    <link rel="icon" type="image/png" href="/icon.png" />
+    <meta name="theme-color" content="#0F1A17" />
+    <script type="module" src="/src/invite.ts"></script>
+  </head>
+  <body class="invite-page">
+    <main class="invite">
+      <div class="invite-card">
+        <svg data-logo data-size="52" data-color="mint"></svg>
+        <span class="eyebrow eyebrow-mint">Invito</span>
+        <h1>Hai ricevuto un invito per Fide</h1>
+        <p class="invite-muted">
+          Fide è l’app con cui la tua azienda gestisce timbrature, cedolini cifrati e richieste di ferie e permessi.
+        </p>
+
+        <noscript>
+          <p class="notice">Per aprire l’invito attiva JavaScript in questo browser.</p>
+        </noscript>
+
+        <div id="invite-ok" class="invite-body" hidden>
+          <a id="open-app" class="btn btn-mint btn-lg" href="/">Apri nell’app Fide</a>
+          <p class="small invite-muted" lang="en">Open in the Fide app</p>
+
+          <ol class="invite-steps">
+            <li>Installa l’app Fide sul telefono: durante la fase pilota il link te lo dà l’ufficio del personale.</li>
+            <li>Apri questo invito dal telefono e tocca «Apri nell’app Fide».</li>
+            <li>Accedi con il codice che ricevi via e-mail: nessuna password.</li>
+          </ol>
+
+          <figure id="qr-block" class="invite-qr" hidden>
+            <img id="qr" alt="Codice QR con il link dell’invito" width="200" height="200" />
+            <figcaption class="small invite-muted">Sei al computer? Inquadra il codice con la fotocamera del telefono.</figcaption>
+          </figure>
+        </div>
+
+        <p id="invite-bad" class="notice" hidden>
+          Questo link d’invito non è completo. Copialo per intero dall’e-mail oppure chiedi un nuovo invito all’ufficio del
+          personale.
+        </p>
+
+        <p class="small invite-muted">
+          L’invito vale 7 giorni, si usa una sola volta e funziona solo con l’indirizzo e-mail a cui è stato inviato.
+        </p>
+      </div>
+      <p class="small invite-muted invite-foot"><a href="/">fide-work.it</a> · <a href="/privacy.html">Privacy</a></p>
+    </main>
+  </body>
+</html>

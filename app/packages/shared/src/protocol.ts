@@ -3,6 +3,16 @@
 // app/scripts/sync-shared.mjs). Keep this file dependency-free and self-contained.
 
 // ---------------------------------------------------------------------------
+// Invitations
+// ---------------------------------------------------------------------------
+
+/**
+ * create_invitation() returns base64url(32 random bytes): 43 characters, no
+ * padding. Links are <site>/invite/<token> (https) or fide://invite/<token>.
+ */
+export const INVITE_TOKEN_PATTERN = /^[A-Za-z0-9_-]{43}$/;
+
+// ---------------------------------------------------------------------------
 // Punch v1: what the phone signs with its Ed25519 key
 // ---------------------------------------------------------------------------
 

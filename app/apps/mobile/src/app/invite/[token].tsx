@@ -1,6 +1,7 @@
 // fide://invite/<token>: keeps the token through sign-in, then redeems it.
 import { useEffect, useState } from 'react';
 import { Redirect, router, useLocalSearchParams } from 'expo-router';
+import { INVITE_TOKEN_PATTERN } from '@fide/shared';
 import { useT, type AppKey } from '../../i18n/app';
 import { useSession } from '../../lib/session';
 import { supabase } from '../../lib/supabase';
@@ -19,7 +20,7 @@ export default function Invite() {
   const [error, setError] = useState<AppKey | null>(null);
   const [needsLogin, setNeedsLogin] = useState(false);
 
-  const malformed = !token || !/^[A-Za-z0-9_-]{20,64}$/.test(token);
+  const malformed = !token || !INVITE_TOKEN_PATTERN.test(token);
 
   useEffect(() => {
     if (malformed) return;

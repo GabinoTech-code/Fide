@@ -1,3 +1,4 @@
+import { INVITE_TOKEN_PATTERN } from '@fide/shared';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import type { PGlite } from '@electric-sql/pglite';
 import { createDb, inTx, seed } from './harness';
@@ -126,7 +127,7 @@ describe('invitations', () => {
     await inTx(db, async (s) => {
       await s.as(users.giulia);
       const token = await s.value<string>(invitePaolo);
-      expect(token).toMatch(/^[A-Za-z0-9_-]{43}$/);
+      expect(token).toMatch(INVITE_TOKEN_PATTERN);
       expect(await s.one(`select status, email from public.invitations`)).toEqual({
         status: 'pending',
         email: 'paolo.marino@aurora.test',
@@ -205,7 +206,7 @@ describe('privileged invitations (security review 2026-10-07)', () => {
       await s.as(users.giulia);
       expect((await s.error(`select public.create_invitation($1)`, [id])).message).toContain('forbidden');
       await s.as(users.mario);
-      expect(await s.value(`select public.create_invitation($1)`, [id])).toMatch(/^[A-Za-z0-9_-]{43}$/);
+      expect(await s.value(`select public.create_invitation($1)`, [id])).toMatch(INVITE_TOKEN_PATTERN);
     });
   });
 

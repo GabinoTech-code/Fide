@@ -39,6 +39,11 @@ describe('security headers', () => {
     }
   });
 
+  it('keeps invitation tokens out of indexes, caches and referrers', () => {
+    const out = toCloudflareHeaders(siteHeaders);
+    expect(out).toContain('/invite/*\n  X-Robots-Tag: noindex, nofollow\n  Referrer-Policy: no-referrer\n  Cache-Control: no-store');
+  });
+
   it('serves the passkey association files as JSON', () => {
     const out = toCloudflareHeaders(siteHeaders);
     expect(out).toContain('/.well-known/apple-app-site-association\n  Content-Type: application/json');

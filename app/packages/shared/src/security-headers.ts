@@ -41,6 +41,13 @@ export const siteHeaders: HeaderRule[] = [
       }),
     },
   },
+  // Invitation links carry a one-time token in the path: never indexed, cached
+  // or sent on as a referrer (Cloudflare joins repeated headers; the last
+  // Referrer-Policy value wins).
+  {
+    path: '/invite/*',
+    headers: { 'X-Robots-Tag': 'noindex, nofollow', 'Referrer-Policy': 'no-referrer', 'Cache-Control': 'no-store' },
+  },
   // Passkeys / universal links: JSON, no redirects (the apex is the RP ID).
   { path: '/.well-known/apple-app-site-association', headers: { 'Content-Type': 'application/json' } },
   { path: '/.well-known/assetlinks.json', headers: { 'Content-Type': 'application/json' } },

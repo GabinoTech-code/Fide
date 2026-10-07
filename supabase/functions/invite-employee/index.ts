@@ -1,10 +1,14 @@
 // POST /functions/v1/invite-employee   { member_id, send_email?: boolean }   (HR JWT)
 // Creates the invitation as the caller (create_invitation authorises HR), and
-// optionally e-mails the universal link through Brevo (EU). The link is always
-// returned so HR can also share it by hand (WhatsApp, SMS, QR on paper).
+// optionally e-mails the link through Brevo (EU). The link is always returned so
+// HR can also share it by hand (WhatsApp, SMS, QR on paper).
+//
+// Links point at the public site (https://fide-work.it/invite/<token>): that
+// domain serves the app-link association files, so phones with the app open it
+// directly; otherwise the site's /invite page offers the fide:// link.
 import { handler, HttpError, requireUuid, rpc, userClient } from '../_shared/http.ts';
 
-const appUrl = Deno.env.get('FIDE_APP_URL') ?? 'http://localhost:5173';
+const siteUrl = Deno.env.get('FIDE_SITE_URL') ?? 'http://localhost:5174';
 const brevoKey = Deno.env.get('BREVO_API_KEY');
 const sender = { name: 'Fide', email: Deno.env.get('FIDE_MAIL_FROM') ?? 'no-reply@fide.invalid' };
 
@@ -19,7 +23,7 @@ Deno.serve(
       member_not_invitable: 409,
       member_email_missing: 422,
     });
-    const link = `${appUrl}/invite/${token}`;
+    const link = `${siteUrl}/invite/${token}`;
 
     let emailed = false;
     if (body.send_email === true && brevoKey) {
