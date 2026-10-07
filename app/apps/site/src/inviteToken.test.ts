@@ -1,8 +1,9 @@
 import { expect, it } from 'vitest';
 import { inviteToken } from './inviteToken';
 
-const TOKEN = 'Qm9uZ2lvcm5vLUZpZGUtaW52aXRvLXRva2VuLTMyYg'; // 42 chars
-const VALID = `${TOKEN}A`; // 43, as create_invitation() returns
+// Obviously fake and low-entropy, so secret scanners leave it alone.
+const VALID = 'test-invite-token_'.padEnd(43, 'x'); // 43 chars, as create_invitation() returns
+const TOKEN = VALID.slice(0, 42);
 
 it('reads the token from /invite/<token>', () => {
   expect(inviteToken(`/invite/${VALID}`)).toBe(VALID);

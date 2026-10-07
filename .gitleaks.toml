@@ -1,9 +1,16 @@
 # gitleaks configuration: default rules plus narrowly scoped allowlists for
-# values that are public by design.
+# values that are public by design or are test fixtures already in history.
 [extend]
 useDefault = true
 
 [allowlist]
-description = "Android signing certificate hashes are public (published in /.well-known/assetlinks.json)"
+description = "Public values and historical test fixtures (exact matches only)"
 regexTarget = "line"
-regexes = ['''android:apk-key-hash:[A-Za-z0-9_-]{43}''']
+regexes = [
+  # Android signing certificate hashes are public (published in /.well-known/assetlinks.json).
+  '''android:apk-key-hash:[A-Za-z0-9_-]{43}''',
+  # Fake invitation token in app/apps/site/src/inviteToken.test.ts at 6ff43cc:
+  # base64url of "Buongiorno-Fide-invito-token-32b". The test now builds a
+  # low-entropy token; this keeps that commit scannable without rewriting history.
+  '''Qm9uZ2lvcm5vLUZpZGUtaW52aXRvLXRva2VuLTMyYg''',
+]
