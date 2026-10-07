@@ -1,0 +1,4 @@
+{
+  "webcredentials": { "apps": ["TEAMID.it.fidework.app"] },
+  "applinks": { "details": [{ "appIDs": ["TEAMID.it.fidework.app"], "components": [{ "/": "/invite/*" }] }] }
+}

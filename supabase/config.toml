@@ -72,7 +72,8 @@ max_frequency = "60s"
 # Passkeys (Supabase Auth, beta). Registration needs an existing session, so the
 # first sign-in is always OTP. Changing rp_id invalidates every passkey.
 # Pilot (hosted project): rp_id = "fide-work.it", rp_origins = ["https://app.fide-work.it",
-# "android:apk-key-hash:<base64url sha256 of the it.fidework.app signing cert>"].
+# "android:apk-key-hash:Pqjxo8_9JaEV2Qi-xfR6jXKY0hIqPs9q8KAwdWqDKXg"] (EAS keystore of it.fidework.app;
+# add Google Play's app-signing key hash too once the app is on Play).
 [auth.passkey]
 enabled = true
 

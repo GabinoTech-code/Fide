@@ -26,6 +26,8 @@ jobs:
       - run: npm run typecheck
       - run: npm run lint
       - run: npm test
+      - run: npm run build --workspace apps/web-portal
+      - run: npm run build --workspace apps/site
 
   mobile-export:
     name: Expo export (iOS, Android, web bundles)
@@ -94,4 +96,3 @@ jobs:
       - run: npx deno lint ../supabase/functions
       - run: npx deno check ../supabase/functions/*/index.ts
 
-  # Phase 3 adds the portal `vite build`.

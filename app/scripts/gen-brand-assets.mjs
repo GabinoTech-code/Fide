@@ -13,6 +13,7 @@ import { brandColors as c, logo, logoSvg } from '../packages/shared/src/brand.ts
 const app = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const mobile = (f) => path.join(app, 'apps/mobile/assets', f);
 const portal = (f) => path.join(app, 'apps/web-portal/public', f);
+const site = (f) => path.join(app, 'apps/site/public', f);
 
 function png(file, svg) {
   writeFileSync(file, new Resvg(svg).render().asPng());
@@ -36,3 +37,9 @@ png(mobile('favicon.png'), logoSvg({ size: 48, color: c.mint, background: c.slat
 png(portal('icon.png'), logoSvg({ size: 48, color: c.mint, background: c.slate, radius: 11, scale: 34 / 48, hands: false, strokeWidth: logo.faviconStroke[48] }));
 png(portal('icon-192.png'), logoSvg({ size: 192, color: c.mint, background: c.slate, radius: 44, scale: 92 / 140 }));
 png(portal('apple-touch-icon.png'), logoSvg({ size: 180, color: c.mint, background: c.slate, scale: 92 / 140 }));
+
+for (const out of [site]) {
+  png(out('icon.png'), logoSvg({ size: 48, color: c.mint, background: c.slate, radius: 11, scale: 34 / 48, hands: false, strokeWidth: logo.faviconStroke[48] }));
+  png(out('icon-192.png'), logoSvg({ size: 192, color: c.mint, background: c.slate, radius: 44, scale: 92 / 140 }));
+  png(out('apple-touch-icon.png'), logoSvg({ size: 180, color: c.mint, background: c.slate, scale: 92 / 140 }));
+}
