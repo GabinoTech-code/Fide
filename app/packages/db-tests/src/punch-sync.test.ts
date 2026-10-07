@@ -7,6 +7,7 @@ import type { PGlite } from '@electric-sql/pglite';
 import { generateDeviceKeys, signPunch, type DeviceKeys } from '@fide/crypto';
 import { fromBase64, makeKioskToken, receiptMessage, toHex, utf8, type PunchFields } from '@fide/shared';
 import { syncPunches, type PunchSyncDeps } from '../../../../supabase/functions/_shared/punch.ts';
+import { buildPunch, uuidFromBytes } from '../../../apps/mobile/src/lib/punch.ts';
 import { createDb, inTx, seed, type Session } from './harness';
 
 let db: PGlite;
@@ -176,6 +177,29 @@ describe('punch-sync', () => {
       await s.rows(`select public.revoke_kiosk($1)`, [seed.kiosk]);
       const revoked = await syncPunches(deps(s), users.marco, [signed(qr({ punch_type: 'out' }), keys)]);
       expect(revoked[0]).toMatchObject({ ok: false, error: 'qr_invalid' });
+    });
+  });
+
+  it('accepts punches built by the mobile app code (QR and geo)', async () => {
+    await inTx(db, async (s) => {
+      const { keys, keyId } = await enrolMarco(s);
+      const newId = () => uuidFromBytes(sodium.randombytes_buf(16));
+      const base = { companyId: seed.aurora, memberId: members.marco, deviceKeyId: keyId };
+      const qrToken = await kioskToken(s, T0 / 1000);
+      const qr = buildPunch(
+        sodium,
+        { ...base, siteId: seed.sites.magazzino, method: 'qr', punchType: 'in', qrToken, now: new Date(T0 + 5_000) },
+        keys.ed25519PrivateKey,
+        newId,
+      );
+      const geo = buildPunch(
+        sodium,
+        { ...base, siteId: seed.sites.milano, method: 'geo', punchType: 'out', inGeofence: true, now: new Date(T0 + 20_000) },
+        keys.ed25519PrivateKey,
+        newId,
+      );
+      const results = await syncPunches(deps(s), users.marco, [qr, geo]);
+      expect(results.map((r) => r.ok)).toEqual([true, true]);
     });
   });
 

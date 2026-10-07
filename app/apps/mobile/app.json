@@ -86,7 +86,8 @@
         }
       ],
       "expo-sqlite",
-      "react-native-libsodium"
+      "react-native-libsodium",
+      "expo-sharing"
     ],
     "scheme": "fide",
     "extra": {
