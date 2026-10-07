@@ -7,7 +7,7 @@ import { splitPayroll, type SplitResult } from '@fide/payroll-parser';
 import { useAuth } from '../auth/AuthProvider';
 import { ErrorNotice, Modal, PageHead } from '../components/ui';
 import { useI18n, type MessageKey } from '../lib/i18n';
-import { loadTrustedKeys, rememberKeys, type TrustedKeys } from '../lib/keyTrust';
+import { loadTrustedDevices, rememberDevices, type TrustedDevices } from '../lib/deviceTrust';
 import {
   assignableMembers,
   cutPdf,
@@ -58,7 +58,7 @@ type Work = { phase: 'encrypting' | 'uploading' | 'publishing'; done: number; to
 /** A batch that failed half-way, kept so "retry" resumes it, plus the keys it was encrypted to. */
 interface Pending {
   batch: PreparedBatch;
-  trust: TrustedKeys;
+  trust: TrustedDevices;
 }
 
 const backend: BatchBackend = {
@@ -112,7 +112,7 @@ function PayrollWorkspace({ companyId }: { companyId: string }) {
   const [analyzing, setAnalyzing] = useState(false);
   const [manual, setManual] = useState<Record<number, string>>({});
   const [resend, setResend] = useState<ReadonlySet<string>>(new Set());
-  const [trust, setTrust] = useState(() => loadTrustedKeys(companyId));
+  const [trust, setTrust] = useState(() => loadTrustedDevices(companyId));
   const [verifying, setVerifying] = useState<Recipient | null>(null);
   const [work, setWork] = useState<Work | null>(null);
   const [pending, setPending] = useState<Pending | null>(null);
@@ -123,15 +123,15 @@ function PayrollWorkspace({ companyId }: { companyId: string }) {
   const defaultTitle = `${t(`kind.${kind}` as MessageKey)} ${periodLabel}`.trim();
 
   const recipients = useMemo(
-    () => (analysis ? planRecipients({ split: analysis.split, members, published: analysis.published, trusted: trust.keys, manual }) : []),
-    [analysis, members, trust.keys, manual],
+    () => (analysis ? planRecipients({ split: analysis.split, members, published: analysis.published, trusted: trust.devices, manual }) : []),
+    [analysis, members, trust.devices, manual],
   );
   const sending = recipients.filter((r) => willSend(r, resend));
   const skipped = analysis ? unassignedPages(analysis.split, manual) : [];
   const assignable = useMemo(() => assignableMembers(members), [members]);
 
-  function remember(entries: TrustedKeys) {
-    setTrust((current) => ({ ...current, keys: rememberKeys(companyId, entries, current.keys) }));
+  function remember(entries: TrustedDevices) {
+    setTrust((current) => ({ ...current, devices: rememberDevices(companyId, entries, current.devices) }));
   }
 
   function reset() {
@@ -190,7 +190,7 @@ function PayrollWorkspace({ companyId }: { companyId: string }) {
     const sodium = await getSodium();
     const source = await loadSplittable(a.source);
     const documents = [];
-    const used: TrustedKeys = {};
+    const used: TrustedDevices = {};
     const trustedAt = new Date().toISOString();
     for (const [i, r] of sending.entries()) {
       setWork({ phase: 'encrypting', done: i, total: sending.length });

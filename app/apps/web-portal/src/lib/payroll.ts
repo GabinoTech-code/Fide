@@ -6,7 +6,7 @@
 import { encryptDocument, type Sodium } from '@fide/crypto';
 import type { KnownEmployee, SplitResult } from '@fide/payroll-parser';
 import { PDFDocument } from 'pdf-lib';
-import { evaluateTrust, type TrustState, type TrustedKeys } from './keyTrust';
+import { evaluateTrust, type TrustState, type TrustedDevices } from './deviceTrust';
 import type { Member } from './types';
 
 export type DocumentKind = 'cedolino' | 'cu' | 'other';
@@ -65,7 +65,7 @@ export function planRecipients(input: {
   split: SplitResult;
   members: Member[];
   published: PublishedDoc[];
-  trusted: TrustedKeys;
+  trusted: TrustedDevices;
   /** page → member id, for pages listed in split.issues only. */
   manual: Record<number, string>;
 }): Recipient[] {

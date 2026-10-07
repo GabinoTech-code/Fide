@@ -8,14 +8,14 @@
 // the public keys and never taken from the server.
 import { keyFingerprint } from '@fide/crypto';
 
-export interface TrustedKey {
+export interface TrustedDevice {
   deviceKeyId: string;
   fingerprint: string;
   trustedAt: string;
 }
 
 /** member id → the key this browser last encrypted to (or HR verified). */
-export type TrustedKeys = Record<string, TrustedKey>;
+export type TrustedDevices = Record<string, TrustedDevice>;
 
 export interface PublicDeviceKey {
   id: string;
@@ -32,7 +32,7 @@ export type TrustState =
   /** The server's fingerprint does not match its own keys: never encrypt. */
   | { kind: 'mismatch' };
 
-export function evaluateTrust(key: PublicDeviceKey, remembered: TrustedKey | undefined): TrustState {
+export function evaluateTrust(key: PublicDeviceKey, remembered: TrustedDevice | undefined): TrustState {
   let fingerprint: string;
   try {
     fingerprint = keyFingerprint(key.x25519_public_key, key.ed25519_public_key);
@@ -45,34 +45,34 @@ export function evaluateTrust(key: PublicDeviceKey, remembered: TrustedKey | und
   return { kind: 'changed', fingerprint, previous: remembered.fingerprint };
 }
 
-const storageKey = (companyId: string) => `fide.portal.trustedKeys.v1.${companyId}`;
+const storageKey = (companyId: string) => `fide.portal.trustedDevices.v1.${companyId}`;
 
-function isTrustedKeys(value: unknown): value is TrustedKeys {
+function isTrustedDevices(value: unknown): value is TrustedDevices {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
   return Object.values(value).every(
     (k) =>
       k &&
       typeof k === 'object' &&
-      typeof (k as TrustedKey).deviceKeyId === 'string' &&
-      typeof (k as TrustedKey).fingerprint === 'string' &&
-      typeof (k as TrustedKey).trustedAt === 'string',
+      typeof (k as TrustedDevice).deviceKeyId === 'string' &&
+      typeof (k as TrustedDevice).fingerprint === 'string' &&
+      typeof (k as TrustedDevice).trustedAt === 'string',
   );
 }
 
 /** `persistent: false` when this browser cannot keep them (private mode, blocked storage). */
-export function loadTrustedKeys(companyId: string): { keys: TrustedKeys; persistent: boolean } {
+export function loadTrustedDevices(companyId: string): { devices: TrustedDevices; persistent: boolean } {
   try {
     const raw = localStorage.getItem(storageKey(companyId));
     const parsed: unknown = raw ? JSON.parse(raw) : {};
-    return { keys: isTrustedKeys(parsed) ? parsed : {}, persistent: true };
+    return { devices: isTrustedDevices(parsed) ? parsed : {}, persistent: true };
   } catch {
-    return { keys: {}, persistent: false };
+    return { devices: {}, persistent: false };
   }
 }
 
 /** Merges into what is stored (another tab may have written meanwhile). Returns the merged set. */
-export function rememberKeys(companyId: string, entries: TrustedKeys, current: TrustedKeys): TrustedKeys {
-  const merged = { ...current, ...loadTrustedKeys(companyId).keys, ...entries };
+export function rememberDevices(companyId: string, entries: TrustedDevices, current: TrustedDevices): TrustedDevices {
+  const merged = { ...current, ...loadTrustedDevices(companyId).devices, ...entries };
   try {
     localStorage.setItem(storageKey(companyId), JSON.stringify(merged));
   } catch {

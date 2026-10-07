@@ -1,7 +1,7 @@
 import sodium from 'libsodium-wrappers';
 import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { generateDeviceKeys, keyFingerprint, type Sodium } from '@fide/crypto';
-import { evaluateTrust, loadTrustedKeys, rememberKeys, type PublicDeviceKey } from './keyTrust';
+import { evaluateTrust, loadTrustedDevices, rememberDevices, type PublicDeviceKey } from './deviceTrust';
 
 let s: Sodium;
 beforeAll(async () => {
@@ -70,29 +70,29 @@ describe('trusted key storage', () => {
       throw new DOMException('denied', 'SecurityError');
     };
     (globalThis as { localStorage?: Storage }).localStorage = { ...fakeStorage(), getItem: blocked, setItem: blocked };
-    expect(loadTrustedKeys('c1')).toEqual({ keys: {}, persistent: false });
+    expect(loadTrustedDevices('c1')).toEqual({ devices: {}, persistent: false });
     // Still usable for the session.
-    const merged = rememberKeys('c1', { m1: { deviceKeyId: 'k1', fingerprint: 'F', trustedAt: 't' } }, {});
+    const merged = rememberDevices('c1', { m1: { deviceKeyId: 'k1', fingerprint: 'F', trustedAt: 't' } }, {});
     expect(merged.m1.deviceKeyId).toBe('k1');
   });
 
   it('round-trips per company and merges with other tabs', () => {
     (globalThis as { localStorage?: Storage }).localStorage = fakeStorage();
-    rememberKeys('c1', { m1: { deviceKeyId: 'k1', fingerprint: 'F1', trustedAt: 't' } }, {});
+    rememberDevices('c1', { m1: { deviceKeyId: 'k1', fingerprint: 'F1', trustedAt: 't' } }, {});
     // Another tab adds m2 meanwhile; this tab's in-memory copy only knows m1.
-    rememberKeys('c1', { m2: { deviceKeyId: 'k2', fingerprint: 'F2', trustedAt: 't' } }, {});
-    const { keys, persistent } = loadTrustedKeys('c1');
+    rememberDevices('c1', { m2: { deviceKeyId: 'k2', fingerprint: 'F2', trustedAt: 't' } }, {});
+    const { devices, persistent } = loadTrustedDevices('c1');
     expect(persistent).toBe(true);
-    expect(Object.keys(keys).sort()).toEqual(['m1', 'm2']);
-    expect(loadTrustedKeys('c2').keys).toEqual({});
+    expect(Object.keys(devices).sort()).toEqual(['m1', 'm2']);
+    expect(loadTrustedDevices('c2').devices).toEqual({});
   });
 
   it('ignores corrupted entries instead of trusting them', () => {
     const storage = fakeStorage();
     (globalThis as { localStorage?: Storage }).localStorage = storage;
-    storage.setItem('fide.portal.trustedKeys.v1.c1', JSON.stringify({ m1: { deviceKeyId: 1 } }));
-    expect(loadTrustedKeys('c1')).toEqual({ keys: {}, persistent: true });
-    storage.setItem('fide.portal.trustedKeys.v1.c1', '{not json');
-    expect(loadTrustedKeys('c1').keys).toEqual({});
+    storage.setItem('fide.portal.trustedDevices.v1.c1', JSON.stringify({ m1: { deviceKeyId: 1 } }));
+    expect(loadTrustedDevices('c1')).toEqual({ devices: {}, persistent: true });
+    storage.setItem('fide.portal.trustedDevices.v1.c1', '{not json');
+    expect(loadTrustedDevices('c1').devices).toEqual({});
   });
 });
