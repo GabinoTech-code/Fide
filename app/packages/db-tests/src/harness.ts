@@ -120,14 +120,14 @@ export class Session {
   }
 
   /** Runs `sql` expecting it to fail; returns the error. Keeps the transaction usable. */
-  async error(sql: string, params: unknown[] = []): Promise<{ code?: string; message: string }> {
+  async error(sql: string, params: unknown[] = []): Promise<{ code?: string; message: string; detail?: string }> {
     await this.db.exec('savepoint expect_error');
     try {
       await this.db.query(sql, params);
     } catch (err) {
       await this.db.exec('rollback to savepoint expect_error');
-      const e = err as { code?: string; message: string };
-      return { code: e.code, message: e.message };
+      const e = err as { code?: string; message: string; detail?: string };
+      return { code: e.code, message: e.message, detail: e.detail };
     }
     await this.db.exec('rollback to savepoint expect_error');
     throw new Error(`expected an error from: ${sql}`);

@@ -71,6 +71,7 @@ describe('authenticated', () => {
           'decide_leave_request(uuid,boolean,text)',
           'decide_punch_correction(uuid,boolean,text)',
           'export_my_data()',
+          'import_members(uuid,jsonb)',
           'is_valid_codice_fiscale(text)',
           'is_valid_partita_iva(text)',
           'key_fingerprint(text,text)',

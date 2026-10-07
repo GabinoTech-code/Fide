@@ -3,6 +3,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import QRCode from 'qrcode';
 import { isValidCodiceFiscale, normalizeCodiceFiscale } from '@fide/shared';
 import { useAuth } from '../auth/AuthProvider';
+import { ImportEmployees } from '../components/ImportEmployees';
 import { ErrorNotice, Modal, PageHead } from '../components/ui';
 import { useI18n, type MessageKey } from '../lib/i18n';
 import { useMembers, useSites } from '../lib/queries';
@@ -23,12 +24,16 @@ export function EmployeesPage() {
   const { data: members = [], isLoading, error } = useMembers();
   const { data: sites = [] } = useSites();
   const [adding, setAdding] = useState(false);
+  const [importing, setImporting] = useState(false);
   const [inviting, setInviting] = useState<Member | null>(null);
   const siteName = new Map(sites.map((s) => [s.id, s.name]));
 
   return (
     <>
       <PageHead title={t('employees.title')}>
+        <button className="btn" onClick={() => setImporting(true)}>
+          {t('import.button')}
+        </button>
         <button className="btn btn-primary" onClick={() => setAdding(true)}>
           {t('employees.add')}
         </button>
@@ -95,6 +100,7 @@ export function EmployeesPage() {
         )}
       </section>
       {adding ? <AddEmployee onClose={() => setAdding(false)} /> : null}
+      {importing ? <ImportEmployees onClose={() => setImporting(false)} /> : null}
       {inviting ? <InviteEmployee member={inviting} onClose={() => setInviting(null)} /> : null}
     </>
   );
