@@ -189,6 +189,56 @@ describe('invitations', () => {
   });
 });
 
+describe('privileged invitations (security review 2026-10-07)', () => {
+  // An owner adds a future HR admin; HR must not be able to redirect that seat.
+  async function pendingHrAdmin(s: import('./harness').Session) {
+    await s.as(users.mario);
+    return s.value<string>(
+      `select public.add_member($1, 'Nuova HR', 'nuova.hr@aurora.test', null, null, null, null, 'hr_admin')`,
+      [seed.aurora],
+    );
+  }
+
+  it('HR cannot invite (or re-invite) a pending HR or owner member', async () => {
+    await inTx(db, async (s) => {
+      const id = await pendingHrAdmin(s);
+      await s.as(users.giulia);
+      expect((await s.error(`select public.create_invitation($1)`, [id])).message).toContain('forbidden');
+      await s.as(users.mario);
+      expect(await s.value(`select public.create_invitation($1)`, [id])).toMatch(/^[A-Za-z0-9_-]{43}$/);
+    });
+  });
+
+  it('HR cannot rewrite the e-mail of HR or owner members; owners can', async () => {
+    await inTx(db, async (s) => {
+      const id = await pendingHrAdmin(s);
+      const hijack = `update public.member_identities set email = 'attacker@evil.test' where member_id = $1 returning member_id`;
+      await s.as(users.giulia);
+      expect(await s.rows(hijack, [id])).toEqual([]);
+      expect(await s.rows(hijack, [members.mario])).toEqual([]);
+      // Employees' identities stay editable by HR.
+      expect(
+        await s.rows(`update public.member_identities set email = 'marco.c@aurora.test' where member_id = $1 returning member_id`, [
+          members.marco,
+        ]),
+      ).toEqual([{ member_id: members.marco }]);
+      await s.as(users.mario);
+      expect(await s.rows(hijack, [id])).toEqual([{ member_id: id }]);
+    });
+  });
+
+  it('the full takeover path is closed', async () => {
+    await inTx(db, async (s) => {
+      const id = await pendingHrAdmin(s);
+      await s.as(users.giulia);
+      await s.rows(`update public.member_identities set email = 'stranger@nowhere.test' where member_id = $1`, [id]);
+      expect((await s.error(`select public.create_invitation($1)`, [id])).message).toContain('forbidden');
+      await s.superuser();
+      expect(await s.value(`select email from public.member_identities where member_id = $1`, [id])).toBe('nuova.hr@aurora.test');
+    });
+  });
+});
+
 describe('device keys', () => {
   const pk = (seedText: string) => Buffer.alloc(32, seedText).toString('base64');
 

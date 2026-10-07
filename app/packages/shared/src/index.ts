@@ -1,6 +1,7 @@
 export * from './italy';
 export * from './protocol';
 export * from './brand';
+export * from './security-headers';
 
 // B2B Company & Organization Types
 export type SupportedCountry = 'IT' | 'ES';

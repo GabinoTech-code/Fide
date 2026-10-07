@@ -1,6 +1,7 @@
 import { resolve } from 'node:path';
 import { defineConfig, type Plugin } from 'vite';
 import { brandColors, iconStroke, icons, logo, type IconName } from '../../packages/shared/src/brand.ts';
+import { previewHeaders, siteHeaders, toCloudflareHeaders } from '../../packages/shared/src/security-headers.ts';
 
 // Inlines brand SVGs at build time so the pages stay static HTML:
 //   <svg data-icon="fichar" data-size="28"></svg>
@@ -36,8 +37,20 @@ function brandSvgs(): Plugin {
   };
 }
 
+// Cloudflare Pages `_headers`, generated so preview and production share one CSP.
+function securityHeaders(): Plugin {
+  return {
+    name: 'fide-security-headers',
+    generateBundle() {
+      this.emitFile({ type: 'asset', fileName: '_headers', source: toCloudflareHeaders(siteHeaders) });
+    },
+  };
+}
+
 export default defineConfig({
-  plugins: [brandSvgs()],
+  plugins: [brandSvgs(), securityHeaders()],
+  server: { headers: previewHeaders(siteHeaders) },
+  preview: { headers: previewHeaders(siteHeaders) },
   build: {
     target: 'es2022',
     rollupOptions: {

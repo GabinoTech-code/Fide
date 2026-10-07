@@ -75,6 +75,7 @@ describe('authenticated', () => {
           'is_valid_partita_iva(text)',
           'key_fingerprint(text,text)',
           'mark_document_opened(uuid)',
+          'private.can_edit_identity(uuid)',
           'private.my_company_ids()',
           'private.my_hr_company_ids()',
           'private.my_managed_member_ids()',
