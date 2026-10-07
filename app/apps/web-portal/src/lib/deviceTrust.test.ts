@@ -1,7 +1,7 @@
 import sodium from 'libsodium-wrappers';
 import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { generateDeviceKeys, keyFingerprint, type Sodium } from '@fide/crypto';
-import { evaluateTrust, loadTrustedDevices, rememberDevices, type PublicDeviceKey } from './deviceTrust';
+import { evaluateTrust, loadPinnedDevices, pinDevices, type PublicDeviceKey } from './deviceTrust';
 
 let s: Sodium;
 beforeAll(async () => {
@@ -23,7 +23,7 @@ describe('evaluateTrust', () => {
   it('trusts on first use, then only the same key', () => {
     const key = serverKey('k1');
     expect(evaluateTrust(key, undefined)).toEqual({ kind: 'first_use', fingerprint: key.fingerprint });
-    const remembered = { deviceKeyId: 'k1', fingerprint: key.fingerprint, trustedAt: '2026-10-01T00:00:00Z' };
+    const remembered = { deviceKeyId: 'k1', fingerprint: key.fingerprint, pinnedAt: '2026-10-01T00:00:00Z' };
     expect(evaluateTrust(key, remembered)).toEqual({ kind: 'trusted', fingerprint: key.fingerprint });
 
     const newPhone = serverKey('k2');
@@ -32,7 +32,7 @@ describe('evaluateTrust', () => {
 
   it('flags a key swapped in place under the same id', () => {
     const key = serverKey('k1');
-    const remembered = { deviceKeyId: 'k1', fingerprint: key.fingerprint, trustedAt: '2026-10-01T00:00:00Z' };
+    const remembered = { deviceKeyId: 'k1', fingerprint: key.fingerprint, pinnedAt: '2026-10-01T00:00:00Z' };
     const attacker = serverKey('k1');
     expect(evaluateTrust(attacker, remembered).kind).toBe('changed');
   });
@@ -70,29 +70,29 @@ describe('trusted key storage', () => {
       throw new DOMException('denied', 'SecurityError');
     };
     (globalThis as { localStorage?: Storage }).localStorage = { ...fakeStorage(), getItem: blocked, setItem: blocked };
-    expect(loadTrustedDevices('c1')).toEqual({ devices: {}, persistent: false });
+    expect(loadPinnedDevices('c1')).toEqual({ devices: {}, persistent: false });
     // Still usable for the session.
-    const merged = rememberDevices('c1', { m1: { deviceKeyId: 'k1', fingerprint: 'F', trustedAt: 't' } }, {});
+    const merged = pinDevices('c1', { m1: { deviceKeyId: 'k1', fingerprint: 'F', pinnedAt: 't' } }, {});
     expect(merged.m1.deviceKeyId).toBe('k1');
   });
 
   it('round-trips per company and merges with other tabs', () => {
     (globalThis as { localStorage?: Storage }).localStorage = fakeStorage();
-    rememberDevices('c1', { m1: { deviceKeyId: 'k1', fingerprint: 'F1', trustedAt: 't' } }, {});
+    pinDevices('c1', { m1: { deviceKeyId: 'k1', fingerprint: 'F1', pinnedAt: 't' } }, {});
     // Another tab adds m2 meanwhile; this tab's in-memory copy only knows m1.
-    rememberDevices('c1', { m2: { deviceKeyId: 'k2', fingerprint: 'F2', trustedAt: 't' } }, {});
-    const { devices, persistent } = loadTrustedDevices('c1');
+    pinDevices('c1', { m2: { deviceKeyId: 'k2', fingerprint: 'F2', pinnedAt: 't' } }, {});
+    const { devices, persistent } = loadPinnedDevices('c1');
     expect(persistent).toBe(true);
     expect(Object.keys(devices).sort()).toEqual(['m1', 'm2']);
-    expect(loadTrustedDevices('c2').devices).toEqual({});
+    expect(loadPinnedDevices('c2').devices).toEqual({});
   });
 
   it('ignores corrupted entries instead of trusting them', () => {
     const storage = fakeStorage();
     (globalThis as { localStorage?: Storage }).localStorage = storage;
-    storage.setItem('fide.portal.trustedDevices.v1.c1', JSON.stringify({ m1: { deviceKeyId: 1 } }));
-    expect(loadTrustedDevices('c1')).toEqual({ devices: {}, persistent: true });
-    storage.setItem('fide.portal.trustedDevices.v1.c1', '{not json');
-    expect(loadTrustedDevices('c1').devices).toEqual({});
+    storage.setItem('fide.portal.pinnedDevices.v1.c1', JSON.stringify({ m1: { deviceKeyId: 1 } }));
+    expect(loadPinnedDevices('c1')).toEqual({ devices: {}, persistent: true });
+    storage.setItem('fide.portal.pinnedDevices.v1.c1', '{not json');
+    expect(loadPinnedDevices('c1').devices).toEqual({});
   });
 });

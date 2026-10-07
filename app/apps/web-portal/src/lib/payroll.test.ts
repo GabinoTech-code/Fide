@@ -89,7 +89,7 @@ describe('planRecipients', () => {
         { id: 'doc-r1', member_id: 'reissue', device_key_id: 'key-revoked', published_at: '2026-10-01T00:00:00Z' },
         { id: 'doc-r0', member_id: 'reissue', device_key_id: 'key-older', published_at: '2026-09-01T00:00:00Z' },
       ],
-      trusted: { changed: { deviceKeyId: 'key-previous-phone', fingerprint: 'BBBB BBBB BBBB BBBB BBBB BBBB', trustedAt: 't' } },
+      pinned: { changed: { deviceKeyId: 'key-previous-phone', fingerprint: 'BBBB BBBB BBBB BBBB BBBB BBBB', pinnedAt: 't' } },
       manual: {},
     });
     expect(plan.map((r) => [r.memberId, r.state])).toEqual([
@@ -119,7 +119,7 @@ describe('planRecipients', () => {
       ],
       4,
     );
-    const plan = planRecipients({ split: result, members: [anna], published: [], trusted: {}, manual: { 3: 'anna', 1: 'anna', 4: 'ghost' } });
+    const plan = planRecipients({ split: result, members: [anna], published: [], pinned: {}, manual: { 3: 'anna', 1: 'anna', 4: 'ghost' } });
     expect(plan).toHaveLength(1);
     expect(plan[0].pages).toEqual([1, 2, 3]);
     expect(plan[0].manualPages).toEqual([3]);
@@ -163,7 +163,7 @@ describe('cut and encrypt', () => {
       ]),
       members,
       published: [{ id: 'doc-prev', member_id: 'marco', device_key_id: 'key-old-phone', published_at: '2026-10-01T00:00:00Z' }],
-      trusted: {},
+      pinned: {},
       manual: {},
     });
     const source = await bulkPdf(['anna 1', 'anna 2', 'marco 1']);
@@ -209,7 +209,7 @@ describe('cut and encrypt', () => {
       split: split([['nokey', [1]]]),
       members: [member('nokey', { status: 'invited' })],
       published: [],
-      trusted: {},
+      pinned: {},
       manual: {},
     });
     expect(() =>

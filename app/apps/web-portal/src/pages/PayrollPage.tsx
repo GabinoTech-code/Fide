@@ -7,7 +7,7 @@ import { splitPayroll, type SplitResult } from '@fide/payroll-parser';
 import { useAuth } from '../auth/AuthProvider';
 import { ErrorNotice, Modal, PageHead } from '../components/ui';
 import { useI18n, type MessageKey } from '../lib/i18n';
-import { loadTrustedDevices, rememberDevices, type TrustedDevices } from '../lib/deviceTrust';
+import { loadPinnedDevices, pinDevices, type PinnedDevices } from '../lib/deviceTrust';
 import {
   assignableMembers,
   cutPdf,
@@ -58,7 +58,7 @@ type Work = { phase: 'encrypting' | 'uploading' | 'publishing'; done: number; to
 /** A batch that failed half-way, kept so "retry" resumes it, plus the keys it was encrypted to. */
 interface Pending {
   batch: PreparedBatch;
-  trust: TrustedDevices;
+  trust: PinnedDevices;
 }
 
 const backend: BatchBackend = {
@@ -112,7 +112,7 @@ function PayrollWorkspace({ companyId }: { companyId: string }) {
   const [analyzing, setAnalyzing] = useState(false);
   const [manual, setManual] = useState<Record<number, string>>({});
   const [resend, setResend] = useState<ReadonlySet<string>>(new Set());
-  const [trust, setTrust] = useState(() => loadTrustedDevices(companyId));
+  const [trust, setTrust] = useState(() => loadPinnedDevices(companyId));
   const [verifying, setVerifying] = useState<Recipient | null>(null);
   const [work, setWork] = useState<Work | null>(null);
   const [pending, setPending] = useState<Pending | null>(null);
@@ -123,15 +123,15 @@ function PayrollWorkspace({ companyId }: { companyId: string }) {
   const defaultTitle = `${t(`kind.${kind}` as MessageKey)} ${periodLabel}`.trim();
 
   const recipients = useMemo(
-    () => (analysis ? planRecipients({ split: analysis.split, members, published: analysis.published, trusted: trust.devices, manual }) : []),
+    () => (analysis ? planRecipients({ split: analysis.split, members, published: analysis.published, pinned: trust.devices, manual }) : []),
     [analysis, members, trust.devices, manual],
   );
   const sending = recipients.filter((r) => willSend(r, resend));
   const skipped = analysis ? unassignedPages(analysis.split, manual) : [];
   const assignable = useMemo(() => assignableMembers(members), [members]);
 
-  function remember(entries: TrustedDevices) {
-    setTrust((current) => ({ ...current, devices: rememberDevices(companyId, entries, current.devices) }));
+  function remember(entries: PinnedDevices) {
+    setTrust((current) => ({ ...current, devices: pinDevices(companyId, entries, current.devices) }));
   }
 
   function reset() {
@@ -190,14 +190,14 @@ function PayrollWorkspace({ companyId }: { companyId: string }) {
     const sodium = await getSodium();
     const source = await loadSplittable(a.source);
     const documents = [];
-    const used: TrustedDevices = {};
-    const trustedAt = new Date().toISOString();
+    const used: PinnedDevices = {};
+    const pinnedAt = new Date().toISOString();
     for (const [i, r] of sending.entries()) {
       setWork({ phase: 'encrypting', done: i, total: sending.length });
       const plaintext = await cutPdf(source, r.pages, a.title);
       documents.push(encryptForRecipient(sodium, { companyId, recipient: r, documentId: crypto.randomUUID(), plaintext, resend }));
       plaintext.fill(0);
-      if (r.key && r.trust && r.trust.kind !== 'mismatch') used[r.memberId] = { deviceKeyId: r.key.id, fingerprint: r.trust.fingerprint, trustedAt };
+      if (r.key && r.trust && r.trust.kind !== 'mismatch') used[r.memberId] = { deviceKeyId: r.key.id, fingerprint: r.trust.fingerprint, pinnedAt };
     }
     return {
       batch: { companyId, kind: a.kind, period: a.period, title: a.title, documents, batchId: null, uploaded: new Set() },
@@ -459,7 +459,7 @@ function PayrollWorkspace({ companyId }: { companyId: string }) {
               onClick={() => {
                 const { memberId, key, trust: state } = verifying;
                 if (key && state?.kind === 'changed') {
-                  remember({ [memberId]: { deviceKeyId: key.id, fingerprint: state.fingerprint, trustedAt: new Date().toISOString() } });
+                  remember({ [memberId]: { deviceKeyId: key.id, fingerprint: state.fingerprint, pinnedAt: new Date().toISOString() } });
                 }
                 setVerifying(null);
               }}

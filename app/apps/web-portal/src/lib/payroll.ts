@@ -6,7 +6,7 @@
 import { encryptDocument, type Sodium } from '@fide/crypto';
 import type { KnownEmployee, SplitResult } from '@fide/payroll-parser';
 import { PDFDocument } from 'pdf-lib';
-import { evaluateTrust, type TrustState, type TrustedDevices } from './deviceTrust';
+import { evaluateTrust, type TrustState, type PinnedDevices } from './deviceTrust';
 import type { Member } from './types';
 
 export type DocumentKind = 'cedolino' | 'cu' | 'other';
@@ -65,7 +65,7 @@ export function planRecipients(input: {
   split: SplitResult;
   members: Member[];
   published: PublishedDoc[];
-  trusted: TrustedDevices;
+  pinned: PinnedDevices;
   /** page → member id, for pages listed in split.issues only. */
   manual: Record<number, string>;
 }): Recipient[] {
@@ -102,7 +102,7 @@ export function planRecipients(input: {
     const m = members.get(memberId)!;
     const active = m.status === 'active' ? (m.device_keys ?? []).find((k) => k.status === 'active') : undefined;
     const existing = latest.get(memberId) ?? null;
-    const trust = active ? evaluateTrust(active, input.trusted[memberId]) : null;
+    const trust = active ? evaluateTrust(active, input.pinned[memberId]) : null;
 
     let state: RecipientState;
     if (!active) state = 'no_key';
