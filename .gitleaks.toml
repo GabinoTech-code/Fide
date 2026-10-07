@@ -1,0 +1,9 @@
+# gitleaks configuration: default rules plus narrowly scoped allowlists for
+# values that are public by design.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Android signing certificate hashes are public (published in /.well-known/assetlinks.json)"
+regexTarget = "line"
+regexes = ['''android:apk-key-hash:[A-Za-z0-9_-]{43}''']

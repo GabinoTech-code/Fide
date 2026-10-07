@@ -30,7 +30,7 @@ jobs:
       - run: npm run build --workspace apps/site
 
   mobile-export:
-    name: Expo export (iOS, Android, web bundles)
+    name: Expo export (iOS and Android bundles)
     runs-on: ubuntu-latest
     needs: js
     steps:
@@ -45,7 +45,8 @@ jobs:
       - run: npm ci
         working-directory: app
 
-      - run: npx expo export --no-bytecode --output-dir dist
+      # The employee app ships on iOS/Android only (the portal is the web app).
+      - run: npx expo export --platform ios --platform android --no-bytecode --output-dir dist
         working-directory: app/apps/mobile
 
   # RLS/grant/RPC behaviour is tested in the `js` job (app/packages/db-tests, PGlite).

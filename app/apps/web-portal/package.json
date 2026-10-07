@@ -8,8 +8,7 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
-    "typecheck": "tsc --noEmit",
-    "start:legacy": "npx serve -l 3000 legacy"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@fide/crypto": "*",

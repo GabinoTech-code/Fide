@@ -1,4 +1,5 @@
 import React from 'react';
+import type { ColorValue } from 'react-native';
 import Svg, { Path, Rect, Circle, SvgProps } from 'react-native-svg';
 import { brandColors, iconStroke, icons, logo, type IconName } from '@fide/shared';
 
@@ -19,7 +20,12 @@ export function FideLogo({ size = 34, color = brandColors.mint, hands = true, ..
 }
 
 /** One of the 24 brand icons (24 × 24 grid, stroke 1.75, thicker at small sizes). */
-export function BrandIcon({ name, size = 24, color = brandColors.slate, ...props }: IconProps & { name: IconName }) {
+export function BrandIcon({
+  name,
+  size = 24,
+  color = brandColors.slate,
+  ...props
+}: Omit<IconProps, 'color'> & { name: IconName; color?: ColorValue }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={iconStroke(size)} strokeLinecap="round" strokeLinejoin="round" {...props}>
       <Path d={icons[name]} />

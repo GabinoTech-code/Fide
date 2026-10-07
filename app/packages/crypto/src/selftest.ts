@@ -3,7 +3,7 @@
 // libsodium binding Fide runs on (react-native-libsodium on the phones) must
 // reproduce them exactly. The Node suite runs this too, so the vectors stay true.
 import { canonicalPunch, documentAssociatedData, fromBase64, toBase64, utf8, type PunchFields } from '@fide/shared';
-import { decryptDocument, encryptDocument, generateDeviceKeys, keyFingerprint, signPunch, verifyPunchSignature, type Sodium } from './index';
+import { decryptDocument, encryptDocument, generateDeviceKeys, keyFingerprint, signPunch, verifyPunchSignature, type Sodium } from './core';
 
 export interface SelfTestSodium extends Sodium {
   crypto_box_seed_keypair(seed: Uint8Array): { publicKey: Uint8Array; privateKey: Uint8Array };

@@ -3,7 +3,7 @@
 // Functions are bundled from supabase/functions only.
 //   node scripts/sync-shared.mjs          write the copies
 //   node scripts/sync-shared.mjs --check  fail if a copy is stale (CI)
-import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -16,7 +16,12 @@ for (const [from, to] of files) {
   const source = readFileSync(path.join(root, from), 'utf8');
   const expected = `// GENERATED from ${from} by app/scripts/sync-shared.mjs — do not edit.\n\n${source}`;
   const target = path.join(root, to);
-  const current = existsSync(target) ? readFileSync(target, 'utf8') : null;
+  let current = null;
+  try {
+    current = readFileSync(target, 'utf8');
+  } catch {
+    // Not generated yet.
+  }
   if (current === expected) continue;
   if (check) {
     console.error(`${to} is out of date: run "npm run sync-shared" in app/`);
