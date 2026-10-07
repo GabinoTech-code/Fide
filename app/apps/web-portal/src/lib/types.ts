@@ -35,7 +35,14 @@ export interface Member {
   manager_member_id: string | null;
   employee_number: string | null;
   member_identities: { email: string | null; codice_fiscale: string | null } | null;
-  device_keys: Array<{ id: string; status: 'active' | 'revoked'; fingerprint: string; x25519_public_key: string; created_at: string }>;
+  device_keys: Array<{
+    id: string;
+    status: 'active' | 'revoked';
+    fingerprint: string;
+    x25519_public_key: string;
+    ed25519_public_key: string;
+    created_at: string;
+  }>;
 }
 
 export interface Site {
@@ -97,4 +104,16 @@ export interface AuditEntry {
   changed_columns: string[] | null;
   actor_auth_user_id: string | null;
   created_at: string;
+}
+
+export interface PayrollBatch {
+  id: string;
+  kind: 'cedolino' | 'cu' | 'other';
+  period: string;
+  title: string;
+  status: 'draft' | 'published';
+  created_at: string;
+  published_at: string | null;
+  /** Documents of the batch, for delivery tracking (opened on the phone or not). */
+  documents: Array<{ id: string; status: string; first_opened_at: string | null }>;
 }

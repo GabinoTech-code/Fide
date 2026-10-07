@@ -44,7 +44,7 @@ export async function enqueue(store: OutboxStore, submission: PunchSubmission, n
 
 export interface FlushSummary {
   sent: number;
-  rejected: Array<{ client_punch_id: string; error: string }>;
+  rejected: { client_punch_id: string; error: string }[];
   /** True when the network or server failed: items stay queued for later. */
   deferred: boolean;
 }

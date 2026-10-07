@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { useAuth } from '../auth/AuthProvider';
 import { supabase } from './supabase';
-import type { AuditEntry, Kiosk, LeaveRequest, Member, Punch, PunchCorrection, Site } from './types';
+import type { AuditEntry, Kiosk, LeaveRequest, Member, PayrollBatch, Punch, PunchCorrection, Site } from './types';
 
 function useCompanyId(): string {
   const { active } = useAuth();
@@ -27,7 +27,7 @@ export function useMembers() {
         supabase
           .from('members')
           .select(
-            'id, company_id, auth_user_id, role, status, full_name, site_id, manager_member_id, employee_number, member_identities(email, codice_fiscale), device_keys(id, status, fingerprint, x25519_public_key, created_at)',
+            'id, company_id, auth_user_id, role, status, full_name, site_id, manager_member_id, employee_number, member_identities(email, codice_fiscale), device_keys(id, status, fingerprint, x25519_public_key, ed25519_public_key, created_at)',
           )
           .eq('company_id', companyId)
           .order('full_name'),
@@ -138,6 +138,36 @@ export function useAuditLog() {
           .order('created_at', { ascending: false })
           .limit(200),
       ),
+  });
+}
+
+/** Recent batches with their documents' delivery state (two queries: no reliance on composite-FK embedding). */
+export function usePayrollBatches() {
+  const companyId = useCompanyId();
+  return useQuery({
+    queryKey: ['payroll', companyId],
+    enabled: Boolean(companyId),
+    queryFn: async () => {
+      const batches = await rows<Omit<PayrollBatch, 'documents'>>(
+        supabase
+          .from('payroll_batches')
+          .select('id, kind, period, title, status, created_at, published_at')
+          .eq('company_id', companyId)
+          .order('created_at', { ascending: false })
+          .limit(24),
+      );
+      if (!batches.length) return [];
+      const docs = await rows<{ id: string; batch_id: string; status: string; first_opened_at: string | null }>(
+        supabase
+          .from('documents')
+          .select('id, batch_id, status, first_opened_at')
+          .in(
+            'batch_id',
+            batches.map((b) => b.id),
+          ),
+      );
+      return batches.map((b): PayrollBatch => ({ ...b, documents: docs.filter((d) => d.batch_id === b.id) }));
+    },
   });
 }
 

@@ -89,3 +89,21 @@ export function toCloudflareHeaders(rules: HeaderRule[]): string {
 export function previewHeaders(rules: HeaderRule[]): Record<string, string> {
   return rules.find((r) => r.path === '/*')?.headers ?? {};
 }
+
+/**
+ * `vite dev` injects the React Refresh preamble and CSS as inline <script> and
+ * <style>, which the production policy rightly forbids. The dev server keeps
+ * every other directive (connect-src, worker-src, framing…) so those violations
+ * still surface while coding; `vite preview` serves the exact production policy.
+ */
+export function devServerHeaders(rules: HeaderRule[]): Record<string, string> {
+  const headers = { ...previewHeaders(rules) };
+  const policy = headers['Content-Security-Policy'];
+  if (policy) {
+    headers['Content-Security-Policy'] = policy
+      .split('; ')
+      .map((d) => (/^(script-src|style-src) /.test(d) ? `${d} 'unsafe-inline'` : d))
+      .join('; ');
+  }
+  return headers;
+}

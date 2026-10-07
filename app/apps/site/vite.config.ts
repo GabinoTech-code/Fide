@@ -1,7 +1,7 @@
 import { resolve } from 'node:path';
 import { defineConfig, type Plugin } from 'vite';
 import { brandColors, iconStroke, icons, logo, type IconName } from '../../packages/shared/src/brand.ts';
-import { previewHeaders, siteHeaders, toCloudflareHeaders } from '../../packages/shared/src/security-headers.ts';
+import { devServerHeaders, previewHeaders, siteHeaders, toCloudflareHeaders } from '../../packages/shared/src/security-headers.ts';
 
 // Inlines brand SVGs at build time so the pages stay static HTML:
 //   <svg data-icon="fichar" data-size="28"></svg>
@@ -49,7 +49,7 @@ function securityHeaders(): Plugin {
 
 export default defineConfig({
   plugins: [brandSvgs(), securityHeaders()],
-  server: { headers: previewHeaders(siteHeaders) },
+  server: { headers: devServerHeaders(siteHeaders) },
   preview: { headers: previewHeaders(siteHeaders) },
   build: {
     target: 'es2022',

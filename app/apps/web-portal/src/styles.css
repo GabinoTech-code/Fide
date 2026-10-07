@@ -140,3 +140,5 @@ tr:last-child td { border-bottom: 0; }
 .kiosk .muted { color: var(--mint-pale); }
 .progress { height: 6px; width: min(70vmin, 520px); border-radius: 3px; background: #1f302b; overflow: hidden; }
 .progress > div { height: 100%; background: var(--mint); transition: width 1s linear; }
+.progress-inline { width: 100%; background: var(--border); }
+.progress-inline > div { background: var(--forest); transition: width 0.2s ease-out; }

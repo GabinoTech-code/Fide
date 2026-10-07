@@ -11,6 +11,11 @@ const KNOWN: Record<string, MessageKey> = {
   last_owner: 'error.lastOwner',
   device_key_not_active: 'error.deviceKeyNotActive',
   upload_incomplete: 'error.uploadIncomplete',
+  supersedes_invalid: 'error.supersedesInvalid',
+  not_draft: 'error.notDraft',
+  pdf_password: 'payroll.encryptedPdf',
+  pdf_invalid: 'payroll.notPdf',
+  crypto_selftest_failed: 'payroll.cryptoBroken',
   pairing_code_invalid: 'error.pairingCodeInvalid',
   not_pending: 'error.notPending',
 };

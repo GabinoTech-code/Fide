@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { portalHeaders, previewHeaders, siteHeaders, toCloudflareHeaders } from './security-headers';
+import { devServerHeaders, portalHeaders, previewHeaders, siteHeaders, toCloudflareHeaders } from './security-headers';
 
 const csp = (rules: ReturnType<typeof portalHeaders>) => previewHeaders(rules)['Content-Security-Policy'];
 
@@ -23,6 +23,20 @@ describe('security headers', () => {
   it('portal allows only Supabase for network calls (https and wss)', () => {
     const policy = csp(portalHeaders(['https://*.supabase.co', 'http://127.0.0.1:54321']));
     expect(policy).toContain("connect-src 'self' https://*.supabase.co wss://*.supabase.co http://127.0.0.1:54321 ws://127.0.0.1:54321");
+  });
+
+  it('relaxes only inline script/style for the Vite dev server', () => {
+    for (const rules of [siteHeaders, portalHeaders(['https://*.supabase.co'])]) {
+      const prod = csp(rules).split('; ');
+      const dev = devServerHeaders(rules)['Content-Security-Policy'].split('; ');
+      expect(dev).toHaveLength(prod.length);
+      dev.forEach((directive, i) => {
+        if (/^(script-src|style-src) /.test(directive)) expect(directive).toBe(`${prod[i]} 'unsafe-inline'`);
+        else expect(directive).toBe(prod[i]);
+      });
+      // The production rules themselves are untouched.
+      expect(csp(rules)).not.toContain('unsafe-inline');
+    }
   });
 
   it('serves the passkey association files as JSON', () => {

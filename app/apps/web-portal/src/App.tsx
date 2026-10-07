@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { lazy, Suspense, useState } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router';
 import { useAuth } from './auth/AuthProvider';
 import { Logo } from './components/Brand';
@@ -9,12 +9,14 @@ import { AuditPage } from './pages/AuditPage';
 import { EmployeesPage } from './pages/EmployeesPage';
 import { KioskPage } from './pages/KioskPage';
 import { LoginPage } from './pages/LoginPage';
-import { PayrollPage } from './pages/PayrollPage';
 import { PresencePage } from './pages/PresencePage';
 import { RegisterCompanyPage } from './pages/RegisterCompanyPage';
 import { RequestsPage } from './pages/RequestsPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { SitesPage } from './pages/SitesPage';
+
+// pdf.js, pdf-lib and libsodium load only when HR opens the payslip page.
+const PayrollPage = lazy(() => import('./pages/PayrollPage').then((m) => ({ default: m.PayrollPage })));
 
 function Message({ title, body, action }: { title: string; body: string; action?: React.ReactNode }) {
   return (
@@ -79,7 +81,14 @@ function Portal() {
         <Route index element={<PresencePage />} />
         <Route path="dipendenti" element={<EmployeesPage />} />
         <Route path="sedi" element={<SitesPage />} />
-        <Route path="cedolini" element={<PayrollPage />} />
+        <Route
+          path="cedolini"
+          element={
+            <Suspense fallback={<p className="muted">{t('common.loading')}</p>}>
+              <PayrollPage />
+            </Suspense>
+          }
+        />
         <Route path="richieste" element={<RequestsPage />} />
         <Route path="registro" element={<AuditPage />} />
         <Route path="impostazioni" element={<SettingsPage />} />

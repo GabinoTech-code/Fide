@@ -1,6 +1,6 @@
 import { defineConfig, loadEnv, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
-import { portalHeaders, previewHeaders, toCloudflareHeaders } from '../../packages/shared/src/security-headers.ts';
+import { devServerHeaders, portalHeaders, previewHeaders, toCloudflareHeaders } from '../../packages/shared/src/security-headers.ts';
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, import.meta.dirname, 'VITE_');
@@ -18,7 +18,7 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [react(), securityHeaders],
-    server: { port: 5173, strictPort: true, headers: previewHeaders(rules) },
+    server: { port: 5173, strictPort: true, headers: devServerHeaders(rules) },
     preview: { port: 5173, headers: previewHeaders(rules) },
     build: { target: 'es2022', sourcemap: true },
   };
