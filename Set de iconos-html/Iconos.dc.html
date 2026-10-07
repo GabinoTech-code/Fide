@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Fide · Iconografía</title>
+<script src="./vendor/react.js"></script>
+<script src="./vendor/react-dom.js"></script>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#0B6E4F}a:hover{color:#08513A}
+</style>
+</helmet>
+<div style="width: 1280px; height: 1340px; box-sizing: border-box; padding: 72px 80px; background: #F4F5F2; color: #0F1A17; font-family: 'IBM Plex Sans', sans-serif; display: flex; flex-direction: column; gap: 40px">
+
+  <div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 48px">
+    <div style="display: flex; flex-direction: column; gap: 14px; max-width: 680px">
+      <span style="font-family: 'IBM Plex Mono', monospace; font-size: 14px; letter-spacing: 1.5px; text-transform: uppercase; color: {{accent}}">Identidad · iconos</span>
+      <h1 style="margin: 0; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 52px; line-height: 1.05; letter-spacing: -1.2px">24 iconos, un mismo trazo.</h1>
+      <p style="margin: 0; font-size: 18px; line-height: 1.5; color: #46524D">Lineales, redondeados y sin relleno, como la llave del logo. Cada uno sale de una función real de la app.</p>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 6px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #46524D; text-align: right">
+      <span>Rejilla 24 × 24 · zona segura 2 px</span>
+      <span>Trazo 1,75 · extremos y uniones redondeados</span>
+      <span>Radio de esquina 2 · sin relleno</span>
+    </div>
+  </div>
+
+  <sc-for list="{{groups}}" as="g" hint-placeholder-count="4">
+    <div style="display: flex; flex-direction: column; gap: 12px">
+      <span style="font-weight: 600; font-size: 16px">{{g.name}}</span>
+      <div style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px">
+        <sc-for list="{{g.icons}}" as="i" hint-placeholder-count="6">
+          <div style="background: #FFFFFF; border: 1px solid #E2E7E4; border-radius: 18px; height: 116px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="{{ink}}" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{i.d}}"></path></svg>
+            <span style="font-size: 13px; color: #2E3935">{{i.n}}</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </sc-for>
+
+  <div style="display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px">
+    <div style="background: #FFFFFF; border: 1px solid #E2E7E4; border-radius: 20px; padding: 22px; display: flex; flex-direction: column; gap: 14px">
+      <span style="font-weight: 600; font-size: 15px">Escala: 32 · 24 · 20 · 16 px</span>
+      <div style="display: flex; align-items: center; gap: 28px">
+        <sc-for list="{{sizes}}" as="s" hint-placeholder-count="4">
+          <svg width="{{s.px}}" height="{{s.px}}" viewBox="0 0 24 24" fill="none" stroke="#0F1A17" stroke-width="{{s.sw}}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{keyD}}"></path></svg>
+        </sc-for>
+        <span style="font-size: 13px; color: #46524D; line-height: 1.45">A 16 px el trazo sube a 2 para que no se pierda.</span>
+      </div>
+    </div>
+    <div style="background: #0F1A17; border-radius: 20px; padding: 18px 22px; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); align-items: center">
+      <sc-for list="{{tabbar}}" as="t" hint-placeholder-count="5">
+        <span style="display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 12px; color: {{t.c}}">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{t.d}}"></path></svg>
+          {{t.n}}
+        </span>
+      </sc-for>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#0B6E4F","options":["#0B6E4F","#0F1A17","#1F4FB8","#B4531A"]},"$preview":{"width":1280,"height":1340}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const ink = this.props.accent ?? '#0B6E4F';
+    const D = {
+      inicio: 'M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z',
+      fichar: 'M12 21a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM12 9v4l2.5 2.5M9 2h6',
+      solicitudes: 'M5 5h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2zM3 10h18M8 3v4M16 3v4M9 15l2 2 4-4',
+      docs: 'M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8zM14 3v5h5M9 13h6M9 17h4',
+      asistente: 'M12 3l1.8 4.7 4.7 1.8-4.7 1.8L12 16l-1.8-4.7-4.7-1.8 4.7-1.8zM19 15l.8 2.2 2.2.8-2.2.8L19 21l-.8-2.2-2.2-.8 2.2-.8z',
+      misdatos: 'M12 2l8 3v6c0 5-3.4 9.3-8 11-4.6-1.7-8-6-8-11V5zM12 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zM8 16.5c1-1.6 2.4-2.4 4-2.4s3 .8 4 2.4',
+      geo: 'M12 15s4.5-3.9 4.5-7.5a4.5 4.5 0 0 0-9 0C7.5 11.1 12 15 12 15zM12 7.5h.01M5 15.5C3.8 16.2 3 17 3 18c0 1.7 4 3 9 3s9-1.3 9-3c0-1-.8-1.8-2-2.5',
+      qr: 'M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h2v2h-2zM18 14h2M14 18v2h2M18 18h2v2',
+      nfc: 'M7 4h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zM10 9.5a3.5 3.5 0 0 1 0 5M13 8a6 6 0 0 1 0 8',
+      offline: 'M2 8.8a15 15 0 0 1 4.2-2.6M10 5.1a15 15 0 0 1 12 3.7M5 12.6a10 10 0 0 1 5.2-2.5M15.8 11a10 10 0 0 1 3.2 1.6M8.5 16.1a5 5 0 0 1 7 0M12 20h.01M3 3l18 18',
+      entrada: 'M10 17l5-5-5-5M15 12H3M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4',
+      salida: 'M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9',
+      vacaciones: 'M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4',
+      permiso: 'M6 2h12M6 22h12M7 2v3a5 5 0 0 0 10 0V2M7 22v-3a5 5 0 0 1 10 0v3M12 10v4',
+      extra: 'M11 20.9A9 9 0 1 1 20.9 11M12 7v5l3 2M18 15v6M15 18h6',
+      olvidado: 'M3 12a9 9 0 1 0 2.6-6.4L3 8M3 3v5h5M12 7v5l3 2',
+      gasto: 'M6 2h12v20l-3-2-3 2-3-2-3 2zM9 7h6M9 11h6M9 15h3',
+      turnos: 'M4 8h13l-3-3M20 16H7l3 3',
+      cifrado: 'M7 11h10a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2zM8 11V7a4 4 0 0 1 8 0v4M12 15v2',
+      passkey: 'M7 3H5a2 2 0 0 0-2 2v2M17 3h2a2 2 0 0 1 2 2v2M7 21H5a2 2 0 0 1-2-2v-2M17 21h2a2 2 0 0 0 2-2v-2M9 9v1M15 9v1M9.5 15.5c1.4 1 3.6 1 5 0M12 9v4h-1',
+      huella: 'M9 21a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM9 13V3h9v2.5M9 7.5h6',
+      registro: 'M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01',
+      exportar: 'M12 3v12M7 10l5 5 5-5M5 21h14',
+      supresion: 'M4 7h16M10 11v6M14 11v6M6 7l1 13a2 2 0 0 0 2 1h6a2 2 0 0 0 2-1l1-13M9 7V4h6v3'
+    };
+    const I = (n, k) => ({ n, d: D[k] });
+    return {
+      accent: ink,
+      ink,
+      keyD: D.huella,
+      groups: [
+        { name: 'Navegación', icons: [I('Inicio', 'inicio'), I('Fichar', 'fichar'), I('Solicitudes', 'solicitudes'), I('Documentos', 'docs'), I('Asistente', 'asistente'), I('Mis datos', 'misdatos')] },
+        { name: 'Fichaje', icons: [I('Geovalla', 'geo'), I('QR de sede', 'qr'), I('NFC', 'nfc'), I('Sin conexión', 'offline'), I('Entrada', 'entrada'), I('Salida', 'salida')] },
+        { name: 'Solicitudes y gastos', icons: [I('Vacaciones', 'vacaciones'), I('Permiso', 'permiso'), I('Horas extra', 'extra'), I('Fichaje olvidado', 'olvidado'), I('Gasto', 'gasto'), I('Cambio de turno', 'turnos')] },
+        { name: 'Privacidad y seguridad', icons: [I('Cifrado E2EE', 'cifrado'), I('Passkey', 'passkey'), I('Llave / huella', 'huella'), I('Registro de accesos', 'registro'), I('Exportar datos', 'exportar'), I('Supresión', 'supresion')] }
+      ],
+      sizes: [{ px: 32, sw: 1.75 }, { px: 24, sw: 1.75 }, { px: 20, sw: 1.9 }, { px: 16, sw: 2 }],
+      tabbar: [
+        { n: 'Inicio', d: D.inicio, c: '#7FD8B2' },
+        { n: 'Fichar', d: D.fichar, c: '#9FB0A9' },
+        { n: 'Solicitudes', d: D.solicitudes, c: '#9FB0A9' },
+        { n: 'Docs', d: D.docs, c: '#9FB0A9' },
+        { n: 'Asistente', d: D.asistente, c: '#9FB0A9' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>
