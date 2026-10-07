@@ -103,7 +103,8 @@ export function DiagnosticsModal({ visible, onClose }: DiagnosticsModalProps) {
         await attempt('expo-location', 'one foreground fix (coordinates are not shown)', async () => {
           const { status } = await Location.requestForegroundPermissionsAsync();
           if (status !== 'granted') return `permission ${status}`;
-          const fix = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
+          // High = GPS: what a punch needs (Balanced uses network location, absent on emulators).
+          const fix = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.High });
           const accuracy = Math.round(fix.coords.accuracy ?? -1);
           return accuracy >= 0 ? { info: `accuracy ±${accuracy} m, mocked=${fix.mocked ?? false}` } : 'no accuracy reported';
         }),

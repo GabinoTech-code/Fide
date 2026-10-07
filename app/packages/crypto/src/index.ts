@@ -30,9 +30,11 @@ export interface Sodium {
   crypto_sign_verify_detached(signature: Uint8Array, message: Uint8Array, publicKey: Uint8Array): boolean;
   crypto_box_seal(message: Uint8Array, publicKey: Uint8Array): Uint8Array;
   crypto_box_seal_open(ciphertext: Uint8Array, publicKey: Uint8Array, privateKey: Uint8Array): Uint8Array;
+  // Associated data is passed as a string: react-native-libsodium only accepts
+  // strings there (libsodium-wrappers UTF-8-encodes them, so the bytes match).
   crypto_aead_xchacha20poly1305_ietf_encrypt(
     message: Uint8Array,
-    additionalData: Uint8Array | null,
+    additionalData: string,
     secretNonce: null,
     publicNonce: Uint8Array,
     key: Uint8Array,
@@ -40,7 +42,7 @@ export interface Sodium {
   crypto_aead_xchacha20poly1305_ietf_decrypt(
     secretNonce: null,
     ciphertext: Uint8Array,
-    additionalData: Uint8Array | null,
+    additionalData: string,
     publicNonce: Uint8Array,
     key: Uint8Array,
   ): Uint8Array;
@@ -133,7 +135,7 @@ export function encryptDocument(
   const nonce = sodium.randombytes_buf(24);
   const ciphertext = sodium.crypto_aead_xchacha20poly1305_ietf_encrypt(
     input.plaintext,
-    utf8(documentAssociatedData(input.documentId, input.memberId)),
+    documentAssociatedData(input.documentId, input.memberId),
     null,
     nonce,
     fileKey,
@@ -186,7 +188,7 @@ export function decryptDocument(
     return sodium.crypto_aead_xchacha20poly1305_ietf_decrypt(
       null,
       input.ciphertext,
-      utf8(documentAssociatedData(input.documentId, input.memberId)),
+      documentAssociatedData(input.documentId, input.memberId),
       fromBase64(input.nonce),
       fileKey,
     );

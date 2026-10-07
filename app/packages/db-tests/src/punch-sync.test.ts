@@ -19,7 +19,11 @@ beforeAll(async () => {
 afterAll(async () => db?.close());
 
 const { users, members } = seed;
-const NOW = new Date('2026-10-07T08:00:30.000Z');
+// Times are relative to the real clock, because device keys get the database's
+// now() as created_at. T0 is a kiosk-window boundary one hour ahead.
+const T0 = Math.floor((Date.now() + 3_600_000) / 30_000) * 30_000;
+const at = (offsetMs: number) => new Date(T0 + offsetMs).toISOString();
+const NOW = new Date(T0 + 30_000);
 
 function deps(s: Session, now = NOW): PunchSyncDeps {
   // Each PostgREST RPC runs in its own transaction; a savepoint gives the same
@@ -55,7 +59,7 @@ function geoPunch(keyId: string, over: Partial<PunchFields> = {}): PunchFields {
     client_punch_id: randomUUID(),
     company_id: seed.aurora,
     device_key_id: keyId,
-    device_ts: '2026-10-07T08:00:00.000Z',
+    device_ts: at(0),
     in_geofence: true,
     member_id: members.marco,
     method: 'geo',
@@ -136,9 +140,9 @@ describe('punch-sync', () => {
   it('flags late syncs and refuses timestamps from the future', async () => {
     await inTx(db, async (s) => {
       const { keys, keyId } = await enrolMarco(s);
-      const results = await syncPunches(deps(s, new Date('2026-10-07T09:00:00.000Z')), users.marco, [
-        signed(geoPunch(keyId, { device_ts: '2026-10-07T08:00:00.000Z' }), keys),
-        signed(geoPunch(keyId, { device_ts: '2026-10-07T09:10:00.000Z', punch_type: 'out' }), keys),
+      const results = await syncPunches(deps(s, new Date(T0 + 3_600_000)), users.marco, [
+        signed(geoPunch(keyId, { device_ts: at(0) }), keys),
+        signed(geoPunch(keyId, { device_ts: at(4_200_000), punch_type: 'out' }), keys),
       ]);
       expect(results[0]).toMatchObject({ ok: true, flags: ['late_sync'] });
       expect(results[1]).toMatchObject({ ok: false, error: 'device_ts_in_future' });
@@ -148,7 +152,7 @@ describe('punch-sync', () => {
   it('accepts a fresh kiosk QR once and refuses forged, stale or replayed ones', async () => {
     await inTx(db, async (s) => {
       const { keys, keyId } = await enrolMarco(s);
-      const unix = Date.parse('2026-10-07T08:00:00.000Z') / 1000;
+      const unix = T0 / 1000;
       const token = await kioskToken(s, unix);
       const qr = (over: Partial<PunchFields> = {}) =>
         geoPunch(keyId, { method: 'qr', in_geofence: null, qr_token: token, site_id: seed.sites.magazzino, ...over });
@@ -156,7 +160,7 @@ describe('punch-sync', () => {
       const results = await syncPunches(deps(s), users.marco, [
         signed(qr(), keys),
         signed(qr(), keys), // same window again, new client id
-        signed(qr({ device_ts: '2026-10-07T07:55:00.000Z' }), keys), // photo taken 5 minutes earlier
+        signed(qr({ device_ts: at(-300_000) }), keys), // photo taken 5 minutes earlier
         signed(qr({ qr_token: token.slice(0, -3) + 'AAA' }), keys),
         signed(qr({ site_id: seed.sites.milano }), keys),
       ]);
@@ -182,7 +186,7 @@ describe('punch-sync', () => {
       await expect(syncPunches(deps(s), users.marco, Array(51).fill({}))).rejects.toThrow();
       const results = await syncPunches(deps(s), users.marco, [
         { nonsense: true },
-        { ...signed(geoPunch(keyId), keys), device_ts: '2026-10-07T08:00:00Z' },
+        { ...signed(geoPunch(keyId), keys), device_ts: at(0).replace('.000Z', 'Z') },
         { ...signed(geoPunch(keyId), keys), signature: 'AAAA' },
         { ...signed(geoPunch(keyId), keys), qr_token: 'FIDE1.x' },
       ]);

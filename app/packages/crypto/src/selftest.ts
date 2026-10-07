@@ -77,16 +77,21 @@ export function runCryptoSelfTest(sodium: SelfTestSodium): SelfTestResult[] {
     check('XChaCha20-Poly1305 vector', () => {
       const ct = sodium.crypto_aead_xchacha20poly1305_ietf_encrypt(
         utf8('%PDF-1.7 fide vector'),
-        utf8(AEAD_AD),
+        AEAD_AD,
         null,
         fill(24, 4),
         fill(32, 3),
       );
       return same(toBase64(ct), EXPECTED.aeadCiphertext);
     }),
-    check('XChaCha20-Poly1305 rejects a wrong associated data', () => {
+    check('XChaCha20-Poly1305 decrypts, and rejects a wrong associated data', () => {
+      const decrypt = (ad: string) =>
+        sodium.crypto_aead_xchacha20poly1305_ietf_decrypt(null, fromBase64(EXPECTED.aeadCiphertext), ad, fill(24, 4), fill(32, 3));
+      // The right AD must work first, so a binding error can't pass as a rejection.
+      const plain = new TextDecoder().decode(decrypt(AEAD_AD));
+      if (plain !== '%PDF-1.7 fide vector') return `decrypted to ${plain}`;
       try {
-        sodium.crypto_aead_xchacha20poly1305_ietf_decrypt(null, fromBase64(EXPECTED.aeadCiphertext), utf8(AEAD_AD + 'x'), fill(24, 4), fill(32, 3));
+        decrypt(AEAD_AD + 'x');
         return 'decrypted with the wrong AD';
       } catch {
         return true;
