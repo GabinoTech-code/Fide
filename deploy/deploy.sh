@@ -4,9 +4,10 @@
 #   FIDE_DEPLOY_HOST=fide-web ./deploy/deploy.sh
 #
 # FIDE_DEPLOY_HOST is an ssh host alias with key authentication (no passwords
-# here). The server needs Docker Compose and a one-time setup (deploy/README.md).
-# Each run uploads a new release next to the previous ones and switches to it;
-# rolling back means pointing `www` at an older release (deploy/README.md).
+# here). It only uploads static files: the nginx config is installed once, by an
+# administrator, as described in deploy/README.md. Each run uploads a new
+# release next to the previous ones and points `www` at it; nginx serves the new
+# files immediately (no reload). Rolling back = pointing `www` at an older release.
 set -euo pipefail
 
 host="${FIDE_DEPLOY_HOST:?set FIDE_DEPLOY_HOST to an ssh host alias (see deploy/README.md)}"
@@ -28,17 +29,14 @@ release="$(date -u +%Y%m%d%H%M%S)"
 target="$dir/releases/$release"
 echo "Uploading release $release to $host:$dir"
 ssh "$host" "mkdir -p '$target/site' '$target/portal'"
-# Cloudflare-only files stay behind; Caddy has its own copy of those rules.
+# Cloudflare-only files stay behind; nginx has its own copy of those rules.
 tar -C apps/site/dist --exclude=./_headers --exclude=./_redirects -cf - . | ssh "$host" "tar -C '$target/site' -xf -"
 tar -C apps/web-portal/dist --exclude=./_headers --exclude=./_redirects -cf - . | ssh "$host" "tar -C '$target/portal' -xf -"
-tar -C "$repo/deploy/caddy" -cf - Caddyfile docker-compose.yml | ssh "$host" "tar -C '$dir' -xf -"
 
-# Switch, recreate the container (bind mounts resolve the symlink at start;
-# certificates live in a volume, so this takes a second), keep 5 releases.
+# Atomic switch (rename over the old symlink), then keep the last 5 releases.
 ssh "$host" "set -e
   cd '$dir'
-  ln -sfn 'releases/$release' www
-  docker compose up -d --force-recreate --remove-orphans
+  ln -sfn 'releases/$release' www.next && mv -T www.next www
   ls -1dt releases/* | tail -n +6 | xargs -r rm -rf"
 
 echo "Published $release. Check: curl -sI https://fide-work.it https://app.fide-work.it"

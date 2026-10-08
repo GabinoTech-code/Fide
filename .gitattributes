@@ -1,5 +1,4 @@
 # Files run or parsed on Linux keep LF on every checkout (core.autocrlf would
 # turn them into CRLF on Windows, which breaks bash and the server configs).
 *.sh text eol=lf
-deploy/caddy/Caddyfile text eol=lf
-deploy/caddy/*.yml text eol=lf
+deploy/nginx/*.conf text eol=lf

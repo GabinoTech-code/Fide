@@ -12,7 +12,7 @@
     "test": "vitest run",
     "audit": "node scripts/audit.mjs",
     "sync-shared": "node scripts/sync-shared.mjs",
-    "gen:caddy": "node scripts/gen-caddyfile.mjs"
+    "gen:nginx": "node scripts/gen-nginx.mjs"
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.8",

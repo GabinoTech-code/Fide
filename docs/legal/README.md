@@ -18,7 +18,7 @@ dell'uso con clienti di dimensioni medio-grandi.
 | --- | --- |
 | Accordo art. 28 firmato con ogni cliente | Modello pronto |
 | Registro dei trattamenti | Modelli pronti (CSV) |
-| Server nell'UE | Database Supabase in regione UE (Irlanda). Sito e portale: server nell'UE da confermare |
+| Server nell'UE | Database Supabase in regione UE (Irlanda). Sito e portale: Hetzner, Finlandia (UE) |
 | Nessuna geolocalizzazione continua (art. 4 L. 300/1970) | QR come modalità predefinita; posizione disattivata per sede, letta una sola volta e mai inviata |
 | Nessuna biometria | Nessuna impronta né riconoscimento facciale: basta lo sblocco del telefono con PIN, verificato dal sistema operativo |
 | Nessuna IA che decide sulle persone | Il servizio non contiene IA |
