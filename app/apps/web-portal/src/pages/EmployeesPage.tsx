@@ -4,20 +4,13 @@ import QRCode from 'qrcode';
 import { isValidCodiceFiscale, normalizeCodiceFiscale } from '@fide/shared';
 import { useAuth } from '../auth/AuthProvider';
 import { ImportEmployees } from '../components/ImportEmployees';
+import { MemberPanel } from '../components/MemberPanel';
 import { ErrorNotice, Modal, PageHead } from '../components/ui';
 import { useI18n, type MessageKey } from '../lib/i18n';
+import { activeKey, one } from '../lib/members';
 import { useMembers, useSites } from '../lib/queries';
 import { callFunction, supabase } from '../lib/supabase';
 import type { Member } from '../lib/types';
-
-/** PostgREST returns embedded one-to-one rows as an object or a one-element array. */
-export function one<T>(value: T | T[] | null | undefined): T | null {
-  return Array.isArray(value) ? (value[0] ?? null) : (value ?? null);
-}
-
-export function activeKey(m: Member) {
-  return (m.device_keys ?? []).find((k) => k.status === 'active') ?? null;
-}
 
 export function EmployeesPage() {
   const { t } = useI18n();
@@ -26,6 +19,9 @@ export function EmployeesPage() {
   const [adding, setAdding] = useState(false);
   const [importing, setImporting] = useState(false);
   const [inviting, setInviting] = useState<Member | null>(null);
+  const [managingId, setManagingId] = useState<string | null>(null);
+  // Re-read from the list so the panel shows fresh data after each change.
+  const managing = members.find((m) => m.id === managingId) ?? null;
   const siteName = new Map(sites.map((s) => [s.id, s.name]));
 
   return (
@@ -73,7 +69,9 @@ export function EmployeesPage() {
                       <td className="small">{t(`role.${m.role}` as MessageKey)}</td>
                       <td className="small">{m.site_id ? siteName.get(m.site_id) : '—'}</td>
                       <td>
-                        <span className={`badge ${m.status === 'active' ? '' : 'badge-muted'}`}>{t(`status.${m.status}` as MessageKey)}</span>
+                        <span className={`badge ${m.status === 'active' ? '' : m.status === 'terminated' ? 'badge-warn' : 'badge-muted'}`}>
+                          {t(`status.${m.status}` as MessageKey)}
+                        </span>
                       </td>
                       <td>
                         {key ? (
@@ -85,11 +83,18 @@ export function EmployeesPage() {
                         )}
                       </td>
                       <td>
-                        {m.status === 'invited' ? (
-                          <button className="btn btn-sm" onClick={() => setInviting(m)}>
-                            {t('employees.invite')}
-                          </button>
-                        ) : null}
+                        <div className="row" style={{ justifyContent: 'flex-end', flexWrap: 'nowrap' }}>
+                          {m.status === 'invited' ? (
+                            <button className="btn btn-sm" onClick={() => setInviting(m)}>
+                              {t('employees.invite')}
+                            </button>
+                          ) : null}
+                          {m.status !== 'erased' ? (
+                            <button className="btn btn-sm" onClick={() => setManagingId(m.id)}>
+                              {t('employees.manage')}
+                            </button>
+                          ) : null}
+                        </div>
                       </td>
                     </tr>
                   );
@@ -102,6 +107,7 @@ export function EmployeesPage() {
       {adding ? <AddEmployee onClose={() => setAdding(false)} /> : null}
       {importing ? <ImportEmployees onClose={() => setImporting(false)} /> : null}
       {inviting ? <InviteEmployee member={inviting} onClose={() => setInviting(null)} /> : null}
+      {managing ? <MemberPanel member={managing} onClose={() => setManagingId(null)} /> : null}
     </>
   );
 }

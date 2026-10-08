@@ -18,6 +18,23 @@ const KNOWN: Record<string, MessageKey> = {
   crypto_selftest_failed: 'payroll.cryptoBroken',
   pairing_code_invalid: 'error.pairingCodeInvalid',
   not_pending: 'error.notPending',
+  termination_date_required: 'error.terminationDateRequired',
+  termination_date_invalid: 'error.terminationDateInvalid',
+  email_locked: 'error.emailLocked',
+  manager_invalid: 'error.managerInvalid',
+  member_erased: 'error.memberErased',
+  self_entry: 'error.selfEntry',
+  member_not_active: 'error.memberNotActive',
+  reason_required: 'error.reasonRequired',
+  ts_in_future: 'error.tsInFuture',
+  protocol_required: 'error.protocolRequired',
+  leave_type_inactive: 'error.leaveTypeInactive',
+  already_withdrawn: 'error.alreadyWithdrawn',
+  answer_required: 'error.answerRequired',
+  already_resolved: 'error.alreadyResolved',
+  already_extended: 'error.alreadyExtended',
+  deadline_passed: 'error.deadlinePassed',
+  member_not_terminated: 'error.memberNotTerminated',
 };
 
 export function errorKey(err: unknown): MessageKey {

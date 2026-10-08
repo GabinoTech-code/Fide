@@ -1,7 +1,7 @@
 // Row shapes used by the portal. Replace with the generated
 // app/packages/shared/src/database.types.ts once the CI publishes it.
 export type MemberRole = 'employee' | 'manager' | 'hr_admin' | 'company_owner';
-export type MemberStatus = 'invited' | 'active' | 'suspended' | 'erased';
+export type MemberStatus = 'invited' | 'active' | 'suspended' | 'terminated' | 'erased';
 
 export interface Company {
   id: string;
@@ -34,6 +34,10 @@ export interface Member {
   site_id: string | null;
   manager_member_id: string | null;
   employee_number: string | null;
+  preferred_language: string;
+  /** Last working day, for status 'terminated'. */
+  terminated_on: string | null;
+  status_changed_at: string | null;
   member_identities: { email: string | null; codice_fiscale: string | null } | null;
   device_keys: Array<{
     id: string;
@@ -114,6 +118,42 @@ export interface PayrollBatch {
   status: 'draft' | 'published';
   created_at: string;
   published_at: string | null;
-  /** Documents of the batch, for delivery tracking (opened on the phone or not). */
-  documents: Array<{ id: string; status: string; first_opened_at: string | null }>;
+  /** Documents of the batch, for delivery tracking (opened on the phone or not) and withdrawal. */
+  documents: BatchDocument[];
+}
+
+export interface LeaveType {
+  id: string;
+  code: string;
+  name: string;
+  unit: 'days' | 'hours';
+  requires_protocol: boolean;
+  active: boolean;
+}
+
+export type GdprKind = 'access' | 'portability' | 'erasure' | 'rectification' | 'objection';
+export type GdprStatus = 'pending' | 'in_progress' | 'completed' | 'rejected';
+
+export interface GdprRequest {
+  id: string;
+  member_id: string;
+  kind: GdprKind;
+  details: string | null;
+  status: GdprStatus;
+  created_at: string;
+  due_at: string;
+  extended_at: string | null;
+  extension_note: string | null;
+  resolution_note: string | null;
+  resolved_at: string | null;
+}
+
+export interface BatchDocument {
+  id: string;
+  batch_id: string;
+  member_id: string;
+  title: string;
+  status: 'draft' | 'published' | 'superseded' | 'deleted';
+  first_opened_at: string | null;
+  storage_path: string;
 }
