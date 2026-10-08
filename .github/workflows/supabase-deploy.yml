@@ -43,7 +43,9 @@ jobs:
 
       - uses: supabase/setup-cli@v1
         with:
-          version: latest
+          # Pinned: "latest" asks the GitHub API on every run and fails when its
+          # rate limit is hit. Bump deliberately.
+          version: 2.120.0
 
       - run: supabase link --project-ref "$SUPABASE_PROJECT_REF"
 

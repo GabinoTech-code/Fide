@@ -19,11 +19,19 @@ jobs:
     name: Docs sync gate
     runs-on: ubuntu-latest
     steps:
+      # Dependabot only bumps versions; it cannot write a "Docs:" line. The
+      # check still reports success, so the required status is satisfied.
+      - name: Dependabot version bumps need no doc
+        if: github.event.pull_request.user.login == 'dependabot[bot]'
+        run: echo "Dependabot PR - nothing to sync."
+
       - uses: actions/checkout@v4
+        if: github.event.pull_request.user.login != 'dependabot[bot]'
         with:
           fetch-depth: 0
 
       - name: Require a doc change or an explicit Docs-none declaration
+        if: github.event.pull_request.user.login != 'dependabot[bot]'
         env:
           PR_BODY: ${{ github.event.pull_request.body }}
           BASE_REF: ${{ github.base_ref }}
