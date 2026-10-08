@@ -26,6 +26,9 @@ Deno.serve(
     const link = `${siteUrl}/invite/${token}`;
 
     let emailed = false;
+    // Brevo's HTTP status and error code (e.g. "401 unauthorized"), never the
+    // address or the link: lets HR and us see why an e-mail did not go out.
+    let emailError: string | undefined;
     if (body.send_email === true && brevoKey) {
       const { data, error } = await client
         .from('members')
@@ -35,15 +38,17 @@ Deno.serve(
       if (error || !data) throw new Error(`member lookup: ${error?.message}`);
       const company = (data.companies as unknown as { legal_name: string }).legal_name;
       const email = (data.member_identities as unknown as { email: string }).email;
-      emailed = await sendInvitation(email, data.full_name as string, company, link);
+      emailError = await sendInvitation(email, data.full_name as string, company, link);
+      emailed = emailError === undefined;
     } else if (body.send_email === true) {
       throw new HttpError(501, 'email_not_configured');
     }
-    return { link, emailed };
+    return { link, emailed, ...(emailError ? { email_error: emailError } : {}) };
   }),
 );
 
-async function sendInvitation(to: string, name: string, company: string, link: string): Promise<boolean> {
+/** Sends the invitation; returns undefined when Brevo accepted it, otherwise a short error code. */
+async function sendInvitation(to: string, name: string, company: string, link: string): Promise<string | undefined> {
   const res = await fetch('https://api.brevo.com/v3/smtp/email', {
     method: 'POST',
     headers: { 'api-key': brevoKey!, 'Content-Type': 'application/json', Accept: 'application/json' },
@@ -58,8 +63,15 @@ async function sendInvitation(to: string, name: string, company: string, link: s
     }),
   });
   if (!res.ok) {
-    console.error('brevo', res.status, await res.text());
-    return false;
+    const text = await res.text();
+    console.error('brevo', res.status, text);
+    let code = '';
+    try {
+      code = String((JSON.parse(text) as { code?: unknown }).code ?? '');
+    } catch {
+      // Not JSON: the status alone is enough.
+    }
+    return `${res.status}${code ? ` ${code.slice(0, 40)}` : ''}`;
   }
-  return true;
+  return undefined;
 }

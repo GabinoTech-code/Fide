@@ -189,6 +189,7 @@ function InviteEmployee({ member, onClose }: { member: Member; onClose: () => vo
   const [qr, setQr] = useState<string | null>(null);
   // 'none': link only; 'sent': Brevo accepted it; 'failed': asked for e-mail but it did not go out.
   const [mail, setMail] = useState<'none' | 'sent' | 'failed'>('none');
+  const [mailError, setMailError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState<unknown>(null);
   const [busy, setBusy] = useState(false);
@@ -203,13 +204,14 @@ function InviteEmployee({ member, onClose }: { member: Member; onClose: () => vo
     setBusy(true);
     setError(null);
     try {
-      const res = await callFunction<{ link: string; emailed: boolean }>('invite-employee', {
+      const res = await callFunction<{ link: string; emailed: boolean; email_error?: string }>('invite-employee', {
         member_id: member.id,
         send_email: sendEmail,
       });
       setLink(res.link);
       setCopied(false);
       setMail(!sendEmail ? 'none' : res.emailed ? 'sent' : 'failed');
+      setMailError(res.email_error ?? null);
     } catch (err) {
       setError(err);
     } finally {
@@ -251,6 +253,7 @@ function InviteEmployee({ member, onClose }: { member: Member; onClose: () => vo
           {mail === 'failed' ? (
             <div className="notice notice-warn" role="alert">
               {t('employees.inviteEmailFailed')}
+              {mailError ? <span className="mono"> ({mailError})</span> : null}
             </div>
           ) : null}
           {mail !== 'sent' ? (
