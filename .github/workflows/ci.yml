@@ -74,7 +74,7 @@ jobs:
 
       # Becomes a drift check (git diff --exit-code) once the file is committed
       # to app/packages/shared/src/database.types.ts.
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: database-types
           path: database.types.ts
