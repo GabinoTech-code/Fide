@@ -47,6 +47,17 @@ updates:
         update-types: [version-update:semver-major, version-update:semver-minor]
       - dependency-name: "react-native-*"
         update-types: [version-update:semver-major]
+      # Scoped native modules follow the Expo SDK too: SDK 57 bundles
+      # async-storage 2.2.0, and 3.x breaks the native build (PR #12).
+      - dependency-name: "@react-native-async-storage/*"
+        update-types: [version-update:semver-major]
+      - dependency-name: "@react-native-community/*"
+        update-types: [version-update:semver-major]
+      # eslint 10 breaks eslint-plugin-react inside eslint-config-expo
+      # ("contextOrFilename.getFilename is not a function", PR #13). Move it
+      # together with eslint-config-expo, then drop this rule.
+      - dependency-name: eslint
+        update-types: [version-update:semver-major]
       # react and react-dom are pinned to the version React Native bundles.
       - dependency-name: react
         update-types: [version-update:semver-major, version-update:semver-minor]
