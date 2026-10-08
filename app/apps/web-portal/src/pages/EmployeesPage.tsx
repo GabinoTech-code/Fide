@@ -187,7 +187,8 @@ function InviteEmployee({ member, onClose }: { member: Member; onClose: () => vo
   const { t } = useI18n();
   const [link, setLink] = useState<string | null>(null);
   const [qr, setQr] = useState<string | null>(null);
-  const [emailed, setEmailed] = useState(false);
+  // 'none': link only; 'sent': Brevo accepted it; 'failed': asked for e-mail but it did not go out.
+  const [mail, setMail] = useState<'none' | 'sent' | 'failed'>('none');
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState<unknown>(null);
   const [busy, setBusy] = useState(false);
@@ -197,6 +198,7 @@ function InviteEmployee({ member, onClose }: { member: Member; onClose: () => vo
     if (link) QRCode.toDataURL(link, { margin: 1, width: 240, color: { dark: '#0F1A17', light: '#FFFFFF' } }).then(setQr);
   }, [link]);
 
+  // Every call creates a new invitation and revokes the previous link.
   const create = async (sendEmail: boolean) => {
     setBusy(true);
     setError(null);
@@ -206,13 +208,22 @@ function InviteEmployee({ member, onClose }: { member: Member; onClose: () => vo
         send_email: sendEmail,
       });
       setLink(res.link);
-      setEmailed(res.emailed);
+      setCopied(false);
+      setMail(!sendEmail ? 'none' : res.emailed ? 'sent' : 'failed');
     } catch (err) {
       setError(err);
     } finally {
       setBusy(false);
     }
   };
+
+  if (!email) {
+    return (
+      <Modal title={t('employees.inviteTitle', { name: member.full_name })} onClose={onClose}>
+        <div className="notice notice-warn">{t('employees.inviteNoEmail')}</div>
+      </Modal>
+    );
+  }
 
   return (
     <Modal title={t('employees.inviteTitle', { name: member.full_name })} onClose={onClose}>
@@ -232,15 +243,32 @@ function InviteEmployee({ member, onClose }: { member: Member; onClose: () => vo
               {copied ? t('common.copied') : t('common.copy')}
             </button>
           </div>
-          {emailed ? <div className="notice">{t('employees.inviteEmailed')}</div> : null}
+          {mail === 'sent' ? (
+            <div className="notice" role="status">
+              {t('employees.inviteEmailed', { email })}
+            </div>
+          ) : null}
+          {mail === 'failed' ? (
+            <div className="notice notice-warn" role="alert">
+              {t('employees.inviteEmailFailed')}
+            </div>
+          ) : null}
+          {mail !== 'sent' ? (
+            <div className="row">
+              <button className="btn" disabled={busy} onClick={() => create(true)}>
+                {mail === 'failed' ? t('common.retry') : t('employees.inviteEmail')}
+              </button>
+              <span className="muted small">{t('employees.inviteNewLinkHint')}</span>
+            </div>
+          ) : null}
         </div>
       ) : (
         <div className="row">
-          <button className="btn btn-primary" disabled={busy} onClick={() => create(false)}>
-            {t('employees.invite')}
+          <button className="btn btn-primary" disabled={busy} onClick={() => create(true)}>
+            {t('employees.inviteSend')}
           </button>
-          <button className="btn" disabled={busy} onClick={() => create(true)}>
-            {t('employees.inviteEmail')}
+          <button className="btn" disabled={busy} onClick={() => create(false)}>
+            {t('employees.inviteLinkOnly')}
           </button>
         </div>
       )}
