@@ -25,7 +25,7 @@ jobs:
         if: github.event.pull_request.user.login == 'dependabot[bot]'
         run: echo "Dependabot PR - nothing to sync."
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         if: github.event.pull_request.user.login != 'dependabot[bot]'
         with:
           fetch-depth: 0
