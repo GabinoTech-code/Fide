@@ -1,94 +1,103 @@
-# Despliegue de la web y el portal en un servidor propio
+# Despliegue de la web y el portal en el servidor propio
 
 La web pública (`fide-work.it`, con `/invite/*` y los ficheros `/.well-known` de las passkeys y los App Links) y el
-portal de HR (`app.fide-work.it`) son **ficheros estáticos**. Aquí se sirven con [Caddy](https://caddyserver.com) en
-un contenedor, que además obtiene y renueva los certificados HTTPS. La base de datos y las funciones siguen en
-Supabase (UE).
+portal de HR (`app.fide-work.it`) son **ficheros estáticos**. Los sirve el **nginx que ya existe** en el servidor de
+AegisLink (Hetzner, Helsinki: `157.180.116.176`), con bloques `server` propios y certificado de Let's Encrypt. La base
+de datos y las funciones siguen en Supabase (UE).
 
-El `Caddyfile` **no se edita a mano**: se genera con `npm run gen:caddy` (en `app/`) desde
-`app/packages/shared/src/security-headers.ts`, la misma fuente que usan Cloudflare y `vite preview`, y un test falla
-si se desincroniza.
+`deploy/nginx/fide.conf` **no se edita a mano**: se genera con `npm run gen:nginx` (en `app/`) desde
+`app/packages/shared/src/security-headers.ts`, la misma fuente que usan Cloudflare y `vite preview`. Un test falla si
+se desincroniza o si algún `location` pierde las cabeceras de seguridad.
 
-## Antes de usar el servidor de coturn de AegisLink
+## Convivencia con AegisLink
 
-Se puede compartir, pero comprueba esto antes. Afecta a AegisLink, no solo a Fide.
+En ese servidor nginx ya atiende `aegislink.duckdns.org`, `aegis-link.it` y `www.aegis-link.it` en 80, 443 y 8443.
+La configuración de Fide:
 
-1. **Puertos.** Caddy necesita 80/tcp (para obtener el certificado) y 443/tcp. Muchos coturn escuchan TURN sobre
-   TLS en **443** para atravesar firewalls de empresa. Compruébalo en el servidor:
+- solo responde a sus dominios (`server_name`), sin `default_server`, así que no cambia lo que reciben los otros;
+- escucha **solo IPv4** y **sin `http2`**, como los sitios existentes. Un `listen [::]` o `http2` en un bloque nuevo
+  cambiaría los sockets que comparten. Por la misma razón, no crees registros AAAA para los dominios de Fide;
+- sirve ficheros de `/opt/fide-web`, sin procesos nuevos ni puertos nuevos;
+- se valida con `nginx -t` antes de recargar. Si falla, nginx sigue con la configuración anterior.
 
-   ```bash
-   sudo ss -tulpn | grep -E ':(80|443)\b'
-   ```
+## Instalación (una sola vez, como administrador)
 
-   Si coturn usa 443, hay tres opciones:
-   - mover TURN-TLS solo a 5349, si los clientes de AegisLink no lo necesitan en 443;
-   - usar una segunda IP para la web;
-   - poner delante un enrutador por SNI (HAProxy o el módulo `stream` de nginx) que mande `fide-work.it` a Caddy y el
-     dominio TURN a coturn.
+**1. DNS en register.it.** Registros **A** (no AAAA) de `fide-work.it`, `www` y `app` hacia `157.180.116.176`.
+Comprueba que resuelven antes del paso 4:
 
-   No cambies coturn sin probar antes las llamadas de AegisLink.
-2. **Ubicación en la UE.** El servidor debe estar en la Unión Europea, como dice el acuerdo art. 28 (allegato 3).
-   Apunta el proveedor (por ejemplo Hetzner u OVH) en `docs/legal/DPA_GDPR_Art28.md`.
-3. **Aislamiento.** El contenedor es de solo lectura, no tiene más permisos que abrir 80/443, monta la web en solo
-   lectura y tiene límites de CPU y memoria. No toca la configuración ni los secretos de coturn. Usa un usuario de
-   despliegue propio, que no pueda leer `/etc/turnserver.conf`.
-4. **Ataques.** Sin Cloudflare delante, un ataque contra la web llega al mismo servidor que las llamadas de AegisLink.
-   Los límites del contenedor protegen la CPU y la memoria, no el ancho de banda.
+```powershell
+nslookup fide-work.it 1.1.1.1
+```
 
-## Preparación del servidor (una sola vez)
+**2. Copiar la configuración al servidor** desde la raíz del repo, en tu PC:
+
+```powershell
+scp -i $HOME\.ssh\aegislink_hetzner deploy/nginx/fide-bootstrap.conf deploy/nginx/fide.conf root@157.180.116.176:/tmp/
+```
+
+**3. En el servidor:** carpetas, configuración solo de puerto 80 y recarga.
 
 ```bash
-# Como administrador
-sudo adduser --disabled-password fide-deploy
-sudo usermod -aG docker fide-deploy
-sudo mkdir -p /opt/fide-web && sudo chown fide-deploy: /opt/fide-web
-# Abrir 80 y 443 si hay firewall (ufw)
-sudo ufw allow 80/tcp && sudo ufw allow 443/tcp
+mkdir -p /opt/fide-web/releases /var/www/letsencrypt
+cp /tmp/fide-bootstrap.conf /etc/nginx/sites-available/fide
+ln -s /etc/nginx/sites-available/fide /etc/nginx/sites-enabled/fide
+nginx -t && systemctl reload nginx
 ```
 
-Como `fide-deploy`, crea `/opt/fide-web/.env` con el e-mail de la cuenta de Let's Encrypt:
+**4. Certificado** para los tres dominios. Certbot pide un email y que aceptes sus condiciones; renueva solo y
+recarga nginx al renovar:
 
 ```bash
-echo 'ACME_EMAIL=tu-email@ejemplo.it' > /opt/fide-web/.env
-# Si 80/443 están ocupados y usas un enrutador SNI delante: FIDE_HTTP_PORT=8080 y FIDE_HTTPS_PORT=8443
+certbot certonly --webroot -w /var/www/letsencrypt --cert-name fide-work.it \
+  -d fide-work.it -d www.fide-work.it -d app.fide-work.it \
+  --deploy-hook "systemctl reload nginx"
 ```
 
-**DNS.** Registros A (y AAAA si hay IPv6) de `fide-work.it`, `www.fide-work.it` y `app.fide-work.it` hacia la IP del
-servidor. Caddy pide los certificados la primera vez que arranca.
+**5. Configuración completa** con HTTPS:
 
-**SSH desde tu PC.** Clave de SSH para `fide-deploy` y un alias en `~/.ssh/config`:
-
-```
-Host fide-web
-  HostName <ip-del-servidor>
-  User fide-deploy
-  IdentityFile ~/.ssh/fide_deploy
+```bash
+cp /tmp/fide.conf /etc/nginx/sites-available/fide
+nginx -t && systemctl reload nginx
 ```
 
-## Publicar
+Cuando cambien las reglas de seguridad, repite los pasos 2 y 5 con el `fide.conf` regenerado.
 
-En `app/apps/web-portal/.env.production` (no se sube al repo) pon los datos del proyecto Supabase:
+## Publicar una versión
+
+En `app/apps/web-portal/.env.production` (no se sube al repo):
 
 ```
 VITE_SUPABASE_URL=https://saehchpgnbcciqimrqsj.supabase.co
-VITE_SUPABASE_PUBLISHABLE_KEY=<clave publicable>
+VITE_SUPABASE_PUBLISHABLE_KEY=<clave publicable de Project Settings → API Keys>
 ```
 
-Después, desde la raíz del repo (Git Bash):
+Un alias SSH en `C:\Users\<tú>\.ssh\config`:
+
+```
+Host fide-web
+  HostName 157.180.116.176
+  User root
+  IdentityFile ~/.ssh/aegislink_hetzner
+```
+
+Después, desde la raíz del repo, **en Git Bash**:
 
 ```bash
 FIDE_DEPLOY_HOST=fide-web ./deploy/deploy.sh
 ```
 
-El script compila la web y el portal, los sube a `/opt/fide-web/releases/<fecha>`, apunta `www` a esa versión,
-recrea el contenedor y conserva las 5 últimas versiones.
+El script compila la web y el portal, los sube a `/opt/fide-web/releases/<fecha>` y cambia `www` a esa versión de
+forma atómica. nginx sirve los ficheros nuevos al momento y se conservan las 5 últimas versiones.
 
 **Volver a la versión anterior**, en el servidor:
 
 ```bash
 cd /opt/fide-web && ls -1t releases | head
-ln -sfn releases/<version-anterior> www && docker compose up -d --force-recreate
+ln -sfn releases/<version-anterior> www.next && mv -T www.next www
 ```
+
+**Recomendado más adelante:** un usuario `fide-deploy`, dueño solo de `/opt/fide-web` y con su propia clave, para que
+la clave de despliegue de Fide no sea la de root del servidor de AegisLink.
 
 ## Comprobaciones después de publicar
 
@@ -99,7 +108,5 @@ curl -sI https://fide-work.it/.well-known/apple-app-site-association | grep -iE 
 curl -sI https://fide-work.it/invite/prueba | grep -iE '^HTTP|x-robots|referrer'            # 200, noindex, no-referrer
 curl -sI https://app.fide-work.it/kiosk | grep -iE '^HTTP'                                  # 200 (SPA)
 curl -sI https://fide-work.it/_headers | grep -iE '^HTTP'                                   # 404
+curl -sI https://aegis-link.it | grep -iE '^HTTP'                                           # AegisLink sigue igual
 ```
-
-Después, en Supabase: añade `https://app.fide-work.it` a `FIDE_ALLOWED_ORIGINS` de las funciones y a las URL de
-redirección de Auth, y pon `FIDE_SITE_URL=https://fide-work.it`.
