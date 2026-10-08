@@ -57,7 +57,7 @@ rules:
       golden-rule: 'principio — ubicación mínima'
     paths:
       include:
-        - 'app/apps/mobile/**'
+        - '/app/apps/mobile/**'
       exclude:
         - '*.test.ts'
         - '*.test.tsx'
@@ -83,7 +83,7 @@ rules:
       golden-rule: '6 — producción falla cerrado'
     paths:
       include:
-        - 'app/apps/**'
+        - '/app/apps/**'
     pattern-regex: (?i)service[_-]?role
 
   - id: fide-no-raw-html
@@ -115,7 +115,7 @@ rules:
       exclude:
         - '*.test.ts'
         - '*.test.tsx'
-        - 'app/packages/db-tests/**'
+        - '/app/packages/db-tests/**'
     pattern: Math.random()
 
   - id: fide-no-console-log-production
@@ -131,8 +131,9 @@ rules:
       exclude:
         - '*.test.ts'
         - '*.test.tsx'
-        - 'app/scripts/**'
-        - 'app/packages/db-tests/**'
+        # CLI tools print by design (app/scripts, package scripts/ such as the payroll spike).
+        - '**/scripts/**'
+        - '/app/packages/db-tests/**'
         - '*.config.ts'
         - '*.config.js'
         - '*.config.mjs'
