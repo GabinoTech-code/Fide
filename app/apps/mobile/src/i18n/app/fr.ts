@@ -34,13 +34,13 @@ export const fr: AppMessages = {
 
   'setup.title': 'Protégez votre compte',
   'setup.body':
-    'Fide crée deux clés sur ce téléphone : l’une signe vos pointages, l’autre ouvre vos bulletins de paie. Elles ne quittent jamais ce téléphone et ne s’utilisent qu’avec votre empreinte, votre visage ou votre code PIN.',
-  'setup.lockRequired': 'Pour continuer, définissez un code PIN, une empreinte ou la reconnaissance faciale dans les réglages du téléphone.',
+    'Fide crée deux clés sur ce téléphone : l’une signe vos pointages, l’autre ouvre vos bulletins de paie. Elles ne quittent jamais ce téléphone et ne s’utilisent qu’après son déverrouillage, avec votre code PIN ou la méthode que vous utilisez déjà. Fide ne reçoit aucune donnée biométrique.',
+  'setup.lockRequired': 'Pour continuer, définissez un verrouillage de l’écran (code PIN, schéma ou mot de passe) dans les réglages du téléphone.',
   'setup.create': 'Créer mes clés',
   'setup.replaced':
     'Les clés de ce compte sont sur un autre téléphone. Si vous les créez ici, ce téléphone cessera de fonctionner et les RH devront réémettre les bulletins déjà reçus.',
-  'setup.fingerprint': 'Empreinte de votre clé',
-  'setup.fingerprintHint': 'Les RH voient la même empreinte dans le portail : elles savent ainsi que la clé est la vôtre.',
+  'setup.fingerprint': 'Code de sécurité de votre clé',
+  'setup.fingerprintHint': 'Les RH voient le même code dans le portail : elles savent ainsi que la clé est la vôtre.',
 
   'tabs.home': 'Accueil',
   'tabs.punch': 'Pointer',
@@ -139,7 +139,7 @@ export const fr: AppMessages = {
   'privacy.title': 'Mes données',
   'privacy.company': 'Entreprise',
   'privacy.device': 'Ce téléphone',
-  'privacy.fingerprintHint': 'Comparez l’empreinte avec celle que voient les RH dans le portail.',
+  'privacy.fingerprintHint': 'Comparez le code de sécurité avec celui que voient les RH dans le portail.',
   'privacy.what': 'Ce que Fide sait de vous',
   'privacy.whatBody':
     'Nom, e-mail, code fiscal, pointages, demandes et documents ouverts. Jamais votre position, jamais le contenu de vos bulletins, jamais vos données biométriques.',

@@ -34,13 +34,13 @@ export const en: AppMessages = {
 
   'setup.title': 'Protect your account',
   'setup.body':
-    'Fide creates two keys on this phone: one signs your punches, the other opens your payslips. They never leave this phone and are used only with your fingerprint, face or PIN.',
-  'setup.lockRequired': 'To continue, set a PIN, fingerprint or face unlock in your phone settings.',
+    'Fide creates two keys on this phone: one signs your punches, the other opens your payslips. They never leave this phone and are used only after you unlock it, with your PIN or the method you already use. Fide never receives biometric data.',
+  'setup.lockRequired': 'To continue, set a screen lock (PIN, pattern or password) in your phone settings.',
   'setup.create': 'Create my keys',
   'setup.replaced':
     'This account’s keys are on another phone. If you create them here, that phone will stop working and HR will need to re-issue the payslips you already received.',
-  'setup.fingerprint': 'Your key fingerprint',
-  'setup.fingerprintHint': 'HR sees the same fingerprint in the portal, so they know the key is yours.',
+  'setup.fingerprint': 'Your key’s security code',
+  'setup.fingerprintHint': 'HR sees the same code in the portal, so they know the key is yours.',
 
   'tabs.home': 'Home',
   'tabs.punch': 'Clock in',
@@ -139,7 +139,7 @@ export const en: AppMessages = {
   'privacy.title': 'My data',
   'privacy.company': 'Company',
   'privacy.device': 'This phone',
-  'privacy.fingerprintHint': 'Compare the fingerprint with the one HR sees in the portal.',
+  'privacy.fingerprintHint': 'Compare the security code with the one HR sees in the portal.',
   'privacy.what': 'What Fide knows about you',
   'privacy.whatBody':
     'Name, e-mail, tax code, punches, requests and which documents you opened. Never your location, never the content of your payslips, never your biometric data.',

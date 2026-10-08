@@ -34,13 +34,13 @@ export const es: AppMessages = {
 
   'setup.title': 'Protege tu cuenta',
   'setup.body':
-    'Fide crea dos claves en el móvil: una firma tus fichajes y la otra abre tus nóminas. Nunca salen de este móvil y solo se usan con tu huella, tu cara o tu PIN.',
-  'setup.lockRequired': 'Para continuar, configura un PIN, una huella o el reconocimiento facial en los ajustes del móvil.',
+    'Fide crea dos claves en el móvil: una firma tus fichajes y la otra abre tus nóminas. Nunca salen de este móvil y solo se usan tras desbloquearlo, con tu PIN o el método que ya usas. Fide no recibe datos biométricos.',
+  'setup.lockRequired': 'Para continuar, configura un bloqueo de pantalla (PIN, patrón o contraseña) en los ajustes del móvil.',
   'setup.create': 'Crear mis claves',
   'setup.replaced':
     'Las claves de esta cuenta están en otro móvil. Si las creas aquí, ese móvil dejará de funcionar y RR. HH. tendrá que volver a emitir las nóminas ya recibidas.',
-  'setup.fingerprint': 'Huella de tu clave',
-  'setup.fingerprintHint': 'RR. HH. ve la misma huella en el portal: así sabe que la clave es tuya.',
+  'setup.fingerprint': 'Código de seguridad de tu clave',
+  'setup.fingerprintHint': 'RR. HH. ve el mismo código en el portal: así sabe que la clave es tuya.',
 
   'tabs.home': 'Inicio',
   'tabs.punch': 'Fichar',
@@ -139,7 +139,7 @@ export const es: AppMessages = {
   'privacy.title': 'Mis datos',
   'privacy.company': 'Empresa',
   'privacy.device': 'Este móvil',
-  'privacy.fingerprintHint': 'Compara la huella con la que ve RR. HH. en el portal.',
+  'privacy.fingerprintHint': 'Compara el código de seguridad con el que ve RR. HH. en el portal.',
   'privacy.what': 'Qué sabe Fide de ti',
   'privacy.whatBody':
     'Nombre, e-mail, codice fiscale, fichajes, solicitudes y qué documentos has abierto. Nunca tu ubicación, nunca el contenido de tus nóminas, nunca tus datos biométricos.',

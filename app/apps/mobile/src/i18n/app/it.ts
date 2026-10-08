@@ -33,13 +33,13 @@ export const it = {
 
   'setup.title': 'Proteggi il tuo account',
   'setup.body':
-    'Fide crea sul telefono due chiavi: una firma le tue timbrature, l’altra apre i tuoi cedolini. Non lasciano mai questo telefono e si usano solo con la tua impronta, il volto o il PIN.',
-  'setup.lockRequired': 'Per continuare imposta un PIN, un’impronta o il riconoscimento del volto nelle impostazioni del telefono.',
+    'Fide crea sul telefono due chiavi: una firma le tue timbrature, l’altra apre i tuoi cedolini. Non lasciano mai questo telefono e si usano solo dopo lo sblocco del telefono, con il PIN o il metodo che usi già. Fide non riceve dati biometrici.',
+  'setup.lockRequired': 'Per continuare imposta un blocco schermo (PIN, sequenza o password) nelle impostazioni del telefono.',
   'setup.create': 'Crea le mie chiavi',
   'setup.replaced':
     'Le chiavi di questo account sono su un altro telefono. Se le crei qui, quel telefono smetterà di funzionare e i cedolini già ricevuti andranno riemessi dall’HR.',
-  'setup.fingerprint': 'Impronta della tua chiave',
-  'setup.fingerprintHint': 'L’HR vede la stessa impronta nel portale: così sa che la chiave è tua.',
+  'setup.fingerprint': 'Codice di sicurezza della tua chiave',
+  'setup.fingerprintHint': 'L’HR vede lo stesso codice nel portale: così sa che la chiave è tua.',
 
   'tabs.home': 'Inizio',
   'tabs.punch': 'Timbra',
@@ -138,7 +138,7 @@ export const it = {
   'privacy.title': 'I miei dati',
   'privacy.company': 'Azienda',
   'privacy.device': 'Questo telefono',
-  'privacy.fingerprintHint': 'Confronta l’impronta con quella che vede l’HR nel portale.',
+  'privacy.fingerprintHint': 'Confronta il codice di sicurezza con quello che vede l’HR nel portale.',
   'privacy.what': 'Cosa sa Fide di te',
   'privacy.whatBody':
     'Nome, e-mail, codice fiscale, timbrature, richieste e quali documenti hai aperto. Mai la tua posizione, mai il contenuto dei cedolini, mai i tuoi dati biometrici.',

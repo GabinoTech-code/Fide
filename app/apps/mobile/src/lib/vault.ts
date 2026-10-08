@@ -1,7 +1,9 @@
 // Device keys: generated on this phone, private halves in SecureStore (this
 // device only, never backed up or synced), public halves registered with
-// register_device_key(). Signing and decrypting require the phone's biometrics
-// or PIN (expo-local-authentication), checked at each use.
+// register_device_key(). Signing and decrypting require unlocking the phone
+// (expo-local-authentication), checked at each use. Any screen lock qualifies
+// (deviceLock accepts SecurityLevel.SECRET, i.e. PIN or pattern): biometrics are
+// never required, and the OS does the check, so no biometric data reaches Fide.
 import * as LocalAuthentication from 'expo-local-authentication';
 import * as SecureStore from 'expo-secure-store';
 import { generateDeviceKeys, keyFingerprint, type DeviceKeys } from '@fide/crypto';

@@ -34,13 +34,13 @@ export const sq: AppMessages = {
 
   'setup.title': 'Mbro llogarinë tënde',
   'setup.body':
-    'Fide krijon në telefon dy çelësa: njëri nënshkruan regjistrimet e tua, tjetri hap fletëpagesat. Nuk largohen kurrë nga ky telefon dhe përdoren vetëm me gjurmën, fytyrën ose PIN-in tënd.',
-  'setup.lockRequired': 'Për të vazhduar, vendos një PIN, gjurmë gishti ose njohje fytyre te cilësimet e telefonit.',
+    'Fide krijon në telefon dy çelësa: njëri nënshkruan regjistrimet e tua, tjetri hap fletëpagesat. Nuk largohen kurrë nga ky telefon dhe përdoren vetëm pasi ta zhbllokosh, me PIN-in ose mënyrën që përdor zakonisht. Fide nuk merr të dhëna biometrike.',
+  'setup.lockRequired': 'Për të vazhduar, vendos një kyçje ekrani (PIN, model ose fjalëkalim) te cilësimet e telefonit.',
   'setup.create': 'Krijo çelësat e mi',
   'setup.replaced':
     'Çelësat e kësaj llogarie janë në një telefon tjetër. Nëse i krijon këtu, ai telefon do të ndalojë së punuari dhe HR do të duhet të ridërgojë fletëpagesat e marra.',
-  'setup.fingerprint': 'Gjurma e çelësit tënd',
-  'setup.fingerprintHint': 'HR sheh të njëjtën gjurmë në portal: kështu e di që çelësi është yti.',
+  'setup.fingerprint': 'Kodi i sigurisë i çelësit tënd',
+  'setup.fingerprintHint': 'HR sheh të njëjtin kod në portal: kështu e di që çelësi është yti.',
 
   'tabs.home': 'Kreu',
   'tabs.punch': 'Regjistro',
@@ -139,7 +139,7 @@ export const sq: AppMessages = {
   'privacy.title': 'Të dhënat e mia',
   'privacy.company': 'Kompania',
   'privacy.device': 'Ky telefon',
-  'privacy.fingerprintHint': 'Krahaso gjurmën me atë që sheh HR në portal.',
+  'privacy.fingerprintHint': 'Krahaso kodin e sigurisë me atë që sheh HR në portal.',
   'privacy.what': 'Çfarë di Fide për ty',
   'privacy.whatBody':
     'Emrin, e-mailin, kodin fiskal, regjistrimet, kërkesat dhe cilat dokumente ke hapur. Kurrë vendndodhjen tënde, kurrë përmbajtjen e fletëpagesave, kurrë të dhënat biometrike.',
