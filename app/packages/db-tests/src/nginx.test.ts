@@ -55,7 +55,8 @@ describe('deploy/nginx', () => {
       ['www.fide-work.online', 'fide-work.it'],
       ['app.fide-work.online', 'app.fide-work.it'],
     ]) {
-      expect(conf).toMatch(new RegExp(`server_name ${alias.replace(/\./g, '\\.')};[^}]*return 301 https://${target.replace(/\./g, '\\.')}\\$request_uri;`));
+      const block = conf.split('\nserver {').find((s) => s.includes(`server_name ${alias};`));
+      expect(block, alias).toContain(`return 301 https://${target}$request_uri;`);
     }
     expect(read('fide-bootstrap.conf')).toContain(
       'server_name fide-work.it www.fide-work.it fide-work.online www.fide-work.online app.fide-work.it app.fide-work.online;',
