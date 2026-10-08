@@ -1,4 +1,5 @@
 import { Icon } from '../components/Brand';
+import { MonthlyReport } from '../components/MonthlyReport';
 import { ErrorNotice, PageHead } from '../components/ui';
 import { useI18n, type MessageKey } from '../lib/i18n';
 import { useMemberNames, useTodayPunches } from '../lib/queries';
@@ -98,6 +99,8 @@ export function PresencePage() {
           </div>
         )}
       </section>
+
+      <MonthlyReport />
     </>
   );
 }
