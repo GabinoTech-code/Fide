@@ -32,6 +32,7 @@ export const es: Messages = {
   'login.email': 'E-mail de trabajo',
   'login.sendCode': 'Envíame el código',
   'login.codeSent': 'Te hemos enviado un código a {email}.',
+  'login.linkHint': 'Si el e-mail trae un enlace en lugar del código, ábrelo en este mismo navegador.',
   'login.code': 'Código de 6 cifras',
   'login.verify': 'Entrar',
   'login.passkey': 'Entrar con passkey',

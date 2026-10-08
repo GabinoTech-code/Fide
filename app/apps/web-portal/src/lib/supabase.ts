@@ -10,7 +10,11 @@ export const supabase = createClient(url || 'http://supabase.invalid', key || 'm
   auth: {
     persistSession: true,
     autoRefreshToken: true,
-    detectSessionInUrl: false,
+    // PKCE: if the e-mail carries a sign-in link instead of the code (Supabase's
+    // default template, until custom SMTP is configured), the link brings back a
+    // one-time ?code= that only this browser can exchange; no tokens in URLs.
+    flowType: 'pkce',
+    detectSessionInUrl: true,
     // Supabase Auth passkeys (beta): registerPasskey / signInWithPasskey.
     experimental: { passkey: true },
   },

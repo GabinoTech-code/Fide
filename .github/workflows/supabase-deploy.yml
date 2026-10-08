@@ -12,7 +12,10 @@ name: Supabase deploy
 #   secrets  SUPABASE_ACCESS_TOKEN, SUPABASE_DB_PASSWORD, FIDE_RECEIPT_PRIVATE_KEY,
 #            BREVO_API_KEY (optional: e-mail invitations)
 #   vars     SUPABASE_PROJECT_REF, FIDE_ALLOWED_ORIGINS, FIDE_SITE_URL,
-#            FIDE_MAIL_FROM (optional), FIDE_RECEIPT_PUBLIC_KEY (reference only)
+#            FIDE_MAIL_FROM (optional), FIDE_RECEIPT_PUBLIC_KEY (reference only),
+#            FIDE_PORTAL_URL (default https://app.fide-work.it)
+#   custom SMTP for Auth e-mails (Brevo): vars FIDE_SMTP_HOST, FIDE_SMTP_PORT,
+#            FIDE_SMTP_USER, FIDE_MAIL_FROM, FIDE_MAIL_SENDER_NAME; secret FIDE_SMTP_PASS
 on:
   workflow_dispatch:
 
@@ -62,20 +65,42 @@ jobs:
           supabase secrets set --env-file "$env_file"
           supabase secrets list
 
-      # Only these Auth fields are changed. The OTP e-mails must carry the 6-digit
-      # code ({{ .Token }}): Supabase's default templates send a link instead.
-      - name: Configure Auth (URLs and sign-in e-mails)
+      # Only these Auth fields are changed. The app and the portal ask for the
+      # 6-digit code ({{ .Token }}), but on the free plan Supabase only allows
+      # custom templates together with a custom SMTP provider: without one the
+      # default e-mail carries a sign-in link (which still works in the portal,
+      # because site_url points at it).
+      - name: Configure Auth (URLs, SMTP and sign-in e-mails)
         env:
           FIDE_PORTAL_URL: ${{ vars.FIDE_PORTAL_URL }}
+          FIDE_SMTP_HOST: ${{ vars.FIDE_SMTP_HOST }}
+          FIDE_SMTP_PORT: ${{ vars.FIDE_SMTP_PORT }}
+          FIDE_SMTP_USER: ${{ vars.FIDE_SMTP_USER }}
+          FIDE_SMTP_PASS: ${{ secrets.FIDE_SMTP_PASS }}
+          FIDE_MAIL_FROM: ${{ vars.FIDE_MAIL_FROM }}
+          FIDE_MAIL_SENDER_NAME: ${{ vars.FIDE_MAIL_SENDER_NAME }}
         run: |
+          umask 077
+          trap 'rm -f "$RUNNER_TEMP/auth.json" "$RUNNER_TEMP/auth-response.json"' EXIT
           portal="${FIDE_PORTAL_URL:-https://app.fide-work.it}"
-          jq -n \
-            --arg site "$portal" \
-            --arg allow "$portal/**,fide://**,http://localhost:5173/**" \
-            --rawfile tpl supabase/templates/otp-code.html \
-            '{site_url: $site, uri_allow_list: $allow, mailer_otp_length: 6, mailer_otp_exp: 600,
-              mailer_subjects_magic_link: "Il tuo codice di accesso a Fide", mailer_templates_magic_link_content: $tpl,
-              mailer_subjects_confirmation: "Il tuo codice di accesso a Fide", mailer_templates_confirmation_content: $tpl}' > "$RUNNER_TEMP/auth.json"
+          base=(--arg site "$portal" --arg allow "$portal/**,fide://**,http://localhost:5173/**")
+          if [ -n "$FIDE_SMTP_HOST" ]; then
+            for v in FIDE_SMTP_USER FIDE_SMTP_PASS FIDE_MAIL_FROM; do
+              if [ -z "${!v}" ]; then echo "::error::$v is required when FIDE_SMTP_HOST is set"; exit 1; fi
+            done
+            jq -n "${base[@]}" \
+              --arg host "$FIDE_SMTP_HOST" --arg port "${FIDE_SMTP_PORT:-587}" --arg user "$FIDE_SMTP_USER" \
+              --arg pass "$FIDE_SMTP_PASS" --arg from "$FIDE_MAIL_FROM" --arg name "${FIDE_MAIL_SENDER_NAME:-Fide}" \
+              --rawfile tpl supabase/templates/otp-code.html \
+              '{site_url: $site, uri_allow_list: $allow, mailer_otp_length: 6, mailer_otp_exp: 600,
+                smtp_host: $host, smtp_port: $port, smtp_user: $user, smtp_pass: $pass,
+                smtp_admin_email: $from, smtp_sender_name: $name,
+                mailer_subjects_magic_link: "Il tuo codice di accesso a Fide", mailer_templates_magic_link_content: $tpl,
+                mailer_subjects_confirmation: "Il tuo codice di accesso a Fide", mailer_templates_confirmation_content: $tpl}' > "$RUNNER_TEMP/auth.json"
+          else
+            echo "::notice::No custom SMTP (vars.FIDE_SMTP_HOST): sign-in e-mails keep Supabase's default link template."
+            jq -n "${base[@]}" '{site_url: $site, uri_allow_list: $allow, mailer_otp_length: 6, mailer_otp_exp: 600}' > "$RUNNER_TEMP/auth.json"
+          fi
           code=$(curl -sS -o "$RUNNER_TEMP/auth-response.json" -w '%{http_code}' -X PATCH \
             "https://api.supabase.com/v1/projects/$SUPABASE_PROJECT_REF/config/auth" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" -H "Content-Type: application/json" \
@@ -84,7 +109,7 @@ jobs:
             echo "::error::Auth config update failed (HTTP $code): $(jq -c '{message, error, msg}' "$RUNNER_TEMP/auth-response.json" 2>/dev/null || head -c 300 "$RUNNER_TEMP/auth-response.json")"
             exit 1
           fi
-          jq '{site_url, uri_allow_list, mailer_otp_length, mailer_otp_exp, mailer_subjects_magic_link, mailer_subjects_confirmation}' "$RUNNER_TEMP/auth-response.json"
+          jq '{site_url, uri_allow_list, mailer_otp_length, mailer_otp_exp, smtp_host, smtp_sender_name, mailer_subjects_magic_link}' "$RUNNER_TEMP/auth-response.json"
 
       - run: supabase db push
 
