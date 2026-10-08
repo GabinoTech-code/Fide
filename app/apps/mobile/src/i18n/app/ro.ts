@@ -34,13 +34,13 @@ export const ro: AppMessages = {
 
   'setup.title': 'Protejează-ți contul',
   'setup.body':
-    'Fide creează pe telefon două chei: una semnează pontajele tale, cealaltă îți deschide fluturașii de salariu. Nu părăsesc niciodată acest telefon și se folosesc doar cu amprenta, fața sau PIN-ul tău.',
-  'setup.lockRequired': 'Pentru a continua, setează un PIN, o amprentă sau recunoașterea feței în setările telefonului.',
+    'Fide creează pe telefon două chei: una semnează pontajele tale, cealaltă îți deschide fluturașii de salariu. Nu părăsesc niciodată acest telefon și se folosesc doar după deblocarea lui, cu PIN-ul sau metoda pe care o folosești deja. Fide nu primește date biometrice.',
+  'setup.lockRequired': 'Pentru a continua, setează o blocare a ecranului (PIN, model sau parolă) în setările telefonului.',
   'setup.create': 'Creează cheile mele',
   'setup.replaced':
     'Cheile acestui cont sunt pe alt telefon. Dacă le creezi aici, acel telefon nu va mai funcționa, iar HR va trebui să retrimită fluturașii primiți deja.',
-  'setup.fingerprint': 'Amprenta cheii tale',
-  'setup.fingerprintHint': 'HR vede aceeași amprentă în portal: așa știe că cheia este a ta.',
+  'setup.fingerprint': 'Codul de securitate al cheii tale',
+  'setup.fingerprintHint': 'HR vede același cod în portal: așa știe că cheia este a ta.',
 
   'tabs.home': 'Acasă',
   'tabs.punch': 'Pontaj',
@@ -139,7 +139,7 @@ export const ro: AppMessages = {
   'privacy.title': 'Datele mele',
   'privacy.company': 'Firmă',
   'privacy.device': 'Acest telefon',
-  'privacy.fingerprintHint': 'Compară amprenta cu cea pe care o vede HR în portal.',
+  'privacy.fingerprintHint': 'Compară codul de securitate cu cel pe care îl vede HR în portal.',
   'privacy.what': 'Ce știe Fide despre tine',
   'privacy.whatBody':
     'Numele, e-mailul, codul fiscal, pontajele, cererile și documentele deschise. Niciodată locația ta, niciodată conținutul fluturașilor, niciodată datele tale biometrice.',

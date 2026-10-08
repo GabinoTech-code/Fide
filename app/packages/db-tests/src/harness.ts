@@ -4,6 +4,7 @@
 // PostgREST does (SET ROLE + request.jwt.claims).
 import { PGlite } from '@electric-sql/pglite';
 import { pgcrypto } from '@electric-sql/pglite/contrib/pgcrypto';
+import { uuid_ossp } from '@electric-sql/pglite/contrib/uuid_ossp';
 import { readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -50,14 +51,19 @@ export const seed = {
   },
 } as const;
 
-export async function createDb(): Promise<PGlite> {
-  const db = await PGlite.create({ extensions: { pgcrypto } });
+/**
+ * `before` runs after the Supabase stub and before the migrations: e.g. an older
+ * schema, to test the upgrade path the hosted project will take.
+ */
+export async function createDb(options: { before?: Array<{ name: string; sql: string }>; seed?: boolean } = {}): Promise<PGlite> {
+  const db = await PGlite.create({ extensions: { pgcrypto, uuid_ossp } });
   await run(db, 'supabase-stub.sql', readFileSync(path.join(here, 'supabase-stub.sql'), 'utf8'));
+  for (const step of options.before ?? []) await run(db, step.name, step.sql);
   const migrationsDir = path.join(supabaseDir, 'migrations');
   for (const file of readdirSync(migrationsDir).filter((f) => f.endsWith('.sql')).sort()) {
     await run(db, file, readFileSync(path.join(migrationsDir, file), 'utf8'));
   }
-  await run(db, 'seed.sql', readFileSync(path.join(supabaseDir, 'seed.sql'), 'utf8'));
+  if (options.seed !== false) await run(db, 'seed.sql', readFileSync(path.join(supabaseDir, 'seed.sql'), 'utf8'));
   return db;
 }
 
