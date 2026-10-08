@@ -41,7 +41,7 @@ jobs:
             if [ -z "${!v}" ]; then echo "::error::$v is not set on the production environment"; exit 1; fi
           done
 
-      - uses: supabase/setup-cli@v1
+      - uses: supabase/setup-cli@v3
         with:
           # Pinned: "latest" asks the GitHub API on every run and fails when its
           # rate limit is hit. Bump deliberately.
