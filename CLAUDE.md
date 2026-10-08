@@ -40,7 +40,7 @@ Quedarse callado ante uno de esos huecos es dejarle solo con lo más difícil.
 Una función no está hecha hasta que lo está en todas sus capas, en la misma rama:
 
 - base de datos (migración nueva, RLS, RPC) con tests en `app/packages/db-tests`;
-- portal y app, con los textos en **las 9 lenguas** (it, es, en, ro, ar, sq, uk, fr, zh);
+- app con los textos en **las 9 lenguas** (it, es, en, ro, ar, sq, uk, fr, zh) y portal en las suyas (it, es, en);
 - funciones Edge y código compartido sincronizado (`npm run sync-shared`);
 - documentación técnica y, si cambia un tratamiento de datos, **los documentos legales** (DPIA, informativa, registros);
 - verificada (typecheck, lint, tests, y en el navegador o el dispositivo cuando se puede ver).

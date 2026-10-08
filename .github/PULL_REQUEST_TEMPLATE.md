@@ -17,7 +17,7 @@ Docs:
 
 ## Checklist
 
-- [ ] Completo de punta a punta: migración nueva + RLS + db-tests, portal, app y las 9 lenguas (si aplica)
+- [ ] Completo de punta a punta: migración nueva + RLS + db-tests, portal (it, es, en), app (9 lenguas) (si aplica)
 - [ ] Un test por arreglo de seguridad o de aislamiento entre empresas
 - [ ] Si cambia qué datos se tratan, quién los ve o cuánto se guardan: DPIA, informativa y registros actualizados
 - [ ] Sin `console.log`, sin `any`, sin `innerHTML`, sin material de clave en logs ni en la red

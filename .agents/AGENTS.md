@@ -12,6 +12,6 @@ The full rules live in `CLAUDE.md` at the repository root (in Spanish). The shor
 - Payslips are encrypted in the HR browser and decrypted only on the employee's phone; no server code sees them in clear.
 - Private keys never leave the phone. No biometric data. Location is only "inside/outside", never coordinates.
 - Punches are signed and append-only; corrections are approved requests.
-- Every change is complete end to end: migration + RLS + db-tests, portal, app, the 9 languages, docs (legal docs too
+- Every change is complete end to end: migration + RLS + db-tests, portal (it, es, en), app (9 languages), docs (legal docs too
   when data processing changes).
 - A changed behaviour updates its canonical doc in the same PR, or the PR body says `Docs: none — <reason>`.
