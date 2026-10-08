@@ -76,10 +76,15 @@ jobs:
             '{site_url: $site, uri_allow_list: $allow, mailer_otp_length: 6, mailer_otp_exp: 600,
               mailer_subjects_magic_link: "Il tuo codice di accesso a Fide", mailer_templates_magic_link_content: $tpl,
               mailer_subjects_confirmation: "Il tuo codice di accesso a Fide", mailer_templates_confirmation_content: $tpl}' > "$RUNNER_TEMP/auth.json"
-          curl -sS --fail-with-body -X PATCH "https://api.supabase.com/v1/projects/$SUPABASE_PROJECT_REF/config/auth" \
+          code=$(curl -sS -o "$RUNNER_TEMP/auth-response.json" -w '%{http_code}' -X PATCH \
+            "https://api.supabase.com/v1/projects/$SUPABASE_PROJECT_REF/config/auth" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" -H "Content-Type: application/json" \
-            --data "@$RUNNER_TEMP/auth.json" \
-            | jq '{site_url, uri_allow_list, mailer_otp_length, mailer_otp_exp, mailer_subjects_magic_link, mailer_subjects_confirmation}'
+            --data "@$RUNNER_TEMP/auth.json")
+          if [ "$code" != "200" ]; then
+            echo "::error::Auth config update failed (HTTP $code): $(jq -c '{message, error, msg}' "$RUNNER_TEMP/auth-response.json" 2>/dev/null || head -c 300 "$RUNNER_TEMP/auth-response.json")"
+            exit 1
+          fi
+          jq '{site_url, uri_allow_list, mailer_otp_length, mailer_otp_exp, mailer_subjects_magic_link, mailer_subjects_confirmation}' "$RUNNER_TEMP/auth-response.json"
 
       - run: supabase db push
 
