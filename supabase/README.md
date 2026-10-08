@@ -65,6 +65,10 @@ Proyecto `saehchpgnbcciqimrqsj`, región `eu-west-1` (Irlanda).
 - **Funciones y sus secretos.** Workflow manual **Supabase deploy** (`gh workflow run supabase-deploy.yml`). Lee
   los secretos y variables del entorno `production` de GitHub (la lista está en la cabecera del workflow) y los
   aplica con `supabase secrets set` antes de desplegar.
+- **Auth.** El mismo workflow fija por la API de gestión la URL del portal, el código de 6 cifras, el SMTP de Brevo y
+  las **passkeys**: `webauthn_rp_id = fide-work.it` (variable `FIDE_PASSKEY_RP_ID`; elegido una vez, porque cambiarlo
+  invalida todas las passkeys) y como origen el portal (`FIDE_PASSKEY_ORIGINS`, separados por comas; el hash de la
+  app Android se añade cuando exista la build). `config.toml` mantiene `localhost` para el desarrollo local.
 - **Clave pública de los recibos de fichaje** (Ed25519, `raw`, base64). Sirve para verificar que un recibo lo
   firmó Fide sobre `"FIDE-RECEIPT-v1|<punch_id>|<sha256(signed_payload)>|<received_at>"`:
 

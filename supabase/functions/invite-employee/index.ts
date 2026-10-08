@@ -36,8 +36,12 @@ Deno.serve(
         .eq('id', memberId)
         .single();
       if (error || !data) throw new Error(`member lookup: ${error?.message}`);
-      const company = (data.companies as unknown as { legal_name: string }).legal_name;
-      const email = (data.member_identities as unknown as { email: string }).email;
+      // PostgREST embeds a related row as an object or as a one-element array,
+      // depending on how it reads the foreign key: accept both. Reading only the
+      // object shape sent Brevo a recipient without address (400 missing_parameter).
+      const company = one<{ legal_name: string }>(data.companies)?.legal_name ?? '';
+      const email = one<{ email: string | null }>(data.member_identities)?.email;
+      if (!email) throw new HttpError(422, 'member_email_missing');
       emailError = await sendInvitation(email, data.full_name as string, company, link);
       emailed = emailError === undefined;
     } else if (body.send_email === true) {
@@ -46,6 +50,10 @@ Deno.serve(
     return { link, emailed, ...(emailError ? { email_error: emailError } : {}) };
   }),
 );
+
+function one<T>(value: unknown): T | null {
+  return (Array.isArray(value) ? (value[0] ?? null) : (value ?? null)) as T | null;
+}
 
 /** Sends the invitation; returns undefined when Brevo accepted it, otherwise a short error code. */
 async function sendInvitation(to: string, name: string, company: string, link: string): Promise<string | undefined> {
@@ -66,12 +74,18 @@ async function sendInvitation(to: string, name: string, company: string, link: s
     const text = await res.text();
     console.error('brevo', res.status, text);
     let code = '';
+    let message = '';
     try {
-      code = String((JSON.parse(text) as { code?: unknown }).code ?? '');
+      const parsed = JSON.parse(text) as { code?: unknown; message?: unknown };
+      code = String(parsed.code ?? '');
+      message = String(parsed.message ?? '');
     } catch {
       // Not JSON: the status alone is enough.
     }
-    return `${res.status}${code ? ` ${code.slice(0, 40)}` : ''}`;
+    // Brevo's message names the faulty field ("to is missing"); drop it if it
+    // ever quotes an address, so no personal data reaches the portal.
+    const detail = message && !message.includes('@') ? `: ${message.slice(0, 80)}` : '';
+    return `${res.status}${code ? ` ${code.slice(0, 40)}` : ''}${detail}`;
   }
   return undefined;
 }

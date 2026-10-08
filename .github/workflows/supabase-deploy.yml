@@ -73,6 +73,8 @@ jobs:
       - name: Configure Auth (URLs, SMTP and sign-in e-mails)
         env:
           FIDE_PORTAL_URL: ${{ vars.FIDE_PORTAL_URL }}
+          FIDE_PASSKEY_RP_ID: ${{ vars.FIDE_PASSKEY_RP_ID }}
+          FIDE_PASSKEY_ORIGINS: ${{ vars.FIDE_PASSKEY_ORIGINS }}
           FIDE_SMTP_HOST: ${{ vars.FIDE_SMTP_HOST }}
           FIDE_SMTP_PORT: ${{ vars.FIDE_SMTP_PORT }}
           FIDE_SMTP_USER: ${{ vars.FIDE_SMTP_USER }}
@@ -83,7 +85,14 @@ jobs:
           umask 077
           trap 'rm -f "$RUNNER_TEMP/auth.json" "$RUNNER_TEMP/auth-response.json"' EXIT
           portal="${FIDE_PORTAL_URL:-https://app.fide-work.it}"
-          base=(--arg site "$portal" --arg allow "$portal/**,fide://**,http://localhost:5173/**")
+          # Passkeys: the RP ID is chosen once (changing it invalidates every
+          # passkey). fide-work.it covers app.fide-work.it and, through the
+          # webcredentials association it serves, the employee app.
+          rp_id="${FIDE_PASSKEY_RP_ID:-fide-work.it}"
+          rp_origins="${FIDE_PASSKEY_ORIGINS:-$portal}"
+          base=(--arg site "$portal" --arg allow "$portal/**,fide://**,http://localhost:5173/**"
+                --arg rp "$rp_id" --arg origins "$rp_origins")
+          passkeys='passkey_enabled: true, webauthn_rp_display_name: "Fide", webauthn_rp_id: $rp, webauthn_rp_origins: $origins'
           if [ -n "$FIDE_SMTP_HOST" ]; then
             for v in FIDE_SMTP_USER FIDE_SMTP_PASS FIDE_MAIL_FROM; do
               if [ -z "${!v}" ]; then echo "::error::$v is required when FIDE_SMTP_HOST is set"; exit 1; fi
@@ -92,14 +101,14 @@ jobs:
               --arg host "$FIDE_SMTP_HOST" --arg port "${FIDE_SMTP_PORT:-587}" --arg user "$FIDE_SMTP_USER" \
               --arg pass "$FIDE_SMTP_PASS" --arg from "$FIDE_MAIL_FROM" --arg name "${FIDE_MAIL_SENDER_NAME:-Fide}" \
               --rawfile tpl supabase/templates/otp-code.html \
-              '{site_url: $site, uri_allow_list: $allow, mailer_otp_length: 6, mailer_otp_exp: 600,
+              "{site_url: \$site, uri_allow_list: \$allow, mailer_otp_length: 6, mailer_otp_exp: 600, $passkeys,"'
                 smtp_host: $host, smtp_port: $port, smtp_user: $user, smtp_pass: $pass,
                 smtp_admin_email: $from, smtp_sender_name: $name,
                 mailer_subjects_magic_link: "Il tuo codice di accesso a Fide", mailer_templates_magic_link_content: $tpl,
                 mailer_subjects_confirmation: "Il tuo codice di accesso a Fide", mailer_templates_confirmation_content: $tpl}' > "$RUNNER_TEMP/auth.json"
           else
             echo "::notice::No custom SMTP (vars.FIDE_SMTP_HOST): sign-in e-mails keep Supabase's default link template."
-            jq -n "${base[@]}" '{site_url: $site, uri_allow_list: $allow, mailer_otp_length: 6, mailer_otp_exp: 600}' > "$RUNNER_TEMP/auth.json"
+            jq -n "${base[@]}" "{site_url: \$site, uri_allow_list: \$allow, mailer_otp_length: 6, mailer_otp_exp: 600, $passkeys}" > "$RUNNER_TEMP/auth.json"
           fi
           code=$(curl -sS -o "$RUNNER_TEMP/auth-response.json" -w '%{http_code}' -X PATCH \
             "https://api.supabase.com/v1/projects/$SUPABASE_PROJECT_REF/config/auth" \
