@@ -32,7 +32,14 @@ Limiti attuali e controlli effettivi: [docs/security/AUDIT-2026-10-07.md](docs/s
 | `app/packages/payroll-parser` | Divisione dei PDF cumulativi dei cedolini per codice fiscale |
 | `app/packages/db-tests` | Test di RLS e funzioni del database (PGlite) |
 | `supabase/` | Migrazioni, funzioni Edge (Deno), configurazione |
-| `docs/` | Architettura, decisioni (ADR), sicurezza, [documenti legali](docs/legal/README.md) |
+| `deploy/` | Pubblicazione di sito e portale sul server (nginx generato da `@fide/shared`) |
+| `docs/` | Architettura, decisioni (ADR), sicurezza, audit, [documenti legali](docs/legal/README.md) |
+| `prototype/` | Mockup di design (riferimento visivo, non codice di prodotto) |
+| `hardware/` | Progetto fisico del terminale di timbratura |
+| `_scratch/` | File temporanei, ignorati da git |
+
+Regole del progetto (rami, sicurezza, struttura, documentazione): [CLAUDE.md](CLAUDE.md). Segnalazioni di sicurezza:
+[SECURITY.md](SECURITY.md).
 
 ## Sviluppo
 

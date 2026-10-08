@@ -1,0 +1,19 @@
+# CodeQL configuration — Fide
+#
+# Scope the analysis to SHIPPED code. Design mockups, scratch dumps, generated
+# bundles and test fixtures are not the product and only add noise to the
+# code-scanning tab. The query suite is chosen in security-scan.yml.
+name: Fide CodeQL config
+
+paths-ignore:
+  - 'prototype/**'
+  - '_scratch/**'
+  - '**/node_modules/**'
+  - '**/dist/**'
+  - '**/build/**'
+  - '**/coverage/**'
+  - '**/.expo/**'
+  # Tests are not shipped: regex/anchor findings in assertion fixtures are noise.
+  - 'app/packages/db-tests/**'
+  - '**/*.test.ts'
+  - '**/*.test.tsx'

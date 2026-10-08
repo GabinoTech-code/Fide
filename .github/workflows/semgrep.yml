@@ -1,0 +1,80 @@
+# Semgrep — fast pattern-based SAST: public packs plus .semgrep/fide-rules.yml,
+# which encodes the security and privacy golden rules of CLAUDE.md.
+#
+# Open-source CLI, no Semgrep account or token. Findings go to
+# Security → Code scanning as SARIF (same tab as CodeQL).
+# Never add secrets, real IPs or key material to this workflow.
+
+name: Semgrep
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '0 5 * * 1' # Mondays 05:00 UTC
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  semgrep:
+    name: Semgrep scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      security-events: write
+    container:
+      image: semgrep/semgrep
+    steps:
+      - uses: actions/checkout@v4
+
+      # p/secrets        — hardcoded credentials and key material
+      # p/security-audit — broad security smells
+      # p/typescript     — TypeScript/React correctness and security
+      # .semgrep/        — Fide golden rules
+      # The custom rules fail the job; the public packs only report.
+      - name: Fide golden rules (blocking)
+        run: semgrep scan --config .semgrep/ --error --metrics=off
+
+      - name: Public packs (report to code scanning)
+        if: always()
+        run: |
+          semgrep scan \
+            --config p/secrets \
+            --config p/security-audit \
+            --config p/typescript \
+            --config .semgrep/ \
+            --metrics=off \
+            --sarif --output semgrep.sarif || true
+
+      # Semgrep keeps `// nosemgrep` findings in the SARIF as suppressed, and code
+      # scanning would still open them. Drop exactly those; the rest is uploaded.
+      - name: Drop nosemgrep-justified results from the SARIF
+        if: always()
+        run: |
+          python3 - <<'PY'
+          import json, os
+          path = 'semgrep.sarif'
+          if os.path.exists(path):
+              with open(path) as f:
+                  sarif = json.load(f)
+              for run in sarif.get('runs', []):
+                  results = run.get('results', [])
+                  kept = [r for r in results
+                          if not any(s.get('kind') == 'inSource' for s in r.get('suppressions', []))]
+                  print(f"semgrep: {len(results) - len(kept)} nosemgrep-justified result(s) dropped, {len(kept)} kept")
+                  run['results'] = kept
+              with open(path, 'w') as f:
+                  json.dump(sarif, f)
+          PY
+
+      - name: Upload SARIF to code scanning
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: semgrep.sarif
+          category: semgrep

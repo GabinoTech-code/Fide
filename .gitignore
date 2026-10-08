@@ -25,6 +25,9 @@ ios/
 *.zip
 *.tar.gz
 
+# Transient working files (CLAUDE.md, estructura: never committed)
+_scratch/
+
 # System files
 .DS_Store
 Thumbs.db

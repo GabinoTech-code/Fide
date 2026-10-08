@@ -1,5 +1,9 @@
 # ZConnect vs Fide · tesis para inversores — design reference
 
+> **Visión de producto escrita el 4 de octubre de 2026, no estado actual.** Varias respuestas de esta tesis no existen
+> todavía (push cifrado, NFC, API y conectores de nómina, SSO, BYOK) y el «asistente IA» choca con el principio
+> «sin IA» del proyecto. Estado real y plan: `docs/audit/COMPARATIVA-COMPETENCIA-2026-10-08.md`.
+
 This is a design mockup created in a visual design tool, exported as a
 standalone page. Treat it as a REFERENCE MOCKUP, not production code:
 the markup and inline styles carry the design's precise values — colors,
