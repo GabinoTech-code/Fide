@@ -39,7 +39,10 @@ export default function Punch() {
       key: p.id,
       type: p.punch_type,
       ts: p.device_ts,
-      status: { kind: 'ok' as const, text: t('punch.statusSent', { code: p.receipt_code }) },
+      // Recorded by HR on the employee's behalf: no device signature, shown as such.
+      status: p.flags.includes('hr_entry')
+        ? { kind: 'muted' as const, text: t('punch.byHr') }
+        : { kind: 'ok' as const, text: t('punch.statusSent', { code: p.receipt_code }) },
     }));
     const local = queue.map((q) => ({
       key: q.submission.client_punch_id,

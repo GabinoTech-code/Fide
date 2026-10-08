@@ -34,11 +34,26 @@ export default function Gate() {
         <Title>{t('nocompany.title')}</Title>
         <Card>
           <Body muted>{t('nocompany.body')}</Body>
+          <Body muted>{t('nocompany.suspended')}</Body>
         </Card>
         <Button kind="secondary" label={t('common.signOut')} onPress={signOut} />
       </Screen>
     );
   }
-  if (keyState === 'missing' || keyState === 'replaced') return <Redirect href="/setup" />;
+  if (keyState === 'missing' || keyState === 'replaced') {
+    // A former employee cannot enrol a new phone: documents stay on the old one.
+    if (membership.status === 'terminated') {
+      return (
+        <Screen>
+          <Title>{t('former.title')}</Title>
+          <Card>
+            <Body muted>{t('former.noPhone', { company: membership.companies?.legal_name ?? '' })}</Body>
+          </Card>
+          <Button kind="secondary" label={t('common.signOut')} onPress={signOut} />
+        </Screen>
+      );
+    }
+    return <Redirect href="/setup" />;
+  }
   return <Redirect href="/(tabs)" />;
 }

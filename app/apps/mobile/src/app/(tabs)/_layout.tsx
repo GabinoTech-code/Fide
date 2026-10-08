@@ -9,6 +9,8 @@ export default function TabsLayout() {
   const { t } = useT();
   const { session, membership, keyState } = useSession();
   if (!session || !membership || keyState === 'missing' || keyState === 'replaced') return <Redirect href="/" />;
+  // Former employees keep documents and privacy only: no punching, no requests.
+  const hidden = membership.status === 'terminated' ? { href: null } : {};
 
   return (
     <Tabs
@@ -21,8 +23,8 @@ export default function TabsLayout() {
       }}
     >
       <Tabs.Screen name="index" options={{ title: t('tabs.home'), tabBarIcon: ({ color }) => <BrandIcon name="inicio" size={22} color={color} /> }} />
-      <Tabs.Screen name="timbra" options={{ title: t('tabs.punch'), tabBarIcon: ({ color }) => <BrandIcon name="fichar" size={22} color={color} /> }} />
-      <Tabs.Screen name="richieste" options={{ title: t('tabs.requests'), tabBarIcon: ({ color }) => <BrandIcon name="solicitudes" size={22} color={color} /> }} />
+      <Tabs.Screen name="timbra" options={{ ...hidden, title: t('tabs.punch'), tabBarIcon: ({ color }) => <BrandIcon name="fichar" size={22} color={color} /> }} />
+      <Tabs.Screen name="richieste" options={{ ...hidden, title: t('tabs.requests'), tabBarIcon: ({ color }) => <BrandIcon name="solicitudes" size={22} color={color} /> }} />
       <Tabs.Screen name="documenti" options={{ title: t('tabs.documents'), tabBarIcon: ({ color }) => <BrandIcon name="docs" size={22} color={color} /> }} />
       <Tabs.Screen name="privacy" options={{ title: t('tabs.privacy'), tabBarIcon: ({ color }) => <BrandIcon name="misdatos" size={22} color={color} /> }} />
     </Tabs>

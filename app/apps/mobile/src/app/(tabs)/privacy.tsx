@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Alert, Pressable, Share } from 'react-native';
-import { useQuery } from '@tanstack/react-query';
-import { useT } from '../../i18n/app';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useT, type AppKey } from '../../i18n/app';
 import { LANGUAGES } from '../../i18n/types';
 import { clearLocalPunches } from '../../lib/outboxSqlite';
 import { useSession } from '../../lib/session';
@@ -10,8 +10,21 @@ import { DiagnosticsModal } from '../../components/modals/DiagnosticsModal';
 import { Colors } from '../../theme/colors';
 import { Badge, Body, Button, Card, Mono, Notice, Row, Screen, Title } from '../../ui/kit';
 
+interface GdprRequest {
+  id: string;
+  kind: 'access' | 'portability' | 'erasure' | 'rectification' | 'objection';
+  status: 'pending' | 'in_progress' | 'completed' | 'rejected';
+  created_at: string;
+  due_at: string;
+  extension_note: string | null;
+  resolution_note: string | null;
+}
+
+const gdprBadge = { pending: 'warn', in_progress: 'warn', completed: 'ok', rejected: 'danger' } as const;
+
 export default function Privacy() {
-  const { t, lang, setLang } = useT();
+  const { t, lang, setLang, date } = useT();
+  const queryClient = useQueryClient();
   const { membership, keys, signOut } = useSession();
   const [message, setMessage] = useState<string | null>(null);
   const [diagnostics, setDiagnostics] = useState(false);
@@ -23,6 +36,21 @@ export default function Privacy() {
       const { data, error } = await supabase.from('member_identities').select('email, codice_fiscale').eq('member_id', membership!.id).maybeSingle();
       if (error) throw error;
       return data as { email: string | null; codice_fiscale: string | null } | null;
+    },
+  });
+
+  // The employee's own requests and HR's answers (art. 12: answer within one month).
+  const requests = useQuery({
+    queryKey: ['my_gdpr', membership?.id],
+    enabled: Boolean(membership),
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('gdpr_requests')
+        .select('id, kind, status, created_at, due_at, extension_note, resolution_note')
+        .eq('member_id', membership!.id)
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      return data as GdprRequest[];
     },
   });
 
@@ -45,6 +73,7 @@ export default function Privacy() {
             kind: 'erasure',
           });
           setMessage(error ? t('common.error') : t('privacy.erasureSent'));
+          if (!error) queryClient.invalidateQueries({ queryKey: ['my_gdpr'] });
         },
       },
     ]);
@@ -85,6 +114,25 @@ export default function Privacy() {
         <Button kind="secondary" icon="exportar" label={t('privacy.export')} onPress={exportData} />
         <Button kind="danger" icon="supresion" label={t('privacy.erasure')} onPress={requestErasure} />
       </Card>
+
+      {(requests.data ?? []).length ? (
+        <Card>
+          <Body muted>{t('privacy.myRequests')}</Body>
+          {requests.data!.map((r) => (
+            <Card key={r.id}>
+              <Row style={{ justifyContent: 'space-between' }}>
+                <Body>
+                  {t(`gdpr.kind.${r.kind}` as AppKey)} · {date(r.created_at)}
+                </Body>
+                <Badge label={t(`gdpr.status.${r.status}` as AppKey)} kind={gdprBadge[r.status]} />
+              </Row>
+              {r.status === 'pending' || r.status === 'in_progress' ? <Body muted>{t('privacy.dueBy', { date: date(r.due_at) })}</Body> : null}
+              {r.extension_note ? <Body muted>{t('privacy.extendedNote', { note: r.extension_note })}</Body> : null}
+              {r.resolution_note ? <Body>{t('privacy.answerText', { note: r.resolution_note })}</Body> : null}
+            </Card>
+          ))}
+        </Card>
+      ) : null}
 
       <Card>
         <Body muted>{t('privacy.language')}</Body>
