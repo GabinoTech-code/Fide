@@ -170,7 +170,7 @@ bien que funciona.
 
 ## Lo que los usuarios critican de ZConnect
 
-Datos de nuestra tesis para inversores (`prototype/`, fuentes consultadas el 4 de octubre de 2026, sin volver a
+Datos de nuestra tesis para inversores (archivo privado, fuentes consultadas el 4 de octubre de 2026, sin volver a
 verificar). Cada punto es una oportunidad que no cuesta funciones nuevas, solo hacer bien lo que ya tenemos.
 
 | Crítica | Respuesta de Fide | Estado |
