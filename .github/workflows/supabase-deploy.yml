@@ -62,6 +62,25 @@ jobs:
           supabase secrets set --env-file "$env_file"
           supabase secrets list
 
+      # Only these Auth fields are changed. The OTP e-mails must carry the 6-digit
+      # code ({{ .Token }}): Supabase's default templates send a link instead.
+      - name: Configure Auth (URLs and sign-in e-mails)
+        env:
+          FIDE_PORTAL_URL: ${{ vars.FIDE_PORTAL_URL }}
+        run: |
+          portal="${FIDE_PORTAL_URL:-https://app.fide-work.it}"
+          jq -n \
+            --arg site "$portal" \
+            --arg allow "$portal/**,fide://**,http://localhost:5173/**" \
+            --rawfile tpl supabase/templates/otp-code.html \
+            '{site_url: $site, uri_allow_list: $allow, mailer_otp_length: 6, mailer_otp_exp: 600,
+              mailer_subjects_magic_link: "Il tuo codice di accesso a Fide", mailer_templates_magic_link_content: $tpl,
+              mailer_subjects_confirmation: "Il tuo codice di accesso a Fide", mailer_templates_confirmation_content: $tpl}' > "$RUNNER_TEMP/auth.json"
+          curl -sS --fail-with-body -X PATCH "https://api.supabase.com/v1/projects/$SUPABASE_PROJECT_REF/config/auth" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" -H "Content-Type: application/json" \
+            --data "@$RUNNER_TEMP/auth.json" \
+            | jq '{site_url, uri_allow_list, mailer_otp_length, mailer_otp_exp, mailer_subjects_magic_link, mailer_subjects_confirmation}'
+
       - run: supabase db push
 
       - name: Deploy Edge Functions

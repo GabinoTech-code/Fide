@@ -213,19 +213,24 @@ export function toNginxConf(sites: NginxSite[], options: NginxOptions): string {
 
 const FIDE_NGINX: NginxOptions = { certName: 'fide-work.it', acmeRoot: '/var/www/letsencrypt' };
 
-/** fide-work.it (site and invitation pages) and app.fide-work.it (portal and kiosk). */
+/**
+ * fide-work.it (site and invitation pages) and app.fide-work.it (portal and
+ * kiosk). fide-work.online points at the same server and redirects here, so it
+ * never falls through to another site's default server and certificate.
+ */
 export function fideNginxSites(options: { supabaseOrigins?: string[]; webRoot?: string } = {}): NginxSite[] {
   const webRoot = options.webRoot ?? '/opt/fide-web/www';
   return [
     {
       host: 'fide-work.it',
-      aliases: ['www.fide-work.it'],
+      aliases: ['www.fide-work.it', 'fide-work.online', 'www.fide-work.online'],
       root: `${webRoot}/site`,
       rules: siteHeaders,
       rewrites: [{ path: '/invite/*', file: '/invite.html' }],
     },
     {
       host: 'app.fide-work.it',
+      aliases: ['app.fide-work.online'],
       root: `${webRoot}/portal`,
       rules: portalHeaders(options.supabaseOrigins ?? ['https://*.supabase.co']),
       spa: true,
