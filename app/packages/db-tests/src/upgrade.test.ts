@@ -42,9 +42,9 @@ describe('v2 over the hosted v1 schema', { timeout: 60_000 }, () => {
     expect(policies.some((p) => /^(Allow|Strict)/.test(p))).toBe(false);
   });
 
-  it('removes a uuid-ossp that v1 put in public', async () => {
+  it('moves a uuid-ossp that v1 put in public to the extensions schema', async () => {
     db = await createDb({ before: [v1], seed: false });
-    expect(await uuidOsspSchema(db)).toBeNull();
+    expect(await uuidOsspSchema(db)).toBe('extensions');
   });
 
   it('keeps the uuid-ossp Supabase installs in the extensions schema', async () => {

@@ -54,3 +54,23 @@ supabase db reset       # vuelve a empezar
 ```
 
 Los usuarios del seed están documentados en la cabecera de `seed.sql`. Todos entran por OTP; los códigos llegan a Inbucket (http://localhost:54324).
+
+## Proyecto alojado (producción)
+
+Proyecto `saehchpgnbcciqimrqsj`, región `eu-west-1` (Irlanda).
+
+- **Migraciones.** La integración de Supabase con GitHub las aplica al mergear en `main` (check "Supabase Preview"
+  sobre `main`). Una migración ya aplicada no se vuelve a ejecutar aunque cambie su contenido: para corregir algo,
+  se añade una migración nueva.
+- **Funciones y sus secretos.** Workflow manual **Supabase deploy** (`gh workflow run supabase-deploy.yml`). Lee
+  los secretos y variables del entorno `production` de GitHub (la lista está en la cabecera del workflow) y los
+  aplica con `supabase secrets set` antes de desplegar.
+- **Clave pública de los recibos de fichaje** (Ed25519, `raw`, base64). Sirve para verificar que un recibo lo
+  firmó Fide sobre `"FIDE-RECEIPT-v1|<punch_id>|<sha256(signed_payload)>|<received_at>"`:
+
+  ```
+  B5QT8bCGgPRJqIvxIhyNTvMnyf2NmGITSgIYn3/ABeM=
+  ```
+
+  La privada solo existe como secreto `FIDE_RECEIPT_PRIVATE_KEY` del entorno `production` y de las funciones. Si
+  se cambia, los recibos antiguos siguen siendo verificables solo con la clave pública antigua: guárdala aquí.

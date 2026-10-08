@@ -1,14 +1,24 @@
 name: Supabase deploy
 
-# Manual only: pushes migrations (and Edge Functions, once they exist) to the
-# project named by the `SUPABASE_PROJECT_REF` variable of the `production`
-# environment. Configure that environment with required reviewers in GitHub.
+# Manual: Edge Function secrets, migrations and Edge Functions for the project
+# named by the `SUPABASE_PROJECT_REF` variable of the `production` environment.
+#
+# The Supabase GitHub integration already applies new migrations when a PR is
+# merged into main (its "Supabase Preview" check on main), so `db push` here is
+# usually a no-op; it matters when the integration is off. Functions and their
+# secrets are only deployed by this workflow.
+#
+# production environment:
+#   secrets  SUPABASE_ACCESS_TOKEN, SUPABASE_DB_PASSWORD, FIDE_RECEIPT_PRIVATE_KEY,
+#            BREVO_API_KEY (optional: e-mail invitations)
+#   vars     SUPABASE_PROJECT_REF, FIDE_ALLOWED_ORIGINS, FIDE_SITE_URL,
+#            FIDE_MAIL_FROM (optional), FIDE_RECEIPT_PUBLIC_KEY (reference only)
 on:
   workflow_dispatch:
 
 jobs:
   deploy:
-    name: db push & functions deploy
+    name: secrets, db push & functions deploy
     runs-on: ubuntu-latest
     environment: production
     env:
@@ -19,8 +29,12 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Check configuration
+        env:
+          FIDE_RECEIPT_PRIVATE_KEY: ${{ secrets.FIDE_RECEIPT_PRIVATE_KEY }}
+          FIDE_ALLOWED_ORIGINS: ${{ vars.FIDE_ALLOWED_ORIGINS }}
+          FIDE_SITE_URL: ${{ vars.FIDE_SITE_URL }}
         run: |
-          for v in SUPABASE_ACCESS_TOKEN SUPABASE_DB_PASSWORD SUPABASE_PROJECT_REF; do
+          for v in SUPABASE_ACCESS_TOKEN SUPABASE_DB_PASSWORD SUPABASE_PROJECT_REF FIDE_RECEIPT_PRIVATE_KEY FIDE_ALLOWED_ORIGINS FIDE_SITE_URL; do
             if [ -z "${!v}" ]; then echo "::error::$v is not set on the production environment"; exit 1; fi
           done
 
@@ -30,12 +44,25 @@ jobs:
 
       - run: supabase link --project-ref "$SUPABASE_PROJECT_REF"
 
+      # Written to a private temp file, never echoed (GitHub also masks secrets in logs).
+      - name: Set Edge Function secrets
+        env:
+          FIDE_RECEIPT_PRIVATE_KEY: ${{ secrets.FIDE_RECEIPT_PRIVATE_KEY }}
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+          FIDE_ALLOWED_ORIGINS: ${{ vars.FIDE_ALLOWED_ORIGINS }}
+          FIDE_SITE_URL: ${{ vars.FIDE_SITE_URL }}
+          FIDE_MAIL_FROM: ${{ vars.FIDE_MAIL_FROM }}
+        run: |
+          umask 077
+          env_file="$(mktemp)"
+          trap 'rm -f "$env_file"' EXIT
+          for v in FIDE_RECEIPT_PRIVATE_KEY FIDE_ALLOWED_ORIGINS FIDE_SITE_URL FIDE_MAIL_FROM BREVO_API_KEY; do
+            if [ -n "${!v}" ]; then printf '%s=%s\n' "$v" "${!v}" >> "$env_file"; fi
+          done
+          supabase secrets set --env-file "$env_file"
+          supabase secrets list
+
       - run: supabase db push
 
       - name: Deploy Edge Functions
-        run: |
-          if [ -d supabase/functions ] && ls supabase/functions/*/index.ts >/dev/null 2>&1; then
-            supabase functions deploy
-          else
-            echo "No Edge Functions yet."
-          fi
+        run: supabase functions deploy
