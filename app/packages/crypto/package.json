@@ -1,0 +1,19 @@
+{
+  "name": "@fide/crypto",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Device keys, punch signatures and fide-doc-v1 document encryption on top of an injected libsodium",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@fide/shared": "*",
+    "@noble/hashes": "^2.4.0",
+    "libsodium-wrappers": "^0.8.4"
+  },
+  "devDependencies": {
+    "@types/libsodium-wrappers": "^0.7.14"
+  }
+}

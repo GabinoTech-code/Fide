@@ -1,3 +1,5 @@
+> **Obsoleto.** Este documento (2026-10-04) describía controles que no existían. Ver [AUDIT-2026-10-07.md](AUDIT-2026-10-07.md).
+
 # Fide — Rapporto di Audit di Sicurezza e Verifica Crittografica
 ### Piattaforma Zero-Knowledge HR & Presenze Privacy-First
 **Classificazione**: Documento di Sicurezza e Conformità Tecnico-Legale  

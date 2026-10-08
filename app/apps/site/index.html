@@ -1,0 +1,448 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fide · Presenze, cedolini e richieste, con la riservatezza di una chiave</title>
+    <meta
+      name="description"
+      content="Fide è l’app HR per le aziende italiane: timbratura con QR o posizione verificata sul telefono, cedolini cifrati che solo il dipendente può aprire, ferie e permessi in due tocchi. Nessuna password."
+    />
+    <link rel="canonical" href="https://fide-work.it/" />
+    <link rel="icon" type="image/png" href="/icon.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="theme-color" content="#0F1A17" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="it_IT" />
+    <meta property="og:title" content="Fide · HR di fiducia" />
+    <meta property="og:description" content="Presenze, cedolini e richieste per le PMI italiane. Privacy by design: Fide non vede la tua posizione né i tuoi cedolini." />
+    <meta property="og:url" content="https://fide-work.it/" />
+    <meta property="og:image" content="https://fide-work.it/icon-192.png" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Fide",
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "iOS, Android, Web",
+        "inLanguage": ["it", "ro", "ar", "sq", "uk", "es", "fr", "en", "zh"],
+        "description": "App HR privacy by design: timbratura firmata sul telefono, cedolini cifrati end-to-end, ferie e permessi.",
+        "url": "https://fide-work.it/"
+      }
+    </script>
+    <script type="module" src="/src/main.ts"></script>
+  </head>
+  <body>
+    <a class="skip" href="#contenuto">Vai al contenuto</a>
+
+    <header class="site-header">
+      <div class="wrap header-row">
+        <a class="brand" href="/" aria-label="Fide, home">
+          <svg data-logo data-size="30" data-color="forest"></svg>
+          <span class="brand-name">fide</span>
+        </a>
+        <nav class="site-nav" aria-label="Sezioni">
+          <a href="#come-funziona">Come funziona</a>
+          <a href="#funzioni">Funzioni</a>
+          <a href="#privacy">Privacy</a>
+          <a href="#domande">Domande</a>
+        </nav>
+        <div class="header-cta">
+          <a class="btn btn-ghost" href="https://app.fide-work.it">Accedi</a>
+          <a class="btn btn-primary" href="#contatti">Richiedi una demo</a>
+        </div>
+      </div>
+    </header>
+
+    <main id="contenuto">
+      <!-- ======================= HERO ======================= -->
+      <section class="hero">
+        <div class="wrap hero-grid">
+          <div class="hero-copy">
+            <span class="eyebrow eyebrow-mint">Presenze · Cedolini · Richieste</span>
+            <h1>L’app HR che i dipendenti usano volentieri. E che non legge i loro dati.</h1>
+            <p class="lead">
+              Timbratura con il QR del chiosco o con la posizione verificata sul telefono, cedolini cifrati che solo il
+              dipendente può aprire, ferie e permessi in due tocchi. Pensata per le PMI italiane, si attiva senza consulenti.
+            </p>
+            <div class="hero-cta">
+              <a class="btn btn-mint btn-lg" href="#contatti">Porta Fide nella tua azienda</a>
+              <a class="btn btn-outline-light btn-lg" href="#come-funziona">Guarda come funziona</a>
+            </div>
+            <ul class="trust">
+              <li><svg data-icon="cifrado" data-size="18"></svg>Cifratura end-to-end</li>
+              <li><svg data-icon="passkey" data-size="18"></svg>Nessuna password</li>
+              <li><svg data-icon="geo" data-size="18"></svg>Zero coordinate GPS inviate</li>
+              <li><svg data-icon="misdatos" data-size="18"></svg>Dati nell’Unione europea</li>
+            </ul>
+          </div>
+
+          <div class="hero-visual" aria-hidden="true">
+            <div class="phone">
+              <div class="phone-notch"></div>
+              <div class="screen">
+                <div class="screen-top">
+                  <span class="muted-light">Mercoledì 7 ottobre</span>
+                  <strong>Buongiorno, Marco</strong>
+                </div>
+                <div class="punch-card">
+                  <span class="clock mono">08:02</span>
+                  <span class="punch-label"><svg data-icon="entrada" data-size="18"></svg> Entrata registrata</span>
+                  <span class="punch-meta mono">Sede Milano · QR chiosco</span>
+                  <span class="receipt mono"><svg data-icon="huella" data-size="16"></svg><span>Firmata sul telefono<br />Ricevuta REC-4F2A91C7D0B3</span></span>
+                </div>
+                <div class="mini-grid">
+                  <div class="mini">
+                    <span class="mini-value">22</span>
+                    <span class="mini-label">giorni di ferie</span>
+                  </div>
+                  <div class="mini">
+                    <span class="mini-value">36 h</span>
+                    <span class="mini-label">permessi ROL</span>
+                  </div>
+                </div>
+                <div class="doc-row">
+                  <svg data-icon="cifrado" data-size="20"></svg>
+                  <span>
+                    <strong>Cedolino ottobre 2026</strong>
+                    <span class="muted-light small">Cifrato · si apre con la tua impronta</span>
+                  </span>
+                </div>
+                <nav class="tabbar">
+                  <span class="on"><svg data-icon="inicio" data-size="20"></svg>Inizio</span>
+                  <span><svg data-icon="fichar" data-size="20"></svg>Timbra</span>
+                  <span><svg data-icon="solicitudes" data-size="20"></svg>Richieste</span>
+                  <span><svg data-icon="docs" data-size="20"></svg>Documenti</span>
+                </nav>
+              </div>
+            </div>
+            <div class="float-card kiosk-card">
+              <svg data-icon="qr" data-size="22"></svg>
+              <span><strong>QR del chiosco</strong><span class="small muted">cambia ogni 30 secondi</span></span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================= HOW IT WORKS ======================= -->
+      <section id="come-funziona" class="section">
+        <div class="wrap">
+          <div class="section-head">
+            <span class="eyebrow">Come funziona</span>
+            <h2>Operativi in un pomeriggio.</h2>
+            <p class="section-lead">Niente server da configurare, codici azienda o password da resettare.</p>
+          </div>
+          <ol class="steps">
+            <li class="step">
+              <span class="step-n">1</span>
+              <h3>L’azienda invita</h3>
+              <p>
+                L’HR registra l’azienda, crea le sedi e aggiunge i dipendenti. Ognuno riceve un link personale: valido 7
+                giorni e solo per il suo indirizzo e-mail.
+              </p>
+            </li>
+            <li class="step">
+              <span class="step-n">2</span>
+              <h3>Il dipendente attiva l’app</h3>
+              <p>
+                Apre il link, riceve un codice via e-mail e protegge l’accesso con l’impronta, il volto o il PIN del telefono.
+                Le chiavi crittografiche nascono sul telefono e non lo lasciano mai.
+              </p>
+            </li>
+            <li class="step">
+              <span class="step-n">3</span>
+              <h3>Timbra in un secondo</h3>
+              <p>
+                Inquadra il QR del chiosco all’ingresso oppure, dove l’azienda l’ha autorizzato, timbra con la posizione
+                verificata sul telefono. Anche senza rete: la timbratura è firmata e si sincronizza da sola.
+              </p>
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      <!-- ======================= FEATURES ======================= -->
+      <section id="funzioni" class="section section-white">
+        <div class="wrap">
+          <div class="section-head">
+            <span class="eyebrow">Funzioni</span>
+            <h2>Tutto quello che serve ogni giorno. Niente di superfluo.</h2>
+          </div>
+          <div class="features">
+            <article class="feature">
+              <span class="feature-icon"><svg data-icon="fichar" data-size="28"></svg></span>
+              <h3>Timbratura affidabile</h3>
+              <p>
+                Ogni entrata e uscita è firmata dal telefono e riceve una ricevuta dal server. Il QR del chiosco cambia ogni
+                30 secondi e vale una sola volta; le timbrature fatte senza rete restano valide.
+              </p>
+            </article>
+            <article class="feature">
+              <span class="feature-icon"><svg data-icon="docs" data-size="28"></svg></span>
+              <h3>Cedolini e CU cifrati</h3>
+              <p>
+                L’HR carica il PDF cumulativo del consulente o di Zucchetti, TeamSystem e simili: Fide lo divide per codice
+                fiscale e lo cifra nel browser. Ogni dipendente apre solo il suo.
+              </p>
+            </article>
+            <article class="feature">
+              <span class="feature-icon"><svg data-icon="vacaciones" data-size="28"></svg></span>
+              <h3>Ferie e permessi</h3>
+              <p>
+                Ferie, ROL, ex festività, permessi 104, straordinari e malattia con numero di protocollo INPS. Il saldo è
+                sempre aggiornato e le richieste si approvano dal portale.
+              </p>
+            </article>
+            <article class="feature">
+              <span class="feature-icon"><svg data-icon="olvidado" data-size="28"></svg></span>
+              <h3>Timbrature dimenticate</h3>
+              <p>
+                Il dipendente chiede la correzione dall’app, il responsabile la approva e resta traccia di chi ha deciso cosa.
+                Nessuna modifica silenziosa del registro.
+              </p>
+            </article>
+            <article class="feature">
+              <span class="feature-icon"><svg data-icon="registro" data-size="28"></svg></span>
+              <h3>Portale HR in tempo reale</h3>
+              <p>
+                Chi è presente adesso, le timbrature con eventuali anomalie, le richieste da approvare e il registro di ogni
+                modifica, azienda per azienda.
+              </p>
+            </article>
+            <article class="feature">
+              <span class="feature-icon"><svg data-icon="exportar" data-size="28"></svg></span>
+              <h3>I miei dati, in un tocco</h3>
+              <p>
+                Il dipendente vede quali dati lo riguardano, li esporta in formato aperto e chiede la cancellazione
+                direttamente dall’app (artt. 15, 17 e 20 GDPR).
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================= PRIVACY ======================= -->
+      <section id="privacy" class="section section-dark">
+        <div class="wrap">
+          <div class="section-head">
+            <span class="eyebrow eyebrow-mint">Privacy by design</span>
+            <h2>Quello che Fide non vede. Per come è costruita, non per promessa.</h2>
+            <p class="section-lead">
+              Il nome viene da <em>fides</em> e <em>fiducia</em>. Il logo è una chiave: solo il dipendente ha quella dei
+              suoi documenti.
+            </p>
+          </div>
+          <div class="privacy-grid">
+            <div class="privacy-item">
+              <svg data-icon="geo" data-size="28"></svg>
+              <h3>La tua posizione</h3>
+              <p>Il telefono calcola se sei in sede e invia solo “sì” o “no”. Le coordinate non vengono mai trasmesse né salvate.</p>
+            </div>
+            <div class="privacy-item">
+              <svg data-icon="cifrado" data-size="28"></svg>
+              <h3>Il contenuto dei cedolini</h3>
+              <p>Sono cifrati con la chiave del dipendente (XChaCha20-Poly1305) prima di uscire dal browser dell’HR. Sui nostri server arrivano solo file illeggibili.</p>
+            </div>
+            <div class="privacy-item">
+              <svg data-icon="passkey" data-size="28"></svg>
+              <h3>Le tue impronte</h3>
+              <p>Impronta e volto restano nel telefono: è il sistema operativo a verificarli. Né l’azienda né Fide ricevono dati biometrici. C’è sempre l’alternativa del PIN.</p>
+            </div>
+          </div>
+          <div class="privacy-proof">
+            <div>
+              <svg data-icon="huella" data-size="22"></svg>
+              <span><strong>Timbrature verificabili.</strong> Firmate con Ed25519 sul telefono e controfirmate dal server: nessuno può alterarle dopo.</span>
+            </div>
+            <div>
+              <svg data-icon="registro" data-size="22"></svg>
+              <span><strong>Accessi tracciati.</strong> Ogni download e apertura di un cedolino resta registrato, come prova di consegna.</span>
+            </div>
+            <div>
+              <svg data-icon="misdatos" data-size="22"></svg>
+              <span><strong>Ogni azienda nel suo spazio.</strong> L’isolamento tra aziende è imposto dal database stesso, e i test lo verificano a ogni modifica.</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================= COMPARISON ======================= -->
+      <section class="section">
+        <div class="wrap">
+          <div class="section-head">
+            <span class="eyebrow">Perché cambiare</span>
+            <h2>Un’altra idea di app HR.</h2>
+          </div>
+          <div class="compare" role="table" aria-label="Confronto">
+            <div class="compare-row compare-head" role="row">
+              <span role="columnheader"></span>
+              <span role="columnheader">Il modo abituale</span>
+              <span role="columnheader">Con Fide</span>
+            </div>
+            <div class="compare-row" role="row">
+              <span role="rowheader">Primo accesso</span>
+              <span role="cell">Indirizzo del server, codice azienda, matricola e password</span>
+              <span role="cell">Un link personale e l’impronta del telefono</span>
+            </div>
+            <div class="compare-row" role="row">
+              <span role="rowheader">Timbratura senza rete</span>
+              <span role="cell">Spesso rifiutata o segnalata come sospetta</span>
+              <span role="cell">Firmata sul telefono e sincronizzata con ricevuta</span>
+            </div>
+            <div class="compare-row" role="row">
+              <span role="rowheader">Posizione</span>
+              <span role="cell">Coordinate inviate e conservate</span>
+              <span role="cell">Calcolata sul telefono, si invia solo l’esito</span>
+            </div>
+            <div class="compare-row" role="row">
+              <span role="rowheader">Cedolini</span>
+              <span role="cell">Leggibili da chi gestisce i server</span>
+              <span role="cell">Cifrati: li apre solo il telefono del dipendente</span>
+            </div>
+            <div class="compare-row" role="row">
+              <span role="rowheader">Diritti privacy</span>
+              <span role="cell">Una richiesta scritta al DPO</span>
+              <span role="cell">Consultazione, esportazione e cancellazione dall’app</span>
+            </div>
+            <div class="compare-row" role="row">
+              <span role="rowheader">Attivazione</span>
+              <span role="cell">Progetto con consulenti e formazione</span>
+              <span role="cell">Self-service: sedi, dipendenti e chiosco in un pomeriggio</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================= AUDIENCES ======================= -->
+      <section class="section section-white">
+        <div class="wrap two-col">
+          <div class="audience">
+            <span class="eyebrow">Per l’HR e i titolari</span>
+            <h2>Meno richieste via WhatsApp, meno fogli Excel.</h2>
+            <ul class="checks">
+              <li>Presenze in tempo reale, con le anomalie già evidenziate</li>
+              <li>Cedolini consegnati con prova di download e apertura</li>
+              <li>Ferie e correzioni approvate in un clic, con storico</li>
+              <li>Si affianca al software paghe che usi già: non lo sostituisce</li>
+              <li>Timbratura con posizione attivabile per sede, solo dopo l’accordo sindacale o l’autorizzazione dell’Ispettorato (art. 4 L. 300/1970)</li>
+            </ul>
+          </div>
+          <div class="audience">
+            <span class="eyebrow">Per chi lavora con te</span>
+            <h2>Un’app semplice, nella sua lingua.</h2>
+            <ul class="checks">
+              <li>Nessuna password da ricordare</li>
+              <li>Saldo di ferie e permessi sempre visibile</li>
+              <li>Cedolini sul telefono, protetti dalla sua impronta</li>
+              <li>Ricevuta per ogni timbratura</li>
+            </ul>
+            <div class="langs" aria-label="Lingue dell’app">
+              <span lang="it">Italiano</span><span lang="ro">Română</span><span lang="ar" dir="rtl">العربية</span
+              ><span lang="sq">Shqip</span><span lang="uk">Українська</span><span lang="es">Español</span
+              ><span lang="fr">Français</span><span lang="en">English</span><span lang="zh">中文</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================= FAQ ======================= -->
+      <section id="domande" class="section">
+        <div class="wrap narrow">
+          <div class="section-head">
+            <span class="eyebrow">Domande frequenti</span>
+            <h2>Le domande che ci fanno di più.</h2>
+          </div>
+          <div class="faq">
+            <details>
+              <summary>L’azienda può vedere dove mi trovo?</summary>
+              <p>
+                No. Quando timbri con la posizione, il telefono confronta la tua posizione con il perimetro della sede e invia
+                solo l’esito “dentro” o “fuori”. Le coordinate non lasciano il telefono e non vengono salvate da nessuna parte.
+                Fuori dalla timbratura l’app non legge la posizione.
+              </p>
+            </details>
+            <details>
+              <summary>Fide o l’azienda possono leggere il mio cedolino su Fide?</summary>
+              <p>
+                Fide no: riceve solo il file cifrato con la tua chiave, che esiste soltanto sul tuo telefono. L’azienda ha già
+                gli originali dal software paghe, ma la copia che ricevi su Fide la apri solo tu.
+              </p>
+            </details>
+            <details>
+              <summary>Serve l’accordo sindacale?</summary>
+              <p>
+                Gli strumenti per registrare accessi e presenze rientrano nel comma 2 dell’art. 4 dello Statuto dei Lavoratori.
+                La geolocalizzazione richiede invece più cautela. Per questo in Fide ogni sede parte con la sola timbratura
+                tramite QR, e la posizione si attiva sede per sede quando l’azienda ha l’accordo o l’autorizzazione. Valuta
+                sempre il tuo caso con il consulente del lavoro.
+              </p>
+            </details>
+            <details>
+              <summary>Funziona anche senza connessione?</summary>
+              <p>
+                Sì. La timbratura viene firmata sul telefono e messa in coda; appena torna la rete viene inviata e ricevi la
+                ricevuta. Se il ritardo è lungo, l’HR la vede segnalata, ma resta valida.
+              </p>
+            </details>
+            <details>
+              <summary>E se cambio o perdo il telefono?</summary>
+              <p>
+                Attivi Fide sul nuovo telefono e nasce una nuova chiave. I documenti già ricevuti erano cifrati per la chiave
+                precedente: l’HR li riemette per la nuova chiave e li ritrovi. È il prezzo, consapevole, di una cifratura
+                che nemmeno noi possiamo aggirare.
+              </p>
+            </details>
+            <details>
+              <summary>Devo cambiare software paghe?</summary>
+              <p>
+                No. Fide è lo strato per i dipendenti: i cedolini continuano a nascere dal tuo consulente o dal tuo gestionale,
+                Fide li consegna in modo sicuro e raccoglie presenze e richieste.
+              </p>
+            </details>
+            <details>
+              <summary>Dove sono conservati i dati?</summary>
+              <p>
+                Su server nell’Unione europea. I documenti sono cifrati end-to-end; gli altri dati sono separati per azienda
+                e accessibili solo a chi ha il ruolo giusto, con ogni modifica registrata.
+              </p>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================= CTA ======================= -->
+      <section id="contatti" class="section section-forest">
+        <div class="wrap cta">
+          <svg data-logo data-size="56" data-color="mist"></svg>
+          <h2>Porta Fide nella tua azienda.</h2>
+          <p class="section-lead">
+            Stiamo selezionando le prime aziende italiane per il programma pilota. Raccontaci quante persone siete e come
+            timbrate oggi: ti rispondiamo con condizioni e prezzi.
+          </p>
+          <div class="hero-cta">
+            <!-- TODO: confirm the mailbox exists before going live. -->
+            <a class="btn btn-mint btn-lg" href="mailto:info@fide-work.it?subject=Programma%20pilota%20Fide">Scrivici</a>
+            <a class="btn btn-outline-light btn-lg" href="https://app.fide-work.it">Accedi al portale</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap footer-row">
+        <a class="brand" href="/" aria-label="Fide, home">
+          <svg data-logo data-size="26" data-color="mint"></svg>
+          <span class="brand-name">fide</span>
+          <span class="small footer-tag">HR di fiducia</span>
+        </a>
+        <nav class="footer-links" aria-label="Link legali">
+          <a href="/privacy.html">Privacy</a>
+          <a href="https://app.fide-work.it">Portale aziende</a>
+          <a href="mailto:info@fide-work.it">info@fide-work.it</a>
+        </nav>
+        <!-- TODO (obbligatorio per legge prima della pubblicazione): ragione sociale, sede e P.IVA del titolare del sito. -->
+        <p class="small footer-legal">© 2026 Fide</p>
+      </div>
+    </footer>
+  </body>
+</html>

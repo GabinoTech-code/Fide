@@ -1,0 +1,10 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls", "delegate_permission/common.get_login_creds"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "it.fidework.app",
+      "sha256_cert_fingerprints": ["3E:A8:F1:A3:CF:FD:25:A1:15:D9:08:BE:C5:F4:7A:8D:72:98:D2:12:2A:3E:CF:6A:F0:A0:30:75:6A:83:29:78"]
+    }
+  }
+]

@@ -1,27 +1,41 @@
-name: Supabase Database Sync
+name: Supabase deploy
 
+# Manual only: pushes migrations (and Edge Functions, once they exist) to the
+# project named by the `SUPABASE_PROJECT_REF` variable of the `production`
+# environment. Configure that environment with required reviewers in GitHub.
 on:
-  push:
-    branches: [ main ]
-    paths:
-      - 'supabase/**'
+  workflow_dispatch:
 
 jobs:
-  deploy-database:
-    name: Sync Migrations to Supabase
+  deploy:
+    name: db push & functions deploy
     runs-on: ubuntu-latest
-
+    environment: production
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+      SUPABASE_PROJECT_REF: ${{ vars.SUPABASE_PROJECT_REF }}
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Supabase CLI
-        uses: supabase/setup-cli@v1
+      - name: Check configuration
+        run: |
+          for v in SUPABASE_ACCESS_TOKEN SUPABASE_DB_PASSWORD SUPABASE_PROJECT_REF; do
+            if [ -z "${!v}" ]; then echo "::error::$v is not set on the production environment"; exit 1; fi
+          done
+
+      - uses: supabase/setup-cli@v1
         with:
           version: latest
 
-      - name: Verify Migrations Syntax
+      - run: supabase link --project-ref "$SUPABASE_PROJECT_REF"
+
+      - run: supabase db push
+
+      - name: Deploy Edge Functions
         run: |
-          echo "Validating Supabase SQL migrations..."
-          cat supabase/migrations/*.sql > /dev/null
-          echo "SQL syntax valid."
+          if [ -d supabase/functions ] && ls supabase/functions/*/index.ts >/dev/null 2>&1; then
+            supabase functions deploy
+          else
+            echo "No Edge Functions yet."
+          fi

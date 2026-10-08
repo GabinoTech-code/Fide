@@ -1,0 +1,29 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "site",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "app/apps/site", "run", "dev"],
+      "port": 5174
+    },
+    {
+      "name": "portal",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "app/apps/web-portal", "run", "dev"],
+      "port": 5173
+    },
+    {
+      "name": "site-preview",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "app/apps/site", "run", "preview", "--", "--port", "4174", "--strictPort"],
+      "port": 4174
+    },
+    {
+      "name": "portal-preview",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "app/apps/web-portal", "run", "preview", "--", "--port", "4173", "--strictPort"],
+      "port": 4173
+    }
+  ]
+}

@@ -1,57 +1,57 @@
-name: Security Audit & CodeQL Analysis
+name: Security scan
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
   schedule:
-    - cron: '0 4 * * 1' # Every Monday at 04:00 UTC
+    - cron: '0 4 * * 1' # Mondays 04:00 UTC
 
 jobs:
-  analyze:
-    name: CodeQL Security Scan
+  codeql:
+    name: CodeQL
     runs-on: ubuntu-latest
     permissions:
       actions: read
       contents: read
       security-events: write
-
-    strategy:
-      fail-fast: false
-      matrix:
-        language: [ 'javascript-typescript' ]
-
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
+      - uses: github/codeql-action/init@v3
         with:
-          languages: ${{ matrix.language }}
+          languages: javascript-typescript
           queries: +security-and-quality
 
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
+      - uses: github/codeql-action/analyze@v3
         with:
-          category: "/language:${{matrix.language}}"
+          category: /language:javascript-typescript
 
   dependency-audit:
-    name: NPM Dependency Audit
+    name: npm audit (high/critical, explicit allowlist)
     runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Audit Production Dependencies
+    defaults:
+      run:
         working-directory: app
-        run: |
-          echo "Running dependency vulnerability audit for production..."
-          npm audit --omit=dev --audit-level=high || true
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      # Fails on any high/critical advisory not listed (with a reason) in app/audit-allowlist.json.
+      - run: npm run audit
+
+  secrets:
+    name: gitleaks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

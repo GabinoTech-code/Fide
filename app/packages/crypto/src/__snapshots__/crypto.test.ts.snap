@@ -1,0 +1,3 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`punch signatures > is deterministic for the cross-platform vector 1`] = `"Znl2cjw9TbXt9G+Lzw1WMnc3pL2pl6xCYa8lJ33c+xaFue6N2LjYeZbWsOKtlANins+HtpF87395itE6xPngCA=="`;
