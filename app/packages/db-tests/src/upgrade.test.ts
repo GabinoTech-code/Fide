@@ -26,7 +26,8 @@ const uuidOsspSchema = async (d: PGlite) =>
     )
   ).rows[0]?.s ?? null;
 
-describe('v2 over the hosted v1 schema', () => {
+// Each test builds a fresh database (stub + v1 + all migrations): slow under a full parallel run.
+describe('v2 over the hosted v1 schema', { timeout: 60_000 }, () => {
   it('drops every v1 table and creates the v2 schema', async () => {
     db = await createDb({ before: [v1], seed: false });
     const now = await tables(db);
