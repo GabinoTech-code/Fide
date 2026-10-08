@@ -217,4 +217,30 @@ describe('punch-sync', () => {
       expect(results.map((r) => !r.ok && r.error)).toEqual(['invalid_punch', 'invalid_punch', 'invalid_punch', 'invalid_punch']);
     });
   });
+
+  it('keeps punches signed before a suspension or termination, refuses later ones', async () => {
+    await inTx(db, async (s) => {
+      const { keys, keyId } = await enrolMarco(s);
+      // HR suspends Marco one minute after T0; the phone syncs its queue afterwards.
+      await s.superuser();
+      await s.rows(`update public.members set status = 'suspended', status_changed_at = $2 where id = $1`, [
+        members.marco,
+        at(60_000),
+      ]);
+      const before = signed(geoPunch(keyId, { device_ts: at(0) }), keys);
+      const after = signed(geoPunch(keyId, { device_ts: at(90_000), punch_type: 'out' }), keys);
+      const results = await syncPunches(deps(s), users.marco, [before, after]);
+      expect(results.map((r) => (r.ok ? 'ok' : r.error))).toEqual(['ok', 'member_not_active']);
+
+      // Terminated: same rule.
+      await s.superuser();
+      await s.rows(
+        `update public.members set status = 'terminated', terminated_on = current_date, status_changed_at = $2 where id = $1`,
+        [members.marco, at(60_000)],
+      );
+      const late = signed(geoPunch(keyId, { device_ts: at(30_000), punch_type: 'out' }), keys);
+      const [ok] = await syncPunches(deps(s), users.marco, [late]);
+      expect(ok).toMatchObject({ ok: true });
+    });
+  });
 });

@@ -7,6 +7,7 @@ import { encryptDocument, type Sodium } from '@fide/crypto';
 import type { KnownEmployee, SplitResult } from '@fide/payroll-parser';
 import { PDFDocument } from 'pdf-lib';
 import { evaluateTrust, type TrustState, type PinnedDevices } from './deviceTrust';
+import { hasDocumentAccess } from './memberStatus';
 import type { Member } from './types';
 
 export type DocumentKind = 'cedolino' | 'cu' | 'other';
@@ -58,7 +59,7 @@ export function knownEmployees(members: Member[]): KnownEmployee[] {
 
 /** Members that can be picked by hand for a page the parser could not assign. */
 export function assignableMembers(members: Member[]): Member[] {
-  return members.filter((m) => m.status === 'active' && m.device_keys?.some((k) => k.status === 'active'));
+  return members.filter((m) => hasDocumentAccess(m) && m.device_keys?.some((k) => k.status === 'active'));
 }
 
 export function planRecipients(input: {
@@ -100,7 +101,8 @@ export function planRecipients(input: {
   const recipients: Recipient[] = [];
   for (const [memberId, g] of groups) {
     const m = members.get(memberId)!;
-    const active = m.status === 'active' ? (m.device_keys ?? []).find((k) => k.status === 'active') : undefined;
+    // Former employees still receive documents (final payslip, CU) during their access window.
+    const active = hasDocumentAccess(m) ? (m.device_keys ?? []).find((k) => k.status === 'active') : undefined;
     const existing = latest.get(memberId) ?? null;
     const trust = active ? evaluateTrust(active, input.pinned[memberId]) : null;
 

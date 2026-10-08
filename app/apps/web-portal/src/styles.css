@@ -91,6 +91,11 @@ button:disabled { cursor: not-allowed; opacity: 0.55; }
 .btn-primary { background: var(--forest); border-color: var(--forest); color: #fff; }
 .btn-primary:hover:not(:disabled) { background: var(--forest-hover); border-color: var(--forest-hover); }
 .btn-danger { color: var(--danger); }
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border); }
+.tab { background: none; border: 0; border-bottom: 2px solid transparent; padding: 10px 14px; font-weight: 600; color: var(--text-2); cursor: pointer; }
+.tab-active { color: var(--forest-hover); border-bottom-color: var(--forest); }
+.tab:disabled { opacity: 0.4; cursor: not-allowed; }
+.subcard { background: var(--mist); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
 .btn-sm { height: 32px; padding: 0 12px; font-size: 13px; }
 .btn-block { width: 100%; }
 .link-btn { color: var(--forest); font-weight: 500; text-decoration: underline; text-underline-offset: 3px; }

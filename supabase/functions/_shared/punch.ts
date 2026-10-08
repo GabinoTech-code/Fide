@@ -27,6 +27,8 @@ export interface DeviceKeyInfo {
   member_id: string;
   auth_user_id: string | null;
   member_status: string;
+  /** When the member stopped being active (suspended/terminated), if ever. */
+  member_status_changed_at?: string | null;
   ed25519_public_key: string;
   status: 'active' | 'revoked';
 }
@@ -102,10 +104,19 @@ async function syncOne(deps: PunchSyncDeps, authUserId: string, raw: Record<stri
     !key ||
     key.auth_user_id !== authUserId ||
     key.member_id !== fields.member_id ||
-    key.company_id !== fields.company_id ||
-    key.member_status !== 'active'
+    key.company_id !== fields.company_id
   ) {
     throw new Rejected('device_key_invalid');
+  }
+  // A punch signed before a suspension or termination still counts when it
+  // syncs later (offline queue); one signed afterwards does not.
+  if (key.member_status !== 'active') {
+    const changedAt = key.member_status_changed_at ? Date.parse(key.member_status_changed_at) : NaN;
+    const stillCounts =
+      (key.member_status === 'suspended' || key.member_status === 'terminated') &&
+      !Number.isNaN(changedAt) &&
+      Date.parse(fields.device_ts) < changedAt;
+    if (!stillCounts) throw new Rejected('member_not_active');
   }
 
   const signedPayload = canonicalPunch(fields);

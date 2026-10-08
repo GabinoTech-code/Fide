@@ -19,6 +19,9 @@ interface LeaveRequest {
   end_date: string;
   quantity: number;
   status: 'pending' | 'approved' | 'rejected' | 'cancelled';
+  /** Set when HR recorded it on the employee's behalf. */
+  entered_by: string | null;
+  decision_note: string | null;
   leave_types: { name: string; unit: 'days' | 'hours' } | null;
 }
 interface Correction {
@@ -27,6 +30,8 @@ interface Correction {
   requested_ts: string;
   reason: string;
   status: 'pending' | 'approved' | 'rejected' | 'cancelled';
+  entered_by: string | null;
+  decision_note: string | null;
 }
 
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
@@ -58,7 +63,7 @@ export default function Requests() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('leave_requests')
-        .select('id, start_date, end_date, quantity, status, leave_types(name, unit)')
+        .select('id, start_date, end_date, quantity, status, entered_by, decision_note, leave_types(name, unit)')
         .eq('member_id', membership!.id)
         .order('start_date', { ascending: false })
         .limit(30);
@@ -72,7 +77,7 @@ export default function Requests() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('punch_corrections')
-        .select('id, punch_type, requested_ts, reason, status')
+        .select('id, punch_type, requested_ts, reason, status, entered_by, decision_note')
         .eq('member_id', membership!.id)
         .order('requested_ts', { ascending: false })
         .limit(30);
@@ -197,6 +202,8 @@ export default function Requests() {
                   {r.end_date !== r.start_date ? ` → ${date(r.end_date)}` : ''} · {Number(r.quantity)}{' '}
                   {t(r.leave_types?.unit === 'hours' ? 'unit.hours' : 'unit.days')}
                 </Mono>
+                {r.entered_by ? <Badge label={t('requests.byHr')} kind="muted" /> : null}
+                {r.decision_note ? <Body muted>{t('requests.decisionNote', { note: r.decision_note })}</Body> : null}
                 {r.status === 'pending' ? <Button kind="danger" label={t('requests.cancel')} onPress={() => cancel('leave', r.id)} /> : null}
               </View>
             ))
@@ -207,6 +214,8 @@ export default function Requests() {
                   <Badge label={t(`status.${c.status}` as AppKey)} kind={statusKind[c.status]} />
                 </Row>
                 <Mono>{c.reason}</Mono>
+                {c.entered_by ? <Badge label={t('requests.byHr')} kind="muted" /> : null}
+                {c.decision_note ? <Body muted>{t('requests.decisionNote', { note: c.decision_note })}</Body> : null}
                 {c.status === 'pending' ? <Button kind="danger" label={t('requests.cancel')} onPress={() => cancel('correction', c.id)} /> : null}
               </View>
             ))}

@@ -1,5 +1,6 @@
 import { router } from 'expo-router';
 import { Text, View } from 'react-native';
+import { formerAccessUntil } from '@fide/shared';
 import { useT, type AppKey } from '../../i18n/app';
 import { useBalances, useOutbox, useTodayPunches } from '../../lib/data';
 import { useSession } from '../../lib/session';
@@ -9,7 +10,7 @@ import { Body, Button, Card, Eyebrow, Fonts, Notice, Row, Screen, Title } from '
 const LEAVE_LABEL: Record<string, string> = { FERIE: 'Ferie', ROL: 'ROL', EXFEST: 'Ex festività' };
 
 export default function Home() {
-  const { t, time } = useT();
+  const { t, time, date } = useT();
   const { membership } = useSession();
   const punches = useTodayPunches();
   const { queue } = useOutbox();
@@ -22,6 +23,26 @@ export default function Home() {
   ].sort((a, b) => a.ts.localeCompare(b.ts));
   const last = all.at(-1);
   const firstName = membership?.full_name.split(' ')[0] ?? '';
+
+  if (membership?.status === 'terminated' && membership.terminated_on) {
+    return (
+      <Screen>
+        <Eyebrow>{membership.companies?.legal_name ?? ''}</Eyebrow>
+        <Title>{t('home.greeting', { name: firstName })}</Title>
+        <Card dark>
+          <Body light>{t('former.title')}</Body>
+          <Body light>
+            {t('former.banner', {
+              company: membership.companies?.legal_name ?? '',
+              day: date(membership.terminated_on),
+              until: date(formerAccessUntil(membership.terminated_on)),
+            })}
+          </Body>
+          <Button kind="mint" icon="docs" label={t('former.toDocuments')} onPress={() => router.push('/(tabs)/documenti')} />
+        </Card>
+      </Screen>
+    );
+  }
 
   return (
     <Screen>

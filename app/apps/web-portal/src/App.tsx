@@ -10,6 +10,7 @@ import { EmployeesPage } from './pages/EmployeesPage';
 import { KioskPage } from './pages/KioskPage';
 import { LoginPage } from './pages/LoginPage';
 import { PresencePage } from './pages/PresencePage';
+import { PrivacyPage } from './pages/PrivacyPage';
 import { RegisterCompanyPage } from './pages/RegisterCompanyPage';
 import { RequestsPage } from './pages/RequestsPage';
 import { SettingsPage } from './pages/SettingsPage';
@@ -90,6 +91,7 @@ function Portal() {
           }
         />
         <Route path="richieste" element={<RequestsPage />} />
+        <Route path="privacy" element={<PrivacyPage />} />
         <Route path="registro" element={<AuditPage />} />
         <Route path="impostazioni" element={<SettingsPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />

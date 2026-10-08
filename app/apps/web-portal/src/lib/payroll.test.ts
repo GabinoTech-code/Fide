@@ -19,6 +19,7 @@ import {
   type BatchBackend,
   type PreparedBatch,
 } from './payroll';
+import { todayInRome } from './memberStatus';
 import type { Member } from './types';
 
 const COMPANY = 'c0000000-0000-4000-8000-000000000001';
@@ -28,7 +29,10 @@ beforeAll(async () => {
   s = sodium as unknown as Sodium;
 });
 
-function member(id: string, opts: { cf?: string; keys?: DeviceKeys; keyId?: string; status?: Member['status']; fakeFingerprint?: string } = {}): Member {
+function member(
+  id: string,
+  opts: { cf?: string; keys?: DeviceKeys; keyId?: string; status?: Member['status']; terminatedOn?: string; fakeFingerprint?: string } = {},
+): Member {
   const k = opts.keys;
   return {
     id,
@@ -40,6 +44,9 @@ function member(id: string, opts: { cf?: string; keys?: DeviceKeys; keyId?: stri
     site_id: null,
     manager_member_id: null,
     employee_number: null,
+    preferred_language: 'it',
+    terminated_on: opts.terminatedOn ?? null,
+    status_changed_at: null,
     member_identities: { email: null, codice_fiscale: opts.cf ?? null },
     device_keys: k
       ? [
@@ -63,6 +70,27 @@ const split = (docs: Array<[string, number[], number[]?]>, issues: SplitResult['
 });
 
 describe('planRecipients', () => {
+  it('still sends to a former employee during the 12-month window, not after', () => {
+    const keys = { recent: generateDeviceKeys(s), old: generateDeviceKeys(s) };
+    const plan = planRecipients({
+      split: split([
+        ['recent', [1]],
+        ['old', [2]],
+      ]),
+      members: [
+        member('recent', { keys: keys.recent, status: 'terminated', terminatedOn: todayInRome() }),
+        member('old', { keys: keys.old, status: 'terminated', terminatedOn: '2020-01-31' }),
+      ],
+      published: [],
+      pinned: {},
+      manual: {},
+    });
+    expect(plan.map((r) => [r.memberId, r.state])).toEqual([
+      ['recent', 'ready'],
+      ['old', 'no_key'],
+    ]);
+  });
+
   it('derives each recipient state', () => {
     const keys = Object.fromEntries(['ready', 'delivered', 'reissue', 'changed', 'mismatch'].map((n) => [n, generateDeviceKeys(s)]));
     const members = [

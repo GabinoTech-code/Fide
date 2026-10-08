@@ -45,7 +45,10 @@ lavoratori (interessati vulnerabili rispetto al datore) e una registrazione sist
 | Controllo a distanza indebito | QR come modalità predefinita; posizione disattivata, mai trasmessa, solo dopo accordo/autorizzazione | Basso |
 | Telefono perso o cambiato | Nuova chiave sul nuovo telefono, revoca della precedente, riemissione dei documenti | Basso |
 | Accesso abusivo al portale HR | Nessuna password: codice monouso via e-mail o passkey; ruoli separati; registro delle modifiche | Medio-basso |
-| Esclusione di chi non ha o non vuole usare lo smartphone | Alternativa obbligatoria gestita dall'HR | Basso, se applicata |
+| Esclusione di chi non ha o non vuole usare lo smartphone | Alternativa obbligatoria gestita dall'HR: il portale registra timbrature e assenze per conto del lavoratore, con motivo obbligatorio, mai per sé stessi, e il lavoratore le vede nell'app come «registrate da HR» | Basso, se applicata |
+| Un documento arriva alla persona sbagliata | L'HR lo ritira: sparisce dall'app, la chiave che lo apre viene distrutta e il file cifrato cancellato. Se era già stato scaricato, il portale avverte che può trattarsi di una violazione da valutare e, se c'è rischio, da notificare entro 72 ore (art. 33) | Medio-basso |
+| Un ex dipendente conserva l'accesso | Alla cessazione niente più timbrature né richieste; resta per 12 mesi la sola lettura dei propri documenti (cedolino finale, CU), poi l'accesso si chiude da solo. La sospensione blocca tutto subito | Basso |
+| Richieste dei lavoratori (artt. 15–22) senza risposta nei termini | Elenco delle richieste nel portale con scadenza di un mese fissata dal database, proroga una sola volta e motivata, risposta obbligatoria e visibile al lavoratore | Basso |
 | Conservazione eccessiva | Cancellazione a fine servizio; il titolare fissa i tempi in base agli obblighi sul LUL | Da definire dal titolare |
 
 ## 5. Da completare a cura del titolare

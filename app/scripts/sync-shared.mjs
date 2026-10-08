@@ -13,12 +13,14 @@ const check = process.argv.includes('--check');
 
 let stale = 0;
 for (const [from, to] of files) {
-  const source = readFileSync(path.join(root, from), 'utf8');
+  // Compare with LF endings: a Windows checkout (core.autocrlf) turns both files to CRLF.
+  const lf = (text) => text.replace(/\r\n/g, '\n');
+  const source = lf(readFileSync(path.join(root, from), 'utf8'));
   const expected = `// GENERATED from ${from} by app/scripts/sync-shared.mjs — do not edit.\n\n${source}`;
   const target = path.join(root, to);
   let current = null;
   try {
-    current = readFileSync(target, 'utf8');
+    current = lf(readFileSync(target, 'utf8'));
   } catch {
     // Not generated yet.
   }

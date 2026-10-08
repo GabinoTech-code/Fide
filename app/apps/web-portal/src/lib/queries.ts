@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { useAuth } from '../auth/AuthProvider';
 import { supabase } from './supabase';
-import type { AuditEntry, Kiosk, LeaveRequest, Member, PayrollBatch, Punch, PunchCorrection, Site } from './types';
+import type { AuditEntry, BatchDocument, GdprRequest, Kiosk, LeaveRequest, LeaveType, Member, PayrollBatch, Punch, PunchCorrection, Site } from './types';
 
 function useCompanyId(): string {
   const { active } = useAuth();
@@ -27,7 +27,7 @@ export function useMembers() {
         supabase
           .from('members')
           .select(
-            'id, company_id, auth_user_id, role, status, full_name, site_id, manager_member_id, employee_number, member_identities(email, codice_fiscale), device_keys(id, status, fingerprint, x25519_public_key, ed25519_public_key, created_at)',
+            'id, company_id, auth_user_id, role, status, full_name, site_id, manager_member_id, employee_number, preferred_language, terminated_on, status_changed_at, member_identities(email, codice_fiscale), device_keys(id, status, fingerprint, x25519_public_key, ed25519_public_key, created_at)',
           )
           .eq('company_id', companyId)
           .order('full_name'),
@@ -157,10 +157,10 @@ export function usePayrollBatches() {
           .limit(24),
       );
       if (!batches.length) return [];
-      const docs = await rows<{ id: string; batch_id: string; status: string; first_opened_at: string | null }>(
+      const docs = await rows<BatchDocument>(
         supabase
           .from('documents')
-          .select('id, batch_id, status, first_opened_at')
+          .select('id, batch_id, member_id, title, status, first_opened_at, storage_path')
           .in(
             'batch_id',
             batches.map((b) => b.id),
@@ -175,4 +175,38 @@ export function usePayrollBatches() {
 export function useMemberNames(): Map<string, string> {
   const { data } = useMembers();
   return new Map((data ?? []).map((m) => [m.id, m.full_name]));
+}
+
+export function useLeaveTypes() {
+  const companyId = useCompanyId();
+  return useQuery({
+    queryKey: ['leaveTypes', companyId],
+    enabled: Boolean(companyId),
+    queryFn: () =>
+      rows<LeaveType>(
+        supabase
+          .from('leave_types')
+          .select('id, code, name, unit, requires_protocol, active')
+          .eq('company_id', companyId)
+          .eq('active', true)
+          .order('code'),
+      ),
+  });
+}
+
+/** GDPR requests, open ones first by deadline (art. 12: one month, extendable once). */
+export function useGdprRequests() {
+  const companyId = useCompanyId();
+  return useQuery({
+    queryKey: ['gdpr', companyId],
+    enabled: Boolean(companyId),
+    queryFn: () =>
+      rows<GdprRequest>(
+        supabase
+          .from('gdpr_requests')
+          .select('id, member_id, kind, details, status, created_at, due_at, extended_at, extension_note, resolution_note, resolved_at')
+          .eq('company_id', companyId)
+          .order('due_at'),
+      ),
+  });
 }

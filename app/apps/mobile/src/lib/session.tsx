@@ -13,6 +13,9 @@ export interface Membership {
   full_name: string;
   site_id: string | null;
   preferred_language: string;
+  /** 'terminated': employment ended; read-only access to own documents for 12 months (RLS). */
+  status: 'active' | 'terminated';
+  terminated_on: string | null;
   companies: { legal_name: string } | null;
 }
 
@@ -55,11 +58,14 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     }
     const { data, error } = await supabase
       .from('members')
-      .select('id, company_id, role, full_name, site_id, preferred_language, companies(legal_name)')
+      .select('id, company_id, role, full_name, site_id, preferred_language, status, terminated_on, companies(legal_name)')
       .eq('auth_user_id', s.user.id)
-      .eq('status', 'active');
+      .in('status', ['active', 'terminated']);
     if (error) throw error;
-    const list = (data ?? []) as unknown as Membership[];
+    // RLS returns a terminated membership only during its 12-month window. Active ones come first.
+    const list = ((data ?? []) as unknown as Membership[]).sort(
+      (a, b) => Number(b.status === 'active') - Number(a.status === 'active'),
+    );
     setMemberships(list);
     return list;
   }, []);

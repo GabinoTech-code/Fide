@@ -1,7 +1,7 @@
 // Payslips: HR drops the bulk PDF from the payroll software; this browser splits
 // it per employee, encrypts each part to the employee's phone and uploads
 // ciphertext only (lib/payroll.ts). Fide never sees a payslip in clear.
-import { useMemo, useRef, useState, type FormEvent } from 'react';
+import { Fragment, useMemo, useRef, useState, type FormEvent } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { splitPayroll, type SplitResult } from '@fide/payroll-parser';
 import { useAuth } from '../auth/AuthProvider';
@@ -27,9 +27,10 @@ import {
   type RecipientState,
 } from '../lib/payroll';
 import { extractPageTexts, loadSplittable } from '../lib/pdfText';
-import { useMembers, usePayrollBatches } from '../lib/queries';
+import { useMemberNames, useMembers, usePayrollBatches } from '../lib/queries';
 import { getSodium } from '../lib/sodium';
 import { supabase } from '../lib/supabase';
+import type { BatchDocument } from '../lib/types';
 
 const KINDS: DocumentKind[] = ['cedolino', 'cu', 'other'];
 
@@ -476,6 +477,9 @@ function PayrollWorkspace({ companyId }: { companyId: string }) {
 function History() {
   const { t, formatDateTime } = useI18n();
   const batches = usePayrollBatches();
+  const names = useMemberNames();
+  const [open, setOpen] = useState<string | null>(null);
+  const [withdrawing, setWithdrawing] = useState<BatchDocument | null>(null);
   return (
     <section className="card stack">
       <h2>{t('payroll.history')}</h2>
@@ -493,31 +497,156 @@ function History() {
                 <th>{t('payroll.kind')}</th>
                 <th>{t('employees.status')}</th>
                 <th>{t('payroll.recipients')}</th>
+                <th />
               </tr>
             </thead>
             <tbody>
               {batches.data.map((b) => {
-                const total = b.documents.length;
-                const opened = b.documents.filter((d) => d.first_opened_at).length;
+                const live = b.documents.filter((d) => d.status !== 'deleted');
+                const total = live.length;
+                const opened = live.filter((d) => d.first_opened_at).length;
+                const withdrawn = b.documents.length - live.length;
                 return (
-                  <tr key={b.id}>
-                    <td style={{ fontWeight: 600 }}>{b.title}</td>
-                    <td className="small">{t(`kind.${b.kind}` as MessageKey)}</td>
-                    <td className="small">
-                      {b.status === 'published' && b.published_at ? (
-                        formatDateTime(b.published_at)
-                      ) : (
-                        <span className="badge badge-muted">{t('payroll.draft')}</span>
-                      )}
-                    </td>
-                    <td className="small">{b.status === 'published' ? t('payroll.opened', { opened, total }) : '—'}</td>
-                  </tr>
+                  <Fragment key={b.id}>
+                    <tr>
+                      <td style={{ fontWeight: 600 }}>{b.title}</td>
+                      <td className="small">{t(`kind.${b.kind}` as MessageKey)}</td>
+                      <td className="small">
+                        {b.status === 'published' && b.published_at ? (
+                          formatDateTime(b.published_at)
+                        ) : (
+                          <span className="badge badge-muted">{t('payroll.draft')}</span>
+                        )}
+                      </td>
+                      <td className="small">
+                        {b.status === 'published' ? t('payroll.opened', { opened, total }) : '—'}
+                        {withdrawn > 0 ? <div className="muted">{t('payroll.withdrawnCount', { n: withdrawn })}</div> : null}
+                      </td>
+                      <td>
+                        {b.status === 'published' ? (
+                          <button className="btn btn-sm" onClick={() => setOpen(open === b.id ? null : b.id)}>
+                            {t(open === b.id ? 'payroll.hideDocuments' : 'payroll.showDocuments')}
+                          </button>
+                        ) : null}
+                      </td>
+                    </tr>
+                    {open === b.id ? (
+                      <tr>
+                        <td colSpan={5}>
+                          <ul className="stack" style={{ gap: 6, listStyle: 'none', padding: 0, margin: 0 }}>
+                            {b.documents.map((d) => (
+                              <li key={d.id} className="row">
+                                <span style={{ fontWeight: 600 }}>{names.get(d.member_id) ?? '—'}</span>
+                                <span className="small muted">{d.title}</span>
+                                <span className="spacer" />
+                                {d.status === 'deleted' ? (
+                                  <span className="badge badge-muted">{t('payroll.withdrawn')}</span>
+                                ) : (
+                                  <>
+                                    <span className={`badge ${d.first_opened_at ? '' : 'badge-muted'}`}>
+                                      {d.first_opened_at ? t('payroll.openedOn', { when: formatDateTime(d.first_opened_at) }) : t('payroll.notOpened')}
+                                    </span>
+                                    <button className="btn btn-sm btn-danger" onClick={() => setWithdrawing(d)}>
+                                      {t('payroll.withdraw')}
+                                    </button>
+                                  </>
+                                )}
+                              </li>
+                            ))}
+                          </ul>
+                        </td>
+                      </tr>
+                    ) : null}
+                  </Fragment>
                 );
               })}
             </tbody>
           </table>
         </div>
       )}
+      {withdrawing ? (
+        <WithdrawDocument doc={withdrawing} recipient={names.get(withdrawing.member_id) ?? ''} onClose={() => setWithdrawing(null)} />
+      ) : null}
     </section>
+  );
+}
+
+interface WithdrawResult {
+  storage_path: string;
+  downloaded: boolean;
+  first_opened_at: string | null;
+}
+
+/** D1: withdraw a document sent to the wrong person, with breach guidance if it was already downloaded. */
+function WithdrawDocument({ doc, recipient, onClose }: { doc: BatchDocument; recipient: string; onClose: () => void }) {
+  const { t } = useI18n();
+  const queryClient = useQueryClient();
+  const [reason, setReason] = useState('');
+  const [result, setResult] = useState<WithdrawResult | null>(null);
+  const [fileRemoved, setFileRemoved] = useState(true);
+  const [error, setError] = useState<unknown>(null);
+  const [busy, setBusy] = useState(false);
+
+  const submit = async (e: FormEvent) => {
+    e.preventDefault();
+    setBusy(true);
+    setError(null);
+    const { data, error } = await supabase.rpc('withdraw_document', { p_document_id: doc.id, p_reason: reason.trim() });
+    if (error) {
+      setBusy(false);
+      return setError(error);
+    }
+    const res = data as WithdrawResult;
+    // The key wrap is already gone, so nobody can decrypt the file any more;
+    // removing the ciphertext is housekeeping.
+    const removal = await supabase.storage.from('encrypted-documents').remove([res.storage_path]);
+    setFileRemoved(!removal.error);
+    setResult(res);
+    setBusy(false);
+    await queryClient.invalidateQueries({ queryKey: ['payroll'] });
+  };
+
+  return (
+    <Modal title={t('payroll.withdrawTitle', { name: recipient })} onClose={onClose}>
+      {result ? (
+        <div className="stack">
+          <div className="notice" role="status">
+            {t('payroll.withdrawDone')}
+          </div>
+          {result.downloaded ? (
+            <div className="notice notice-warn" role="alert">
+              {t('payroll.withdrawBreach')}
+            </div>
+          ) : (
+            <p className="small muted">{t('payroll.withdrawNotDownloaded')}</p>
+          )}
+          {!fileRemoved ? <p className="small muted">{t('payroll.withdrawFileLater')}</p> : null}
+          <p className="small muted">{t('payroll.withdrawResend')}</p>
+        </div>
+      ) : (
+        <form className="stack" onSubmit={submit}>
+          <p className="small">{t('payroll.withdrawExplain', { title: doc.title })}</p>
+          {doc.first_opened_at ? <div className="notice notice-warn">{t('payroll.withdrawAlreadyOpened')}</div> : null}
+          <label className="field">
+            {t('member.reason')}
+            <input
+              required
+              minLength={3}
+              maxLength={500}
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              placeholder={t('payroll.withdrawPlaceholder')}
+            />
+          </label>
+          <ErrorNotice error={error} />
+          <div className="row">
+            <span className="spacer" />
+            <button className="btn btn-danger" disabled={busy}>
+              {t('payroll.withdrawConfirm')}
+            </button>
+          </div>
+        </form>
+      )}
+    </Modal>
   );
 }
