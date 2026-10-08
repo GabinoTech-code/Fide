@@ -1,5 +1,8 @@
 # Auditoría funcional de punta a punta · 8 de octubre de 2026
 
+> Estado vivo: cada punto terminado lleva **✅ HECHO** con su prueba. El plan vigente está en la
+> [comparativa](COMPARATIVA-COMPETENCIA-2026-10-08.md).
+
 Revisión de la base de datos (tablas, RPC y permisos), del portal de HR y de la app del trabajador, buscando
 los flujos que se cortan a mitad de camino. Cada hallazgo indica dónde está el hueco: **BD** (no existe en la base
 de datos), **Portal** o **App** (existe en la base de datos, pero nadie lo puede usar).
@@ -15,11 +18,11 @@ Prioridades:
 
 | # | Hallazgo | Dónde | Prio |
 | --- | --- | --- | --- |
-| E1 | **Dar de baja o suspender a un empleado.** `set_member_status` existe, pero no hay botón. Un despedido conserva el acceso a la app, puede fichar y seguiría recibiendo documentos. | Portal | **P0** |
-| E2 | **Revocar el móvil de un empleado** (perdido o robado). `revoke_device_key` existe, sin botón. | Portal | **P0** |
-| E3 | **Editar un empleado** (nombre, email, CF, matrícula, sede, responsable). La BD lo permite, pero el portal solo deja crear. Un error al escribir el email bloquea la invitación para siempre. | Portal | **P0** |
+| E1 | **Dar de baja o suspender a un empleado.** `set_member_status` existe, pero no hay botón. Un despedido conserva el acceso a la app, puede fichar y seguiría recibiendo documentos. ✅ **HECHO** (migración `20261009090100_member_lifecycle.sql`, test `lifecycle.test.ts`, panel «Gestisci» del portal). | Portal | **P0** |
+| E2 | **Revocar el móvil de un empleado** (perdido o robado). `revoke_device_key` existe, sin botón. ✅ **HECHO** (panel «Gestisci» → Stato e telefono; `revoke_device_key` ya cubierto en `members.test.ts`). | Portal | **P0** |
+| E3 | **Editar un empleado** (nombre, email, CF, matrícula, sede, responsable). La BD lo permite, pero el portal solo deja crear. Un error al escribir el email bloquea la invitación para siempre. ✅ **HECHO** (RPC `update_member` (email solo mientras está invitado), test `lifecycle.test.ts`). | Portal | **P0** |
 | E4 | **Mansión y categoría.** No existen. Falta un catálogo de **mansioni** configurable por empresa (operaio comune, operaio specializzato, capo turno, capo impianto, magazziniere, impiegato…), más categoría (operaio / impiegato / quadro / apprendista), **livello CCNL**, tipo de contrato (indeterminato, determinato, apprendistato, somministrato), **horas semanales** o part-time, fecha de alta y de baja, y reparto. | BD + Portal + App | **P1** |
-| E5 | **Roles y jerarquía.** `set_member_role` existe, sin botón: no se puede nombrar a nadie HR ni responsable. `manager_member_id` (quién es su capo turno) tampoco se puede asignar. | Portal | **P1** |
+| E5 | **Roles y jerarquía.** `set_member_role` existe, sin botón: no se puede nombrar a nadie HR ni responsable. `manager_member_id` (quién es su capo turno) tampoco se puede asignar. 🟡 **A medias**: el responsable ya se asigna en «Gestisci → Dati» (`update_member`); los roles siguen sin pantalla. | Portal | **P1** |
 | E6 | **Estado de la invitación.** No se ve si caducó (7 días), no se puede anular (`revoke_invitation`, sin botón) y "Invitar" crea una nueva cada vez. | Portal | P1 |
 | E7 | Buscar o filtrar empleados por sede, rol o estado; ordenar. | Portal | P2 |
 | E8 | La importación CSV no recoge mansión, contrato ni horas (depende de E4). | Portal | P1 |
@@ -39,7 +42,7 @@ Prioridades:
 
 | # | Hallazgo | Dónde | Prio |
 | --- | --- | --- | --- |
-| F1 | **HR no puede registrar un fichaje en nombre de un trabajador.** Solo el propio trabajador crea sus correcciones. La informativa y la DPIA **prometen** una alternativa sin móvil gestionada por HR, y el Garante la exige. | BD + Portal | **P0** |
+| F1 | **HR no puede registrar un fichaje en nombre de un trabajador.** Solo el propio trabajador crea sus correcciones. La informativa y la DPIA **prometen** una alternativa sin móvil gestionada por HR, y el Garante la exige. ✅ **HECHO** (RPC `hr_record_punch` (`20261009090200_hr_entries.sql`), test `hr-actions.test.ts`). | BD + Portal | **P0** |
 | F2 | Historial de presencias por empleado y por mes en el portal (hoy solo existe "hoy" y el CSV mensual). | Portal | P1 |
 | F3 | Panel de **anomalías**: salidas olvidadas, turnos de más de 16 h, fichajes marcados. Hoy solo aparecen dentro del CSV. | Portal | P1 |
 | F4 | El trabajador solo ve los fichajes de **hoy**; no tiene su historial del mes ni sus horas. | App | P1 |
@@ -52,7 +55,7 @@ Prioridades:
 | # | Hallazgo | Dónde | Prio |
 | --- | --- | --- | --- |
 | V1 | **Saldos.** La tabla `leave_balances` existe, pero no hay pantalla ni importación: nadie puede cargar los días de vacaciones o ROL, y el trabajador ve sus saldos vacíos. Estaba planificado como importación CSV. | Portal | **P1** |
-| V2 | **HR no puede registrar una ausencia en nombre del trabajador** (por ejemplo, la malattia con el certificado INPS que le llega a la empresa, o la de un trabajador sin móvil). | BD + Portal | **P0** |
+| V2 | **HR no puede registrar una ausencia en nombre del trabajador** (por ejemplo, la malattia con el certificado INPS que le llega a la empresa, o la de un trabajador sin móvil). ✅ **HECHO** (RPC `hr_record_leave` (`20261009090200_hr_entries.sql`), test `hr-actions.test.ts`). | BD + Portal | **P0** |
 | V3 | El trabajador **no ve el motivo de un rechazo** (`decision_note`) y HR no puede escribirlo al rechazar. | Portal + App | P1 |
 | V4 | Solicitudes: solo se ven las pendientes. Falta historial, filtros y quién aprobó y cuándo. | Portal | P1 |
 | V5 | **Calendario de ausencias** de la empresa o del equipo, para ver quién falta y cuándo. | Portal | P1 |
@@ -70,7 +73,7 @@ Prioridades:
 
 | # | Hallazgo | Dónde | Prio |
 | --- | --- | --- | --- |
-| D1 | **Retirar un documento** enviado a la persona equivocada. No existe ninguna forma, y un cedolino en el móvil equivocado es una violación de datos. | BD + Portal | **P0** |
+| D1 | **Retirar un documento** enviado a la persona equivocada. No existe ninguna forma, y un cedolino en el móvil equivocado es una violación de datos. ✅ **HECHO** (RPC `withdraw_document` (`20261009090300_document_withdrawal.sql`), test `hr-actions.test.ts`, historial de Cedolini). | BD + Portal | **P0** |
 | D2 | **Documento suelto a una o varias personas** (contrato, comunicación, CU de uno solo): hoy hay que pasar por el flujo de nóminas y asignar las páginas a mano. Falta "Enviar documento", eligiendo destinatarios de una lista. | Portal | P1 |
 | D3 | **Pendientes de entrega.** Si un trabajador aún no ha activado la app, su nómina se salta y nadie lo recuerda. Falta una cola "se enviará cuando active el móvil", o al menos un aviso persistente. | Portal | P1 |
 | D4 | **Historial por empleado**: qué documentos tiene, cuándo los abrió (prueba de entrega) y exportarlo. Hoy solo hay un recuento por lote. | Portal | P1 |
@@ -81,7 +84,7 @@ Prioridades:
 
 | # | Hallazgo | Dónde | Prio |
 | --- | --- | --- | --- |
-| G1 | **Solicitudes RGPD sin bandeja.** El trabajador puede pedir la cancelación desde la app, pero HR no las ve: `resolve_gdpr_request` existe, sin pantalla. Hay que responder en un mes (art. 12). | Portal | **P0** |
+| G1 | **Solicitudes RGPD sin bandeja.** El trabajador puede pedir la cancelación desde la app, pero HR no las ve: `resolve_gdpr_request` existe, sin pantalla. Hay que responder en un mes (art. 12). ✅ **HECHO** (página Privacy del portal y lista en la app; `20261009090400_gdpr_inbox.sql`, test `hr-actions.test.ts`). | Portal | **P0** |
 | G2 | Purga automática de datos al terminar los plazos de conservación. | BD | P2 |
 
 ## 7. Avisos

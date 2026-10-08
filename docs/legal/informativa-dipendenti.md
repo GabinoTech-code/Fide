@@ -52,6 +52,9 @@ né in background.
 **Il telefono personale non è obbligatorio**: se non vuoi o non puoi usarlo, [timbri con [●]] / [l'ufficio del
 personale registra le tue presenze].
 
+Le timbrature e le assenze registrate dall'ufficio del personale per tuo conto compaiono nell'app come «registrate da
+HR», con il motivo: se non corrispondono, puoi contestarle.
+
 ## Chi vede i dati
 
 L'ufficio del personale e i responsabili autorizzati, ciascuno per i dati di cui ha bisogno (un responsabile vede i
@@ -63,9 +66,14 @@ dati della sua squadra), e il nostro consulente del lavoro per le paghe. Ogni mo
 documentazione del rapporto, di regola [5] anni dall'ultima registrazione.] [Altri dati: fino alla cessazione del
 rapporto più [●].]
 
+Quando il rapporto di lavoro finisce non puoi più timbrare né fare richieste, ma per **12 mesi** puoi ancora vedere e
+scaricare i tuoi documenti nell'app (per esempio il cedolino finale e la Certificazione Unica) ed esercitare i tuoi
+diritti. Poi l'accesso si chiude da solo.
+
 ## I tuoi diritti
 
 Puoi chiedere accesso, rettifica, cancellazione, limitazione, opposizione e portabilità (artt. 15–22 GDPR). Dall'app
 (**I miei dati**) puoi esportare i tuoi dati e inviare una richiesta di cancellazione; le timbrature restano
-conservate per gli obblighi di legge. Per tutto il resto scrivi a [contatto privacy]. Puoi proporre reclamo al
+conservate per gli obblighi di legge. Per tutto il resto scrivi a [contatto privacy]. Ti rispondiamo entro un mese
+(prorogabile di altri due nei casi complessi, spiegandoti il motivo) e vedi la risposta anche nell'app. Puoi proporre reclamo al
 Garante per la protezione dei dati personali (www.garanteprivacy.it).
