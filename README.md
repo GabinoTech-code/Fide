@@ -52,6 +52,8 @@ npm run typecheck && npm run lint && npm test
 - Portale: `npm run dev --workspace apps/web-portal` (serve `apps/web-portal/.env`, vedi `.env.example`).
 - Sito: `npm run dev --workspace apps/site`.
 - App: `cd apps/mobile && npx expo start --dev-client` con una development build (EAS).
+  Le build EAS leggono `EXPO_PUBLIC_SUPABASE_URL` e `EXPO_PUBLIC_SUPABASE_ANON_KEY` dalle variabili d'ambiente EAS del
+  progetto (ambienti `development`, `preview`, `production`, scelti in `eas.json`), non da `.env`, che non è nel repository.
 
 Le migrazioni si applicano al progetto ospitato con il workflow manuale **Supabase deploy** (`.github/workflows/supabase-deploy.yml`).
 Dettagli in [supabase/README.md](supabase/README.md) e [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
