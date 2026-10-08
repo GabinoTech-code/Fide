@@ -1,0 +1,61 @@
+# Docs sync gate — regla de oro «La doc no miente» (CLAUDE.md, punto 7).
+#
+# A PR that changes product code must also touch a doc, or declare in its body
+#   Docs: none — <why no doc applies>
+# Its own workflow so that editing the PR body re-runs only this check.
+
+name: Docs sync
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, edited]
+
+permissions:
+  contents: read
+
+jobs:
+  docs-sync:
+    name: Docs sync gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Require a doc change or an explicit Docs-none declaration
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          set -euo pipefail
+          CHANGED=$(git diff --name-only "origin/${BASE_REF}...HEAD")
+          echo "Changed files:"; echo "$CHANGED"
+
+          # Product code: app sources, shared packages, database, Edge Functions, deploy, workflows.
+          # Tests (and the db-tests package, which is only tests) are excluded.
+          CODE=$(echo "$CHANGED" \
+            | grep -E '^(app/apps/[^/]+/src/|app/packages/[^/]+/src/|supabase/migrations/|supabase/functions/|supabase/config\.toml$|deploy/|\.github/workflows/)' \
+            | grep -vE '^app/packages/db-tests/|(^|/)__tests__/|\.test\.[cm]?[jt]sx?$|\.spec\.[cm]?[jt]sx?$|^deploy/README\.md$' || true)
+          if [ -z "$CODE" ]; then
+            echo "No product code changed - nothing to sync."
+            exit 0
+          fi
+
+          DOCS=$(echo "$CHANGED" | grep -E '^(docs/|README\.md$|CLAUDE\.md$|SECURITY\.md$|supabase/README\.md$|deploy/README\.md$|\.agents/)' || true)
+          if [ -n "$DOCS" ]; then
+            echo "Docs touched alongside code:"; echo "$DOCS"
+            exit 0
+          fi
+
+          # 'Docs: none — reason' (em dash or hyphen), reason non-empty.
+          if printf '%s\n' "$PR_BODY" | grep -qE '^Docs:[[:space:]]*none[[:space:]]*(—|-)[[:space:]]*[^[:space:]]'; then
+            echo "PR body declares 'Docs: none' with a reason - accepted."
+            exit 0
+          fi
+
+          echo "::error::Product code changed but no doc was updated and the PR body has no 'Docs: none — <reason>' line."
+          echo "Code changed:"; echo "$CODE"
+          echo "Update the canonical doc (map in CLAUDE.md, 'La doc no miente') or add to the PR body:"
+          echo "  Docs: none — <why no doc applies>"
+          exit 1

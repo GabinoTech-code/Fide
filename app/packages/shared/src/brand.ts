@@ -1,6 +1,6 @@
 // Fide visual identity — single source of truth for the portal, the app and the
 // generated icons (app/scripts/gen-brand-assets.mjs). Values come from the
-// design references "Logo, icono de app, color y tipografía" and "Set de iconos".
+// design references in prototype/ ("Logo, icono de app, color y tipografía" and "Set de iconos").
 
 export const brandColors = {
   /** Pizarra: dark surfaces, primary text */

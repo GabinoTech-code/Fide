@@ -1,0 +1,17 @@
+# Semgrep scan scope — mirrors .github/codeql/codeql-config.yml.
+# Only shipped product and ops code. gitignore-style syntax; Semgrep already
+# skips node_modules and .git.
+
+# Design mockups (CLAUDE.md, estructura: prototype/ is not product)
+prototype/
+
+# Transient scratch (gitignored, never product)
+_scratch/
+
+# Regenerable build & coverage artifacts
+**/dist/
+**/build/
+**/coverage/
+**/.expo/
+android/
+ios/

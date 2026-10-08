@@ -1,0 +1,159 @@
+# Fide custom Semgrep rules — encode the "REGLA DE ORO — Seguridad y privacidad"
+# and the non-negotiable principles of CLAUDE.md, so they cannot be silently
+# reintroduced. High precision on purpose: each targets a failure mode that
+# would break a promise Fide makes to employees and companies.
+#
+# A reviewed exception carries `// nosemgrep: <rule-id>` plus the reason.
+rules:
+  - id: fide-no-silent-decrypt-fallback
+    languages: [typescript, javascript]
+    severity: ERROR
+    message: >-
+      Encryption/decryption must FAIL CLOSED. A catch block that returns the
+      plaintext silently degrades the end-to-end encryption of payslips
+      (Seguridad #1). Throw instead of falling back to cleartext.
+    metadata:
+      category: security
+      golden-rule: '1 — el cifrado nunca degrada en silencio'
+    patterns:
+      - pattern: |
+          try { ... } catch ($E) { ... return $PLAIN; ... }
+      - metavariable-regex:
+          metavariable: $PLAIN
+          regex: (?i).*(plaintext|cleartext|decrypted|unencrypted|clearpdf|plainpdf).*
+
+  - id: fide-no-key-material-on-wire
+    languages: [typescript, javascript]
+    severity: ERROR
+    message: >-
+      Possible private key material leaving the device or the HR browser.
+      Fields named privateKey / secretKey / seed / fileKey must never be sent to
+      Supabase, an Edge Function or stringified for the network (Seguridad #2).
+      Only public keys, signatures and sealed blobs travel.
+    metadata:
+      category: security
+      golden-rule: '2 — cero material de clave en la red'
+    patterns:
+      - pattern-either:
+          - pattern: 'JSON.stringify({ ..., $K: $V, ... })'
+          - pattern: '$DB.from($T).insert({ ..., $K: $V, ... })'
+          - pattern: '$DB.from($T).upsert({ ..., $K: $V, ... })'
+          - pattern: '$DB.from($T).update({ ..., $K: $V, ... })'
+          - pattern: '$DB.rpc($F, { ..., $K: $V, ... })'
+          - pattern: '$DB.functions.invoke($F, { ..., body: { ..., $K: $V, ... }, ... })'
+      - metavariable-regex:
+          metavariable: $K
+          regex: (?i)^(private_?key|priv_?key|secret_?key|sk|seed|signing_?key|file_?key|box_?secret)$
+
+  - id: fide-no-coordinates-from-the-phone
+    languages: [typescript, javascript]
+    severity: ERROR
+    message: >-
+      The employee app must never send coordinates: it computes inside/outside
+      on the phone and sends only the result (principio de ubicación mínima,
+      art. 4 L. 300/1970). Remove the coordinate field from the payload.
+    metadata:
+      category: privacy
+      golden-rule: 'principio — ubicación mínima'
+    paths:
+      include:
+        - '/app/apps/mobile/**'
+      exclude:
+        - '*.test.ts'
+        - '*.test.tsx'
+    patterns:
+      - pattern-either:
+          - pattern: 'JSON.stringify({ ..., $K: $V, ... })'
+          - pattern: '$DB.from($T).insert({ ..., $K: $V, ... })'
+          - pattern: '$DB.from($T).upsert({ ..., $K: $V, ... })'
+          - pattern: '$DB.rpc($F, { ..., $K: $V, ... })'
+          - pattern: '$DB.functions.invoke($F, { ..., body: { ..., $K: $V, ... }, ... })'
+      - metavariable-regex:
+          metavariable: $K
+          regex: (?i)^(lat|lng|lon|latitude|longitude|coords|coordinates|position|accuracy)$
+
+  - id: fide-no-service-key-in-clients
+    languages: [typescript, javascript]
+    severity: ERROR
+    message: >-
+      The Supabase service-role key bypasses RLS and must exist only in Edge
+      Function secrets, never in the app, the portal or the site (Seguridad #6).
+    metadata:
+      category: security
+      golden-rule: '6 — producción falla cerrado'
+    paths:
+      include:
+        - '/app/apps/**'
+    pattern-regex: (?i)service[_-]?role
+
+  - id: fide-no-raw-html
+    languages: [typescript, javascript]
+    severity: ERROR
+    message: >-
+      No raw HTML injection (CLAUDE.md: sin innerHTML). Payslip text, names and
+      notes are user-controlled; render them as text.
+    metadata:
+      category: security
+      golden-rule: 'convención — sin innerHTML'
+    pattern-either:
+      - pattern: '$X.innerHTML = $Y'
+      - pattern: '$X.outerHTML = $Y'
+      - pattern: '$X.insertAdjacentHTML(...)'
+      - pattern: 'document.write(...)'
+      - pattern: '<$EL dangerouslySetInnerHTML={...} />'
+
+  - id: fide-no-math-random
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >-
+      Math.random() is not a cryptographic generator. Use sodium.randombytes_buf
+      or crypto.getRandomValues for any identifier, nonce, token or key.
+    metadata:
+      category: security
+      golden-rule: 'convención — aleatoriedad criptográfica'
+    paths:
+      exclude:
+        - '*.test.ts'
+        - '*.test.tsx'
+        - '/app/packages/db-tests/**'
+    pattern: Math.random()
+
+  - id: fide-no-console-log-production
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >-
+      No console.log in production code (CLAUDE.md convention): it can leak
+      personal data or key material to device logs (Seguridad #2).
+    metadata:
+      category: security
+      golden-rule: '2 — sin fugas por logs'
+    paths:
+      exclude:
+        - '*.test.ts'
+        - '*.test.tsx'
+        # CLI tools print by design (app/scripts, package scripts/ such as the payroll spike).
+        - '**/scripts/**'
+        - '/app/packages/db-tests/**'
+        - '*.config.ts'
+        - '*.config.js'
+        - '*.config.mjs'
+    pattern: console.log(...)
+
+  - id: fide-no-cors-wildcard
+    languages: [typescript, javascript]
+    severity: ERROR
+    message: >-
+      CORS wildcard '*' must not be used; Edge Functions answer only the origins
+      in FIDE_ALLOWED_ORIGINS (Seguridad #6 — producción falla cerrado).
+    metadata:
+      category: security
+      golden-rule: '6 — sin CORS *'
+    paths:
+      exclude:
+        - '*.test.ts'
+    pattern-either:
+      - pattern: "{ ..., 'Access-Control-Allow-Origin': '*', ... }"
+      - pattern: '{ ..., "Access-Control-Allow-Origin": "*", ... }'
+      - pattern: "$H.set('Access-Control-Allow-Origin', '*')"
+      - pattern: 'origin: "*"'
+      - pattern: "origin: '*'"

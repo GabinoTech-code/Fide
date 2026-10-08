@@ -1,0 +1,72 @@
+# Dependabot — weekly version updates.
+#
+# One grouped PR per ecosystem per week (solo maintainer). Security updates are
+# a separate repository setting and are not replaced by this file.
+
+version: 2
+updates:
+  # ── npm workspaces (app/: mobile, portal, site, packages) — one lockfile ──
+  - package-ecosystem: npm
+    directory: /app
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+    groups:
+      app-minor-patch:
+        update-types:
+          - minor
+          - patch
+        # Crypto libraries never ride a routine group: they must move on the
+        # phone, the browser and Deno together and keep the shared test vectors
+        # of @fide/crypto passing. Each still arrives as its own visible PR.
+        exclude-patterns:
+          - "libsodium*"
+          - "@types/libsodium*"
+          - "react-native-libsodium"
+          - "@noble/*"
+          # PDF splitting and text extraction decide who receives which payslip:
+          # a bump must be reviewed against the payroll-parser fixtures.
+          - "pdfjs-dist"
+          - "pdf-lib"
+    # Expo and React Native move only in a deliberate SDK-upgrade PR tested on
+    # a device: their majors (and RN's 0.x minors) track the Expo SDK, and a
+    # bump alone breaks the native build even when JS-only CI is green.
+    ignore:
+      - dependency-name: expo
+        update-types: [version-update:semver-major]
+      - dependency-name: "expo-*"
+        update-types: [version-update:semver-major]
+      - dependency-name: "@expo/*"
+        update-types: [version-update:semver-major]
+      - dependency-name: eslint-config-expo
+        update-types: [version-update:semver-major]
+      - dependency-name: react-native
+        update-types: [version-update:semver-major, version-update:semver-minor]
+      - dependency-name: "react-native-*"
+        update-types: [version-update:semver-major]
+      # react and react-dom are pinned to the version React Native bundles.
+      - dependency-name: react
+        update-types: [version-update:semver-major, version-update:semver-minor]
+      - dependency-name: react-dom
+        update-types: [version-update:semver-major, version-update:semver-minor]
+      - dependency-name: "@types/react"
+        update-types: [version-update:semver-major, version-update:semver-minor]
+
+  # ── GitHub Actions ──────────────────────────────────────────────────────
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+      - ci
+    groups:
+      github-actions:
+        update-types:
+          - minor
+          - patch
