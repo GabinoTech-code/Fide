@@ -31,6 +31,7 @@ export const it = {
   'login.email': 'E-mail di lavoro',
   'login.sendCode': 'Inviami il codice',
   'login.codeSent': 'Ti abbiamo inviato un codice a {email}.',
+  'login.linkHint': 'Se nell’e-mail trovi un link invece del codice, aprilo in questo stesso browser.',
   'login.code': 'Codice di 6 cifre',
   'login.verify': 'Accedi',
   'login.passkey': 'Accedi con passkey',

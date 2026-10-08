@@ -2,7 +2,8 @@
 
 La web pública (`fide-work.it`, con `/invite/*` y los ficheros `/.well-known` de las passkeys y los App Links) y el
 portal de HR (`app.fide-work.it`) son **ficheros estáticos**. Los sirve el **nginx que ya existe** en el servidor de
-AegisLink (Hetzner, Helsinki: `157.180.116.176`), con bloques `server` propios y certificado de Let's Encrypt. La base
+AegisLink (Hetzner, Helsinki: `157.180.116.176`), con bloques `server` propios y certificado de Let's Encrypt.
+`fide-work.online` (con su `www` y `app`) apunta al mismo servidor y redirige a `fide-work.it`. La base
 de datos y las funciones siguen en Supabase (UE).
 
 `deploy/nginx/fide.conf` **no se edita a mano**: se genera con `npm run gen:nginx` (en `app/`) desde
@@ -22,7 +23,8 @@ La configuración de Fide:
 
 ## Instalación (una sola vez, como administrador)
 
-**1. DNS en register.it.** Registros **A** (no AAAA) de `fide-work.it`, `www` y `app` hacia `157.180.116.176`.
+**1. DNS en register.it.** Registros **A** (no AAAA) de `fide-work.it` y `app` hacia `157.180.116.176`; `www` es
+un CNAME al dominio raíz. Lo mismo para `fide-work.online`.
 Comprueba que resuelven antes del paso 4:
 
 ```powershell
@@ -50,6 +52,7 @@ recarga nginx al renovar:
 ```bash
 certbot certonly --webroot -w /var/www/letsencrypt --cert-name fide-work.it \
   -d fide-work.it -d www.fide-work.it -d app.fide-work.it \
+  -d fide-work.online -d www.fide-work.online -d app.fide-work.online \
   --deploy-hook "systemctl reload nginx"
 ```
 
@@ -80,7 +83,8 @@ Host fide-web
   IdentityFile ~/.ssh/aegislink_hetzner
 ```
 
-Después, desde la raíz del repo, **en Git Bash**:
+Después, desde la raíz del repo, **en Git Bash**. Sin alias, usa `FIDE_DEPLOY_HOST=root@157.180.116.176` y
+`FIDE_DEPLOY_SSH_KEY=~/.ssh/aegislink_hetzner`:
 
 ```bash
 FIDE_DEPLOY_HOST=fide-web ./deploy/deploy.sh

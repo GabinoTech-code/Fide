@@ -28,7 +28,10 @@ export function LoginPage() {
   const sendCode = (e: FormEvent) => {
     e.preventDefault();
     run(async () => {
-      const { error } = await supabase.auth.signInWithOtp({ email: normalized, options: { shouldCreateUser: true } });
+      const { error } = await supabase.auth.signInWithOtp({
+        email: normalized,
+        options: { shouldCreateUser: true, emailRedirectTo: window.location.origin },
+      });
       if (error) throw error;
       setSent(true);
     });
@@ -87,6 +90,7 @@ export function LoginPage() {
           ) : (
             <form className="stack" onSubmit={verify}>
               <p className="small">{t('login.codeSent', { email: normalized })}</p>
+              <p className="small muted">{t('login.linkHint')}</p>
               <label className="field">
                 {t('login.code')}
                 <input

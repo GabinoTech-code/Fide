@@ -69,6 +69,16 @@ otp_length = 6
 otp_expiry = 600
 max_frequency = "60s"
 
+# Sign-in e-mails carry the 6-digit code, not a link. The hosted project gets the
+# same template from .github/workflows/supabase-deploy.yml.
+[auth.email.template.magic_link]
+subject = "Il tuo codice di accesso a Fide"
+content_path = "./supabase/templates/otp-code.html"
+
+[auth.email.template.confirmation]
+subject = "Il tuo codice di accesso a Fide"
+content_path = "./supabase/templates/otp-code.html"
+
 # Passkeys (Supabase Auth, beta). Registration needs an existing session, so the
 # first sign-in is always OTP. Changing rp_id invalidates every passkey.
 # Pilot (hosted project): rp_id = "fide-work.it", rp_origins = ["https://app.fide-work.it",

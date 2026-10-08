@@ -47,6 +47,20 @@ describe('deploy/nginx', () => {
     expect(locationBody('app.fide-work.it', '/')).toContain('try_files $uri /index.html;');
     expect(locationBody('fide-work.it', '/')).toContain('try_files $uri $uri/ =404;');
     expect(conf).toContain('return 301 https://fide-work.it$request_uri;');
+    // The second domain points at the same server: it must redirect, never fall
+    // through to another site's default server and certificate.
+    for (const [alias, target] of [
+      ['www.fide-work.it', 'fide-work.it'],
+      ['fide-work.online', 'fide-work.it'],
+      ['www.fide-work.online', 'fide-work.it'],
+      ['app.fide-work.online', 'app.fide-work.it'],
+    ]) {
+      const block = conf.split('\nserver {').find((s) => s.includes(`server_name ${alias};`));
+      expect(block, alias).toContain(`return 301 https://${target}$request_uri;`);
+    }
+    expect(read('fide-bootstrap.conf')).toContain(
+      'server_name fide-work.it www.fide-work.it fide-work.online www.fide-work.online app.fide-work.it app.fide-work.online;',
+    );
     expect(conf).not.toContain('unsafe-inline');
   });
 
