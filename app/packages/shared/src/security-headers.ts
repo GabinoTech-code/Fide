@@ -201,7 +201,12 @@ export function toNginxConf(sites: NginxSite[], options: NginxOptions): string {
     out.push('    gzip on;', '    gzip_types text/css application/javascript application/json image/svg+xml;');
     for (const rule of specific) {
       const rewrite = site.rewrites?.find((r) => r.path === rule.path);
-      location(locationFor(rule.path), rule.headers, rewrite ? [`try_files ${rewrite.file} =404;`] : []);
+      const body = rewrite ? [`try_files ${rewrite.file} =404;`] : [];
+      // nginx's mime.types predates .mjs: the pdf.js worker would go out as
+      // application/octet-stream and, with nosniff, the browser refuses to run it.
+      // The nested location keeps the parent's add_header (it defines none).
+      if (rule === IMMUTABLE_ASSETS) body.push('location ~ \\.mjs$ {', '    types { }', '    default_type text/javascript;', '}');
+      location(locationFor(rule.path), rule.headers, body);
     }
     // Cloudflare-only files in dist/ are not served.
     out.push('    location ~ ^/_(headers|redirects)$ {', '        return 404;', '    }');

@@ -35,6 +35,16 @@ describe('deploy/nginx', () => {
     expect(locationBody('app.fide-work.it', '/')).toContain(`add_header Content-Security-Policy "${csp(portalHeaders(['https://*.supabase.co']))}" always;`);
   });
 
+  it('serves ES module files (the pdf.js worker) as JavaScript, or nosniff blocks them', () => {
+    // Regression: the portal could not read any payslip PDF in production.
+    for (const host of ['fide-work.it', 'app.fide-work.it']) {
+      const assets = locationBody(host, '^~ /assets/');
+      expect(assets, host).toContain('location ~ \\.mjs$ {');
+      expect(assets, host).toContain('default_type text/javascript;');
+      expect(assets, host).toContain('add_header X-Content-Type-Options "nosniff" always;');
+    }
+  });
+
   it('serves invitations, association files and the portal as the hosting rules say', () => {
     const invite = locationBody('fide-work.it', '^~ /invite/');
     expect(invite).toContain('try_files /invite.html =404;');

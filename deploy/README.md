@@ -10,6 +10,10 @@ de datos y las funciones siguen en Supabase (UE).
 `app/packages/shared/src/security-headers.ts`, la misma fuente que usan Cloudflare y `vite preview`. Un test falla si
 se desincroniza o si algún `location` pierde las cabeceras de seguridad.
 
+Los `.mjs` de `/assets/` (el worker de pdf.js con el que el portal lee los cedolini) se sirven como
+`text/javascript`: el `mime.types` de nginx no conoce esa extensión y, con `nosniff`, el navegador no los ejecutaría.
+Sin esto, el portal no puede leer ningún PDF.
+
 ## Convivencia con AegisLink
 
 En ese servidor nginx ya atiende `aegislink.duckdns.org`, `aegis-link.it` y `www.aegis-link.it` en 80, 443 y 8443.
