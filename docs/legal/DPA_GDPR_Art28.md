@@ -127,6 +127,6 @@ Il Titolare ____________________  Il Responsabile ____________________
 | Fornitore | Servizio | Dati | Luogo |
 | --- | --- | --- | --- |
 | Supabase, Inc. | Database, autenticazione, archivio dei file cifrati, funzioni server | Tutti i dati dell'allegato 1 | Regione UE (Irlanda). Società statunitense: garanzie per eventuali accessi extra-UE secondo il DPA del fornitore [verificare: clausole contrattuali tipo / Data Privacy Framework]. |
-| Brevo (Sendinblue SAS) | Invio delle e-mail di invito e dei codici di accesso | E-mail, nome, nome dell'azienda | Francia (UE) |
+| Brevo (Sendinblue SAS) | Invio delle e-mail di invito, dei codici di accesso e degli avvisi di servizio (nuovo documento, richiesta gestita, richiesta privacy) | E-mail, nome, nome dell'azienda; negli avvisi all'HR il nome del richiedente | Francia (UE) |
 | Hetzner Online GmbH | Server del portale e del sito (file statici, nessun dato del database) | Indirizzi IP e dati tecnici delle richieste (log del server web) | Finlandia (UE); società tedesca |
 | *Solo quando attivate:* Expo (650 Industries, Inc.), Apple, Google | Notifiche push («nuovo documento disponibile», senza contenuti personali) | Identificativo del dispositivo per le notifiche | USA [verificare garanzie al momento dell'attivazione] |

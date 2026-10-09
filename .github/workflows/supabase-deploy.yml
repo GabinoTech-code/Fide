@@ -13,7 +13,8 @@ name: Supabase deploy
 #            BREVO_API_KEY (optional: e-mail invitations)
 #   vars     SUPABASE_PROJECT_REF, FIDE_ALLOWED_ORIGINS, FIDE_SITE_URL,
 #            FIDE_MAIL_FROM (optional), FIDE_RECEIPT_PUBLIC_KEY (reference only),
-#            FIDE_PORTAL_URL (default https://app.fide-work.it)
+#            FIDE_PORTAL_URL (default https://app.fide-work.it; also the link in notification e-mails)
+#   generated on every run: FIDE_DISPATCH_TOKEN (notify-dispatch secret and Vault, for pg_cron)
 #   custom SMTP for Auth e-mails (Brevo): vars FIDE_SMTP_HOST, FIDE_SMTP_PORT,
 #            FIDE_SMTP_USER, FIDE_MAIL_FROM, FIDE_MAIL_SENDER_NAME; secret FIDE_SMTP_PASS
 on:
@@ -57,11 +58,19 @@ jobs:
           FIDE_ALLOWED_ORIGINS: ${{ vars.FIDE_ALLOWED_ORIGINS }}
           FIDE_SITE_URL: ${{ vars.FIDE_SITE_URL }}
           FIDE_MAIL_FROM: ${{ vars.FIDE_MAIL_FROM }}
+          FIDE_PORTAL_URL: ${{ vars.FIDE_PORTAL_URL }}
         run: |
           umask 077
           env_file="$(mktemp)"
           trap 'rm -f "$env_file"' EXIT
-          for v in FIDE_RECEIPT_PRIVATE_KEY FIDE_ALLOWED_ORIGINS FIDE_SITE_URL FIDE_MAIL_FROM BREVO_API_KEY; do
+          # notify-dispatch token: new on every deploy and also stored in Vault
+          # (step "Schedule e-mail notifications") so pg_cron can call the
+          # function. Never printed.
+          FIDE_DISPATCH_TOKEN="$(openssl rand -hex 32)"
+          echo "::add-mask::$FIDE_DISPATCH_TOKEN"
+          echo "FIDE_DISPATCH_TOKEN=$FIDE_DISPATCH_TOKEN" >> "$GITHUB_ENV"
+          FIDE_PORTAL_URL="${FIDE_PORTAL_URL:-https://app.fide-work.it}"
+          for v in FIDE_RECEIPT_PRIVATE_KEY FIDE_ALLOWED_ORIGINS FIDE_SITE_URL FIDE_MAIL_FROM BREVO_API_KEY FIDE_PORTAL_URL FIDE_DISPATCH_TOKEN; do
             if [ -n "${!v}" ]; then printf '%s=%s\n' "$v" "${!v}" >> "$env_file"; fi
           done
           supabase secrets set --env-file "$env_file"
@@ -126,3 +135,25 @@ jobs:
 
       - name: Deploy Edge Functions
         run: supabase functions deploy
+
+      # E-mail notifications: pg_cron calls notify-dispatch with the URL and the
+      # token kept in Vault (private.set_notify_config, migration
+      # 20261009120000_notifications.sql); same token as the function secret.
+      - name: Schedule e-mail notifications
+        run: |
+          umask 077
+          trap 'rm -f "$RUNNER_TEMP/notify.json" "$RUNNER_TEMP/notify-response.json"' EXIT
+          url="https://$SUPABASE_PROJECT_REF.supabase.co/functions/v1/notify-dispatch"
+          # Both values go inside SQL literals: allow only safe characters.
+          [[ "$FIDE_DISPATCH_TOKEN" =~ ^[0-9a-f]{64}$ ]] || { echo "::error::bad dispatch token"; exit 1; }
+          [[ "$url" =~ ^https://[a-z0-9.-]+/functions/v1/notify-dispatch$ ]] || { echo "::error::bad URL"; exit 1; }
+          jq -n --arg q "select private.set_notify_config('$url', '$FIDE_DISPATCH_TOKEN')" '{query: $q}' > "$RUNNER_TEMP/notify.json"
+          code=$(curl -sS -o "$RUNNER_TEMP/notify-response.json" -w '%{http_code}' -X POST \
+            "https://api.supabase.com/v1/projects/$SUPABASE_PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" -H "Content-Type: application/json" \
+            --data "@$RUNNER_TEMP/notify.json")
+          if [ "$code" != "200" ] && [ "$code" != "201" ]; then
+            echo "::error::Scheduling notifications failed (HTTP $code): $(head -c 300 "$RUNNER_TEMP/notify-response.json")"
+            exit 1
+          fi
+          echo "notify-dispatch scheduled; token rotated."

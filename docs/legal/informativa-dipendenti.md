@@ -55,6 +55,12 @@ personale registra le tue presenze].
 Le timbrature e le assenze registrate dall'ufficio del personale per tuo conto compaiono nell'app come «registrate da
 HR», con il motivo: se non corrispondono, puoi contestarle.
 
+## Avvisi via e-mail
+
+Ti scriviamo all'indirizzo con cui accedi quando hai un nuovo documento, quando una tua richiesta è stata gestita o
+quando l'ufficio del personale risponde a una tua richiesta privacy. L'e-mail dice solo che c'è qualcosa da vedere
+nell'app: mai il contenuto del documento né il tipo di assenza. L'invio passa da Brevo (Francia, UE).
+
 ## Chi vede i dati
 
 L'ufficio del personale e i responsabili autorizzati, ciascuno per i dati di cui ha bisogno (un responsabile vede i

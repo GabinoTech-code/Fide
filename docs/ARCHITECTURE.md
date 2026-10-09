@@ -19,7 +19,7 @@ flowchart LR
     Auth["Auth\nOTP e-mail, passkey"]
     DB[("Postgres\nRLS per azienda e ruolo\ntabelle append-only")]
     Storage[("Storage\nsolo file cifrati")]
-    Fn["Edge Functions\npunch-sync · kiosk-pair\ndocument-url · invite-employee"]
+    Fn["Edge Functions\npunch-sync · kiosk-pair\ndocument-url · invite-employee\nnotify-dispatch"]
   end
   App -- sessione utente --> Auth
   App -- letture RLS --> DB
@@ -63,6 +63,12 @@ dopo la verifica del codice di sicurezza, poi `create_payroll_batch()`, upload e
 Sul telefono: `document-url` dà un URL firmato di 60 secondi e registra il download, l'app decifra dopo lo sblocco
 e cancella il file temporaneo.
 
+**Avvisi via e-mail.** Dei trigger mettono in una coda privata (`private.notification_outbox`) chi va avvisato e
+di cosa: richiesta nuova (HR e responsabile), decisione, richiesta privacy (solo HR), risposta, documento nuovo. Ogni
+minuto `pg_cron` chiama `notify-dispatch` (solo se c'è qualcosa in coda, con un token in Vault che cambia a ogni
+deploy), che invia con Brevo nella lingua del destinatario. Nella coda niente indirizzi né contenuti; le e-mail non
+dicono mai il tipo di assenza né cosa contiene un documento.
+
 **Report mensile.** Il portale legge timbrature e assenze approvate del mese e produce i CSV per il consulente del
 lavoro, in ora italiana.
 
@@ -73,5 +79,5 @@ allegato 2. Stato effettivo dei controlli: [security/AUDIT-2026-10-07.md](securi
 
 ## Fuori dal pilota
 
-NFC, assistente IA, notifiche push cifrate, firma del mittente sui cedolini, trasferimento delle chiavi tra
+NFC, assistente IA, notifiche push (per ora solo e-mail), firma del mittente sui cedolini, trasferimento delle chiavi tra
 telefoni, Spagna, SSO.
