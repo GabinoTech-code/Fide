@@ -210,3 +210,35 @@ export function useGdprRequests() {
       ),
   });
 }
+
+/** Decided and cancelled requests (both kinds), newest first; the history tab filters them. */
+export function useRequestHistory() {
+  const companyId = useCompanyId();
+  return useQuery({
+    queryKey: ['requestHistory', companyId],
+    enabled: Boolean(companyId),
+    queryFn: async () => {
+      const [leave, corrections] = await Promise.all([
+        rows<LeaveRequest>(
+          supabase
+            .from('leave_requests')
+            .select('id, member_id, start_date, end_date, quantity, note, status, created_at, decided_by, decided_at, decision_note, entered_by, leave_types(code, name, unit)')
+            .eq('company_id', companyId)
+            .neq('status', 'pending')
+            .order('updated_at', { ascending: false })
+            .limit(300),
+        ),
+        rows<PunchCorrection>(
+          supabase
+            .from('punch_corrections')
+            .select('id, member_id, punch_type, requested_ts, reason, status, created_at, decided_by, decided_at, decision_note, entered_by')
+            .eq('company_id', companyId)
+            .neq('status', 'pending')
+            .order('updated_at', { ascending: false })
+            .limit(300),
+        ),
+      ]);
+      return { leave, corrections };
+    },
+  });
+}
