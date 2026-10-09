@@ -9,10 +9,10 @@ telefono del dipendente, ferie e permessi. In **fase pilota**.
   si sincronizzano con ricevuta. Il database non permette di modificarle; le correzioni sono richieste approvate.
 - **QR del chiosco** che cambia ogni 30 secondi (HMAC-SHA256) e vale una sola volta.
 - **Posizione solo se la sede la attiva** (art. 4 L. 300/1970): il telefono calcola «dentro/fuori» con una sola
-  lettura e invia solo l'esito, mai le coordinate.
+  lettura e invia solo l'esito (più l'indicazione «posizione simulata» se il sistema la segnala), mai le coordinate.
 - **Cedolini cifrati nel browser dell'HR** (XChaCha20-Poly1305, chiave sigillata con X25519 per il telefono del
   dipendente); il server vede solo file cifrati. Il portale verifica il codice di sicurezza delle chiavi prima di
-  cifrare.
+  cifrare. Il dipendente li apre o ne salva una copia nel telefono: la copia salvata è sua e non è più cifrata.
 - **Nessuna password**: codice via e-mail e passkey. **Nessun dato biometrico**: le chiavi si usano dopo il normale
   sblocco del telefono, verificato dal sistema operativo.
 - **Isolamento tra aziende** con Row Level Security, verificato da test automatici.

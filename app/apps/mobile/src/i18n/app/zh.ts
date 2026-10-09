@@ -225,4 +225,8 @@ export const zh: AppMessages = {
   'privacy.sees.dataBody': '姓名、邮箱、税号（codice fiscale）和你的申请。从不包括生物识别数据。',
   'privacy.accessLog': '访问日志',
   'privacy.accessEmpty': '你的文件暂无记录。',
+
+  // Saving a document outside the app
+  'docs.save': '保存到手机',
+  'docs.saved': '已保存。此副本在 Fide 之外，不再加密：请妥善保管。',
 };

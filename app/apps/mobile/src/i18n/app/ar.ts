@@ -227,4 +227,8 @@ export const ar: AppMessages = {
   'privacy.sees.dataBody': 'الاسم والبريد الإلكتروني والـ codice fiscale وطلباتك. لا بيانات بيومترية أبدًا.',
   'privacy.accessLog': 'سجل الوصول',
   'privacy.accessEmpty': 'لا يوجد نشاط على مستنداتك بعد.',
+
+  // Saving a document outside the app
+  'docs.save': 'حفظ على الهاتف',
+  'docs.saved': 'تم الحفظ. هذه النسخة خارج Fide ولم تعد مشفّرة: احفظها في مكان آمن.',
 };

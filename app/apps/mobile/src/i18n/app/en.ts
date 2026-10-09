@@ -227,4 +227,8 @@ export const en: AppMessages = {
   'privacy.sees.dataBody': 'Name, e-mail, codice fiscale and your requests. Never biometric data.',
   'privacy.accessLog': 'Access log',
   'privacy.accessEmpty': 'No activity on your documents yet.',
+
+  // Saving a document outside the app
+  'docs.save': 'Save to phone',
+  'docs.saved': 'Saved. This copy is outside Fide and no longer encrypted: keep it somewhere safe.',
 };

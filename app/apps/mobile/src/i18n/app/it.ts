@@ -226,4 +226,8 @@ export const it = {
   'privacy.sees.dataBody': 'Nome, e-mail, codice fiscale e le tue richieste. Mai dati biometrici.',
   'privacy.accessLog': 'Registro accessi',
   'privacy.accessEmpty': 'Ancora nessun movimento sui tuoi documenti.',
+
+  // Saving a document outside the app
+  'docs.save': 'Salva sul telefono',
+  'docs.saved': 'Salvato. Questa copia è fuori da Fide e non è più cifrata: conservala in un posto sicuro.',
 } as const;

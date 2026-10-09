@@ -4,7 +4,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useT, type AppKey } from '../../i18n/app';
 import { AccessLine } from '../../components/AccessLine';
 import { useAccessEvents, useDocuments } from '../../lib/data';
-import { DocumentError, openDocument, type DocumentRow } from '../../lib/documents';
+import { DocumentError, openDocument, saveDocument, type DocumentRow } from '../../lib/documents';
 import { useLiveQueries } from '../../lib/refresh';
 import { useSession } from '../../lib/session';
 import { unlock, LockedError } from '../../lib/vault';
@@ -24,21 +24,27 @@ export default function Documents() {
   const { t, date } = useT();
   const { membership, keys } = useSession();
   const queryClient = useQueryClient();
-  const [opening, setOpening] = useState<string | null>(null);
+  const [opening, setOpening] = useState<{ id: string; action: 'open' | 'save' } | null>(null);
+  const [saved, setSaved] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [sheet, setSheet] = useState<DocumentRow | null>(null);
   const docs = useDocuments();
   const events = useAccessEvents();
   const refresh = useLiveQueries(docs, events);
 
-  async function open(doc: DocumentRow) {
+  async function run(doc: DocumentRow, action: 'open' | 'save') {
     if (!keys) return;
     setError(null);
-    setOpening(doc.id);
+    setSaved(null);
+    setOpening({ id: doc.id, action });
     try {
       await unlock(t('unlock.document'), t('unlock.fallback'));
-      await openDocument(doc, keys, doc.title);
-      setSheet(null);
+      if (action === 'open') {
+        await openDocument(doc, keys, doc.title);
+        setSheet(null);
+      } else if (await saveDocument(doc, keys, doc.title)) {
+        setSaved(doc.id);
+      }
       queryClient.invalidateQueries({ queryKey: ['documents'] });
       queryClient.invalidateQueries({ queryKey: ['access_events'] });
     } catch (err) {
@@ -74,6 +80,7 @@ export default function Documents() {
             subtitle={`PDF · ${date(doc.published_at)}`}
             onPress={() => {
               setError(null);
+              setSaved(null);
               setSheet(doc);
             }}
             trailing={
@@ -107,9 +114,24 @@ export default function Documents() {
               {!sheet.first_opened_at ? <Small>{t('docs.notOpenedYet')}</Small> : null}
             </View>
             {error ? <Notice kind="danger">{error}</Notice> : null}
+            {saved === sheet.id ? <Notice>{t('docs.saved')}</Notice> : null}
+            <Button
+              kind="outline"
+              icon="exportar"
+              label={t('docs.save')}
+              busy={opening?.id === sheet.id && opening.action === 'save'}
+              disabled={Boolean(opening)}
+              onPress={() => run(sheet, 'save')}
+            />
             <Row style={{ flexWrap: 'nowrap' }}>
               <Button kind="secondary" label={t('docs.close')} onPress={() => setSheet(null)} style={{ flex: 1 }} />
-              <Button label={t('docs.decryptOpen')} busy={opening === sheet.id} onPress={() => open(sheet)} style={{ flex: 1 }} />
+              <Button
+                label={t('docs.decryptOpen')}
+                busy={opening?.id === sheet.id && opening.action === 'open'}
+                disabled={Boolean(opening)}
+                onPress={() => run(sheet, 'open')}
+                style={{ flex: 1 }}
+              />
             </Row>
           </>
         ) : null}

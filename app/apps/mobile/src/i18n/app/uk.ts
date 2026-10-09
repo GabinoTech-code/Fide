@@ -227,4 +227,8 @@ export const uk: AppMessages = {
   'privacy.sees.dataBody': 'Ім’я, e-mail, codice fiscale і твої запити. Ніколи — біометрія.',
   'privacy.accessLog': 'Журнал доступів',
   'privacy.accessEmpty': 'Із твоїми документами ще нічого не відбувалося.',
+
+  // Saving a document outside the app
+  'docs.save': 'Зберегти на телефоні',
+  'docs.saved': 'Збережено. Ця копія поза Fide і більше не зашифрована: зберігай її в надійному місці.',
 };

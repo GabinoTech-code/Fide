@@ -227,4 +227,8 @@ export const sq: AppMessages = {
   'privacy.sees.dataBody': 'Emri, e-maili, codice fiscale dhe kërkesat e tua. Kurrë të dhëna biometrike.',
   'privacy.accessLog': 'Regjistri i aksesimeve',
   'privacy.accessEmpty': 'Ende asnjë veprim në dokumentet e tua.',
+
+  // Saving a document outside the app
+  'docs.save': 'Ruaje në telefon',
+  'docs.saved': 'U ruajt. Kjo kopje është jashtë Fide dhe nuk është më e enkriptuar: mbaje në një vend të sigurt.',
 };

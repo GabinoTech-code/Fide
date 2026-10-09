@@ -227,4 +227,8 @@ export const ro: AppMessages = {
   'privacy.sees.dataBody': 'Nume, e-mail, codice fiscale și cererile tale. Niciodată date biometrice.',
   'privacy.accessLog': 'Jurnal de accesări',
   'privacy.accessEmpty': 'Încă nicio activitate pe documentele tale.',
+
+  // Saving a document outside the app
+  'docs.save': 'Salvează pe telefon',
+  'docs.saved': 'Salvat. Această copie e în afara Fide și nu mai e criptată: păstreaz-o într-un loc sigur.',
 };
