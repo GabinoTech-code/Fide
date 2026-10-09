@@ -8,6 +8,7 @@ import * as Location from 'expo-location';
 import { useT, type AppKey } from '../../i18n/app';
 import { useOutbox, useSites, useTodayPunches } from '../../lib/data';
 import { evaluateGeofence } from '../../lib/geofence';
+import { useLiveQueries } from '../../lib/refresh';
 import { enqueue } from '../../lib/outbox';
 import { sqliteOutbox } from '../../lib/outboxSqlite';
 import { buildPunch, uuidFromBytes } from '../../lib/punch';
@@ -26,6 +27,7 @@ export default function Punch() {
   const sites = useSites();
   const punches = useTodayPunches();
   const { queue, reload, sync } = useOutbox();
+  const refresh = useLiveQueries(sites, punches);
   const [siteId, setSiteId] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [feedback, setFeedback] = useState<Feedback>(null);
@@ -141,7 +143,7 @@ export default function Punch() {
   }
 
   return (
-    <Screen>
+    <Screen refresh={refresh}>
       <Title>{t('punch.title')}</Title>
 
       {(sites.data ?? []).length > 1 ? (

@@ -10,6 +10,7 @@ import { IBMPlexSans_400Regular, IBMPlexSans_500Medium, IBMPlexSans_600SemiBold 
 import { IBMPlexMono_400Regular, IBMPlexMono_500Medium } from '@expo-google-fonts/ibm-plex-mono';
 import { AppI18nProvider } from '../i18n/app';
 import { cleanupDecrypted } from '../lib/documents';
+import { wireAppFocus } from '../lib/refresh';
 import { SessionProvider } from '../lib/session';
 import { Colors } from '../theme/colors';
 
@@ -32,6 +33,9 @@ export default function RootLayout() {
     // Decrypted documents never outlive the next app start.
     cleanupDecrypted();
   }, []);
+
+  // Back in the foreground: refetch what changed meanwhile (a decided request, a new payslip).
+  useEffect(() => wireAppFocus(), []);
 
   useEffect(() => {
     if (fontsLoaded || fontError) SplashScreen.hideAsync().catch(() => undefined);
