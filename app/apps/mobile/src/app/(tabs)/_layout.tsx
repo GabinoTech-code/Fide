@@ -1,5 +1,6 @@
 import { Redirect, Tabs } from 'expo-router';
 import { useT } from '../../i18n/app';
+import { useRealtimeRefresh } from '../../lib/refresh';
 import { useSession } from '../../lib/session';
 import { BrandIcon } from '../../components/common/Icons';
 import { Colors } from '../../theme/colors';
@@ -8,6 +9,7 @@ import { Fonts } from '../../ui/kit';
 export default function TabsLayout() {
   const { t } = useT();
   const { session, membership, keyState } = useSession();
+  useRealtimeRefresh(membership?.id);
   if (!session || !membership || keyState === 'missing' || keyState === 'replaced') return <Redirect href="/" />;
   // Former employees keep documents and privacy only: no punching, no requests.
   const hidden = membership.status === 'terminated' ? { href: null } : {};
