@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import {
   ActivityIndicator,
   Pressable,
+  RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
@@ -26,12 +27,27 @@ export const Fonts = {
   mono: 'IBMPlexMono_500Medium',
 };
 
-export function Screen({ children, dark, scroll = true }: { children: ReactNode; dark?: boolean; scroll?: boolean }) {
+export function Screen({
+  children,
+  dark,
+  scroll = true,
+  refresh,
+}: {
+  children: ReactNode;
+  dark?: boolean;
+  scroll?: boolean;
+  /** Pull-to-refresh, from useLiveQueries. */
+  refresh?: { refreshing: boolean; onRefresh: () => void };
+}) {
   const bg = dark ? Colors.dark : Colors.bg;
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: bg }} edges={['top', 'left', 'right']}>
       {scroll ? (
-        <ScrollView contentContainerStyle={styles.screen} keyboardShouldPersistTaps="handled">
+        <ScrollView
+          contentContainerStyle={styles.screen}
+          keyboardShouldPersistTaps="handled"
+          refreshControl={refresh ? <RefreshControl {...refresh} colors={[Colors.accent]} tintColor={Colors.accent} /> : undefined}
+        >
           {children}
         </ScrollView>
       ) : (

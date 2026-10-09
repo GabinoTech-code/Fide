@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Pressable, View } from 'react-native';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useT, type AppKey } from '../../i18n/app';
+import { useLiveQueries } from '../../lib/refresh';
 import { useSession } from '../../lib/session';
 import { supabase } from '../../lib/supabase';
 import { Badge, Body, Button, Card, Field, Mono, Notice, Row, Screen, Segmented, Title } from '../../ui/kit';
@@ -37,6 +38,8 @@ interface Correction {
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
 const DATETIME = /^(\d{4}-\d{2}-\d{2})[ T](\d{2}):(\d{2})$/;
 const statusKind = { pending: 'warn', approved: 'ok', rejected: 'danger', cancelled: 'muted' } as const;
+// While something waits for HR, look for the decision every minute (only while the app is in front).
+const whilePending = (rows: { status: string }[] | undefined) => (rows?.some((r) => r.status === 'pending') ? 60_000 : false);
 
 export default function Requests() {
   const { t, date, time } = useT();
@@ -70,6 +73,7 @@ export default function Requests() {
       if (error) throw error;
       return data as unknown as LeaveRequest[];
     },
+    refetchInterval: (q) => whilePending(q.state.data),
   });
   const corrections = useQuery({
     queryKey: ['my_corrections', membership?.id],
@@ -84,7 +88,9 @@ export default function Requests() {
       if (error) throw error;
       return data as Correction[];
     },
+    refetchInterval: (q) => whilePending(q.state.data),
   });
+  const refresh = useLiveQueries(types, leave, corrections);
 
   const type = types.data?.find((x) => x.id === typeId) ?? null;
   const set = (k: keyof typeof form) => (v: string) => setForm((f) => ({ ...f, [k]: v }));
@@ -139,7 +145,7 @@ export default function Requests() {
   }
 
   return (
-    <Screen>
+    <Screen refresh={refresh}>
       <Title>{t('requests.title')}</Title>
       <Segmented
         value={mode}

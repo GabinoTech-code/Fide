@@ -4,6 +4,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useT, type AppKey } from '../../i18n/app';
 import { LANGUAGES } from '../../i18n/types';
 import { clearLocalPunches } from '../../lib/outboxSqlite';
+import { useLiveQueries } from '../../lib/refresh';
 import { useSession } from '../../lib/session';
 import { supabase } from '../../lib/supabase';
 import { DiagnosticsModal } from '../../components/modals/DiagnosticsModal';
@@ -53,6 +54,7 @@ export default function Privacy() {
       return data as GdprRequest[];
     },
   });
+  const refresh = useLiveQueries(identity, requests);
 
   async function exportData() {
     const { data, error } = await supabase.rpc('export_my_data');
@@ -90,7 +92,7 @@ export default function Privacy() {
   }
 
   return (
-    <Screen>
+    <Screen refresh={refresh}>
       <Title>{t('privacy.title')}</Title>
       {message ? <Notice>{message}</Notice> : null}
 

@@ -3,6 +3,7 @@ import { Text, View } from 'react-native';
 import { formerAccessUntil } from '@fide/shared';
 import { useT, type AppKey } from '../../i18n/app';
 import { useBalances, useOutbox, useTodayPunches } from '../../lib/data';
+import { useLiveQueries } from '../../lib/refresh';
 import { useSession } from '../../lib/session';
 import { Colors } from '../../theme/colors';
 import { Body, Button, Card, Eyebrow, Fonts, Notice, Row, Screen, Title } from '../../ui/kit';
@@ -15,6 +16,7 @@ export default function Home() {
   const punches = useTodayPunches();
   const { queue } = useOutbox();
   const balances = useBalances();
+  const refresh = useLiveQueries(punches, balances);
 
   const pending = queue.filter((q) => !q.rejected);
   const all = [
@@ -45,7 +47,7 @@ export default function Home() {
   }
 
   return (
-    <Screen>
+    <Screen refresh={refresh}>
       <Eyebrow>{membership?.companies?.legal_name ?? ''}</Eyebrow>
       <Title>{t('home.greeting', { name: firstName })}</Title>
 

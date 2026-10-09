@@ -3,6 +3,7 @@ import { Pressable, View } from 'react-native';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useT, type AppKey } from '../../i18n/app';
 import { DocumentError, listDocuments, openDocument, type DocumentRow } from '../../lib/documents';
+import { useLiveQueries } from '../../lib/refresh';
 import { useSession } from '../../lib/session';
 import { unlock, LockedError } from '../../lib/vault';
 import { BrandIcon } from '../../components/common/Icons';
@@ -22,6 +23,7 @@ export default function Documents() {
   const [opening, setOpening] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const docs = useQuery({ queryKey: ['documents', membership?.id], enabled: Boolean(membership), queryFn: listDocuments });
+  const refresh = useLiveQueries(docs);
 
   async function open(doc: DocumentRow) {
     if (!keys) return;
@@ -42,7 +44,7 @@ export default function Documents() {
   }
 
   return (
-    <Screen>
+    <Screen refresh={refresh}>
       <Title>{t('docs.title')}</Title>
       {error ? <Notice kind="danger">{error}</Notice> : null}
       {docs.data && docs.data.length === 0 ? <Notice>{t('docs.empty')}</Notice> : null}
