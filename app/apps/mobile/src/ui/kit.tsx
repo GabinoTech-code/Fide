@@ -1,7 +1,10 @@
-// Small UI kit on the brand tokens (Colors = @fide/shared brand palette).
+// UI kit on the brand tokens, matching the design prototype
+// (prototype/App Fide · prototipo interactivo-html): sizes, radii and colours
+// come from its inline styles.
 import type { ReactNode } from 'react';
 import {
   ActivityIndicator,
+  Modal,
   Pressable,
   RefreshControl,
   ScrollView,
@@ -13,10 +16,11 @@ import {
   type TextInputProps,
   type ViewStyle,
 } from 'react-native';
+import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { IconName } from '@fide/shared';
 import { Colors } from '../theme/colors';
-import { BrandIcon } from '../components/common/Icons';
+import { BrandIcon, ShieldPrivacyIcon } from '../components/common/Icons';
 
 export const Fonts = {
   display: 'SpaceGrotesk_700Bold',
@@ -44,33 +48,68 @@ export function Screen({
     <SafeAreaView style={{ flex: 1, backgroundColor: bg }} edges={['top', 'left', 'right']}>
       {scroll ? (
         <ScrollView
-          contentContainerStyle={styles.screen}
+          contentContainerStyle={[styles.screen, dark && styles.screenDark]}
           keyboardShouldPersistTaps="handled"
           refreshControl={refresh ? <RefreshControl {...refresh} colors={[Colors.accent]} tintColor={Colors.accent} /> : undefined}
         >
           {children}
         </ScrollView>
       ) : (
-        <View style={[styles.screen, { flex: 1 }]}>{children}</View>
+        <View style={[styles.screen, dark && styles.screenDark, { flex: 1 }]}>{children}</View>
       )}
     </SafeAreaView>
   );
 }
 
-export function Title({ children, light }: { children: ReactNode; light?: boolean }) {
-  return <Text style={[styles.title, light && { color: Colors.textWhite }]}>{children}</Text>;
+/** Screen header: eyebrow, title and the round privacy button of the prototype. */
+export function Header({ eyebrow, title, privacy = true, privacyLabel }: { eyebrow?: string; title: string; privacy?: boolean; privacyLabel?: string }) {
+  return (
+    <View style={styles.header}>
+      <View style={{ flex: 1, gap: 2 }}>
+        {eyebrow ? <Eyebrow>{eyebrow}</Eyebrow> : null}
+        <Title>{title}</Title>
+      </View>
+      {privacy ? (
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={privacyLabel}
+          onPress={() => router.navigate('/(tabs)/privacy')}
+          style={({ pressed }) => [styles.roundButton, pressed && { opacity: 0.8 }]}
+        >
+          <ShieldPrivacyIcon size={20} color={Colors.textPrimary} />
+        </Pressable>
+      ) : null}
+    </View>
+  );
 }
 
-export function Eyebrow({ children }: { children: ReactNode }) {
-  return <Text style={styles.eyebrow}>{children}</Text>;
+export function Title({ children, light }: { children: ReactNode; light?: boolean }) {
+  return <Text style={[styles.title, light && { color: Colors.bg }]}>{children}</Text>;
+}
+
+export function Eyebrow({ children, light }: { children: ReactNode; light?: boolean }) {
+  return <Text style={[styles.eyebrow, light && { color: Colors.textMuted }]}>{children}</Text>;
+}
+
+export function SectionTitle({ children }: { children: ReactNode }) {
+  return <Text style={styles.section}>{children}</Text>;
 }
 
 export function Body({ children, muted, light, center }: { children: ReactNode; muted?: boolean; light?: boolean; center?: boolean }) {
   return (
-    <Text style={[styles.body, muted && { color: Colors.textSecondary }, light && { color: Colors.accentRing }, center && { textAlign: 'center' }]}>
+    <Text style={[styles.body, muted && { color: Colors.textSecondary }, light && { color: Colors.textLight }, center && { textAlign: 'center' }]}>
       {children}
     </Text>
   );
+}
+
+/** 13 px secondary text, for details under a title. */
+export function Small({ children, light, color }: { children: ReactNode; light?: boolean; color?: string }) {
+  return <Text style={[styles.small, light && { color: Colors.textMuted }, color ? { color } : null]}>{children}</Text>;
+}
+
+export function Strong({ children, size = 14, light }: { children: ReactNode; size?: number; light?: boolean }) {
+  return <Text style={[styles.strong, { fontSize: size }, light && { color: Colors.bg }]}>{children}</Text>;
 }
 
 export function Mono({ children, style }: { children: ReactNode; style?: object }) {
@@ -81,7 +120,7 @@ export function Card({ children, dark, style }: { children: ReactNode; dark?: bo
   return <View style={[styles.card, dark && styles.cardDark, style]}>{children}</View>;
 }
 
-type ButtonKind = 'primary' | 'mint' | 'secondary' | 'danger';
+type ButtonKind = 'primary' | 'mint' | 'secondary' | 'outline' | 'danger' | 'soft';
 
 export function Button({
   label,
@@ -90,6 +129,7 @@ export function Button({
   icon,
   busy,
   disabled,
+  style,
 }: {
   label: string;
   onPress: () => void;
@@ -97,12 +137,15 @@ export function Button({
   icon?: IconName;
   busy?: boolean;
   disabled?: boolean;
+  style?: StyleProp<ViewStyle>;
 }) {
   const palette = {
-    primary: { bg: Colors.accent, fg: Colors.textWhite, border: Colors.accent },
-    mint: { bg: Colors.accentLight, fg: Colors.dark, border: Colors.accentLight },
-    secondary: { bg: Colors.cardBg, fg: Colors.textPrimary, border: Colors.cardBorderSubtle },
-    danger: { bg: Colors.cardBg, fg: Colors.danger, border: Colors.cardBorderSubtle },
+    primary: { bg: Colors.accent, fg: Colors.textWhite, border: Colors.accent, width: 0 },
+    mint: { bg: Colors.accentLight, fg: Colors.dark, border: Colors.accentLight, width: 0 },
+    secondary: { bg: Colors.cardBg, fg: Colors.textPrimary, border: Colors.chipBorder, width: 1 },
+    outline: { bg: 'transparent', fg: Colors.textPrimary, border: Colors.textPrimary, width: 1.5 },
+    danger: { bg: 'transparent', fg: Colors.danger, border: Colors.danger, width: 1.5 },
+    soft: { bg: Colors.softButton, fg: Colors.textPrimary, border: Colors.softButton, width: 0 },
   }[kind];
   const off = disabled || busy;
   return (
@@ -112,7 +155,8 @@ export function Button({
       onPress={off ? undefined : onPress}
       style={({ pressed }) => [
         styles.button,
-        { backgroundColor: palette.bg, borderColor: palette.border, opacity: off ? 0.55 : pressed ? 0.85 : 1 },
+        { backgroundColor: palette.bg, borderColor: palette.border, borderWidth: palette.width, opacity: off ? 0.55 : pressed ? 0.85 : 1 },
+        style,
       ]}
     >
       {busy ? <ActivityIndicator color={palette.fg} /> : icon ? <BrandIcon name={icon} size={20} color={palette.fg} /> : null}
@@ -121,39 +165,153 @@ export function Button({
   );
 }
 
-export function Field({ label, ...input }: TextInputProps & { label: string }) {
+export function Field({ label, dark, ...input }: TextInputProps & { label: string; dark?: boolean }) {
   return (
     <View style={{ gap: 6 }}>
-      <Text style={styles.label}>{label}</Text>
-      <TextInput placeholderTextColor={Colors.textMuted} {...input} style={[styles.input, input.style]} />
+      <Text style={[styles.label, dark && { color: Colors.textLight }]}>{label}</Text>
+      <TextInput
+        placeholderTextColor={Colors.textMuted}
+        {...input}
+        style={[styles.input, dark && styles.inputDark, input.multiline && { minHeight: 64, paddingTop: 10, textAlignVertical: 'top' }, input.style]}
+      />
     </View>
   );
 }
 
 export function Notice({ children, kind = 'info' }: { children: ReactNode; kind?: 'info' | 'warn' | 'danger' }) {
   const palette = {
-    info: { bg: Colors.accentMuted, fg: Colors.success },
+    info: { bg: Colors.accentMuted, fg: Colors.infoText },
     warn: { bg: Colors.warningBg, fg: Colors.warningText },
     danger: { bg: Colors.dangerBg, fg: Colors.danger },
   }[kind];
   return (
     <View style={[styles.notice, { backgroundColor: palette.bg }]} accessibilityRole="alert">
-      <Text style={[styles.body, { color: palette.fg, fontSize: 14 }]}>{children}</Text>
+      <BrandIcon name="misdatos" size={18} color={palette.fg} />
+      <Text style={[styles.small, { color: palette.fg, flex: 1, lineHeight: 19 }]}>{children}</Text>
     </View>
   );
 }
 
-export function Badge({ label, kind = 'ok' }: { label: string; kind?: 'ok' | 'muted' | 'warn' | 'danger' }) {
+export type BadgeKind = 'ok' | 'muted' | 'warn' | 'danger';
+
+export function Badge({ label, kind = 'ok' }: { label: string; kind?: BadgeKind }) {
   const palette = {
     ok: { bg: Colors.successBg, fg: Colors.success },
-    muted: { bg: '#EEF1EF', fg: Colors.textSecondary },
-    warn: { bg: Colors.warningBg, fg: Colors.warningText },
+    muted: { bg: Colors.neutralTile, fg: Colors.textSecondary },
+    warn: { bg: Colors.warningBg, fg: Colors.pendingText },
     danger: { bg: Colors.dangerBg, fg: Colors.danger },
   }[kind];
   return (
     <View style={[styles.badge, { backgroundColor: palette.bg }]}>
       <Text style={[styles.badgeText, { color: palette.fg }]}>{label}</Text>
     </View>
+  );
+}
+
+/** Selectable tile (verification method, request type). */
+export function Chip({ label, selected, onPress }: { label: string; selected: boolean; onPress: () => void }) {
+  return (
+    <Pressable
+      accessibilityRole="radio"
+      accessibilityState={{ selected }}
+      onPress={onPress}
+      style={[styles.chip, { borderColor: selected ? Colors.accent : Colors.chipBorder, backgroundColor: selected ? Colors.accentMuted : Colors.cardBg }]}
+    >
+      <Text style={styles.chipText} numberOfLines={1}>
+        {label}
+      </Text>
+    </Pressable>
+  );
+}
+
+/** Grid of chips: two or three columns. */
+export function ChipGrid({ children, columns = 2 }: { children: ReactNode; columns?: 2 | 3 }) {
+  return <View style={styles.chipGrid}>{wrapColumns(children, columns)}</View>;
+}
+
+function wrapColumns(children: ReactNode, columns: number): ReactNode {
+  const items = (Array.isArray(children) ? children.flat() : [children]).filter(Boolean);
+  return items.map((child, i) => (
+    <View key={i} style={{ width: `${100 / columns - (columns === 2 ? 1.5 : 2)}%`, flexGrow: 1 }}>
+      {child}
+    </View>
+  ));
+}
+
+export type Tone = 'mint' | 'neutral' | 'amber' | 'danger';
+
+const TONES: Record<Tone, { bg: string; fg: string }> = {
+  mint: { bg: Colors.accentMuted, fg: Colors.accent },
+  neutral: { bg: Colors.neutralTile, fg: Colors.textPrimary },
+  amber: { bg: Colors.warningBg, fg: Colors.warningText },
+  danger: { bg: Colors.dangerBg, fg: Colors.danger },
+};
+
+/** A row card: icon tile, title, subtitle and something on the right. */
+export function ListItem({
+  icon,
+  tone = 'neutral',
+  title,
+  subtitle,
+  subtitleColor,
+  trailing,
+  onPress,
+  disabled,
+}: {
+  icon?: IconName;
+  tone?: Tone;
+  title: string;
+  subtitle?: string;
+  subtitleColor?: string;
+  trailing?: ReactNode;
+  onPress?: () => void;
+  disabled?: boolean;
+}) {
+  const body = (
+    <>
+      {icon ? (
+        <View style={[styles.tile, { backgroundColor: TONES[tone].bg }]}>
+          <BrandIcon name={icon} size={20} color={TONES[tone].fg} />
+        </View>
+      ) : null}
+      <View style={{ flex: 1, gap: 2 }}>
+        <Strong>{title}</Strong>
+        {subtitle ? <Text style={[styles.meta, subtitleColor ? { color: subtitleColor } : null]}>{subtitle}</Text> : null}
+      </View>
+      {trailing}
+    </>
+  );
+  if (!onPress) return <View style={styles.listItem}>{body}</View>;
+  return (
+    <Pressable accessibilityRole="button" onPress={onPress} disabled={disabled} style={({ pressed }) => [styles.listItem, pressed && { opacity: 0.85 }]}>
+      {body}
+    </Pressable>
+  );
+}
+
+/** Quick action of the home screen: a 56 px tile with a caption. */
+export function QuickAction({ icon, label, onPress }: { icon: IconName; label: string; onPress: () => void }) {
+  return (
+    <Pressable accessibilityRole="button" onPress={onPress} style={({ pressed }) => [styles.quick, pressed && { opacity: 0.8 }]}>
+      <View style={styles.quickTile}>
+        <BrandIcon name={icon} size={22} color={Colors.accent} />
+      </View>
+      <Text style={styles.quickText} numberOfLines={2}>
+        {label}
+      </Text>
+    </Pressable>
+  );
+}
+
+/** Bottom sheet over a dimmed backdrop. */
+export function Sheet({ visible, onClose, children }: { visible: boolean; onClose: () => void; children: ReactNode }) {
+  return (
+    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose} statusBarTranslucent>
+      <Pressable style={styles.backdrop} onPress={onClose} accessibilityRole="button" />
+      <SafeAreaView edges={['bottom']} style={styles.sheet}>
+        {children}
+      </SafeAreaView>
+    </Modal>
   );
 }
 
@@ -188,20 +346,38 @@ export function Segmented<T extends string>({
 }
 
 const styles = StyleSheet.create({
-  screen: { padding: 20, gap: 16, paddingBottom: 40 },
-  title: { fontFamily: Fonts.display, fontSize: 28, letterSpacing: -0.6, color: Colors.textPrimary },
-  eyebrow: { fontFamily: Fonts.mono, fontSize: 12, letterSpacing: 1.4, textTransform: 'uppercase', color: Colors.accent },
-  body: { fontFamily: Fonts.text, fontSize: 16, lineHeight: 23, color: Colors.textPrimary },
+  screen: { paddingHorizontal: 20, paddingTop: 20, paddingBottom: 32, gap: 16 },
+  screenDark: { paddingHorizontal: 28, paddingTop: 48, paddingBottom: 40, gap: 18, flexGrow: 1 },
+  header: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: -4 },
+  roundButton: { width: 44, height: 44, borderRadius: 22, borderWidth: 1, borderColor: Colors.chipBorder, backgroundColor: Colors.cardBg, alignItems: 'center', justifyContent: 'center' },
+  title: { fontFamily: Fonts.display, fontSize: 26, letterSpacing: -0.5, color: Colors.textPrimary },
+  eyebrow: { fontFamily: Fonts.text, fontSize: 12, letterSpacing: 1.2, textTransform: 'uppercase', color: Colors.textSecondary },
+  section: { fontFamily: Fonts.textBold, fontSize: 15, color: Colors.textPrimary },
+  body: { fontFamily: Fonts.text, fontSize: 15, lineHeight: 22, color: Colors.textPrimary },
+  small: { fontFamily: Fonts.text, fontSize: 13, lineHeight: 18, color: Colors.textSecondary },
+  strong: { fontFamily: Fonts.textBold, color: Colors.textPrimary },
+  meta: { fontFamily: Fonts.text, fontSize: 12, color: Colors.textSecondary },
   mono: { fontFamily: Fonts.mono, fontSize: 13, color: Colors.textSecondary },
-  card: { backgroundColor: Colors.cardBg, borderRadius: 20, borderWidth: 1, borderColor: Colors.cardBorder, padding: 18, gap: 10 },
-  cardDark: { backgroundColor: Colors.dark, borderColor: Colors.dark },
-  button: { minHeight: 52, borderRadius: 14, borderWidth: 1, paddingHorizontal: 18, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10 },
-  buttonText: { fontFamily: Fonts.textBold, fontSize: 16 },
-  label: { fontFamily: Fonts.textBold, fontSize: 13, color: Colors.textSecondary },
-  input: { minHeight: 50, borderRadius: 12, borderWidth: 1, borderColor: Colors.cardBorderSubtle, backgroundColor: Colors.cardBg, paddingHorizontal: 14, fontFamily: Fonts.text, fontSize: 16, color: Colors.textPrimary },
-  notice: { borderRadius: 14, padding: 14 },
-  badge: { borderRadius: 999, paddingHorizontal: 10, paddingVertical: 4, alignSelf: 'flex-start' },
+  card: { backgroundColor: Colors.cardBg, borderRadius: 18, borderWidth: 1, borderColor: Colors.cardBorder, padding: 16, gap: 12 },
+  cardDark: { backgroundColor: Colors.dark, borderColor: Colors.dark, borderRadius: 22, padding: 20, gap: 14 },
+  button: { minHeight: 48, borderRadius: 14, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10 },
+  buttonText: { fontFamily: Fonts.textBold, fontSize: 15, textAlign: 'center' },
+  label: { fontFamily: Fonts.textMedium, fontSize: 13, color: Colors.textPrimary },
+  input: { minHeight: 48, borderRadius: 12, borderWidth: 1, borderColor: Colors.chipBorder, backgroundColor: Colors.inputBg, paddingHorizontal: 12, fontFamily: Fonts.text, fontSize: 15, color: Colors.textPrimary },
+  inputDark: { backgroundColor: Colors.darkCard, borderColor: Colors.darkBorder, color: Colors.bg },
+  notice: { borderRadius: 14, paddingVertical: 12, paddingHorizontal: 14, flexDirection: 'row', gap: 10, alignItems: 'flex-start' },
+  badge: { borderRadius: 999, paddingHorizontal: 10, paddingVertical: 5, alignSelf: 'flex-start' },
   badgeText: { fontFamily: Fonts.textBold, fontSize: 12 },
+  chipGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  chip: { minHeight: 48, borderRadius: 14, borderWidth: 1.5, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 8 },
+  chipText: { fontFamily: Fonts.textMedium, fontSize: 14, color: Colors.textPrimary },
+  listItem: { backgroundColor: Colors.cardBg, borderWidth: 1, borderColor: Colors.cardBorder, borderRadius: 16, padding: 14, flexDirection: 'row', alignItems: 'center', gap: 12 },
+  tile: { width: 40, height: 40, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
+  quick: { flex: 1, alignItems: 'center', gap: 6 },
+  quickTile: { width: 56, height: 56, borderRadius: 18, backgroundColor: Colors.cardBg, borderWidth: 1, borderColor: Colors.cardBorder, alignItems: 'center', justifyContent: 'center' },
+  quickText: { fontFamily: Fonts.text, fontSize: 12, color: Colors.textPrimary, textAlign: 'center' },
+  backdrop: { flex: 1, backgroundColor: Colors.backdrop },
+  sheet: { backgroundColor: Colors.cardBg, borderTopLeftRadius: 26, borderTopRightRadius: 26, paddingHorizontal: 20, paddingTop: 22, paddingBottom: 12, gap: 14 },
   segmented: { flexDirection: 'row', backgroundColor: Colors.cardBg, borderRadius: 14, borderWidth: 1, borderColor: Colors.cardBorder, padding: 4, gap: 4 },
   segment: { flex: 1, minHeight: 40, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
   segmentOn: { backgroundColor: Colors.dark },

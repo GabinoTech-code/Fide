@@ -84,3 +84,14 @@ export function useRealtimeRefresh(memberId: string | undefined) {
     };
   }, [memberId, queryClient]);
 }
+
+/** Current time, ticking every second only while `running` (an open shift). */
+export function useClock(running: boolean): number {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    if (!running) return;
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, [running]);
+  return now;
+}

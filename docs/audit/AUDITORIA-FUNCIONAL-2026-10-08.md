@@ -59,7 +59,7 @@ Prioridades:
 | V3 | El trabajador **no ve el motivo de un rechazo** (`decision_note`) y HR no puede escribirlo al rechazar. | Portal + App | P1 |
 | V4 | Solicitudes: solo se ven las pendientes. Falta historial, filtros y quién aprobó y cuándo. | Portal | P1 |
 | V5 | **Calendario de ausencias** de la empresa o del equipo, para ver quién falta y cuándo. | Portal | P1 |
-| V6 | El trabajador escribe las fechas a mano (`AAAA-MM-GG`) y calcula él los días. Falta un selector de fechas y el cálculo de días laborables (y medias jornadas). | App | P1 |
+| V6 | El trabajador escribe las fechas a mano (`AAAA-MM-GG`) y calcula él los días. Falta un selector de fechas y el cálculo de días laborables (y medias jornadas). 🟡 **PARCIAL**: selector de fechas y días laborables sin festivos nacionales hechos (`app/apps/mobile/src/ui/Calendar.tsx`, `italianWorkingDays` con test `app/packages/shared/src/italy/calendar.test.ts`); faltan las medias jornadas. | App | P1 |
 | V7 | Configurar los tipos de ausencia (la BD lo permite: nombre, unidad, si necesita aprobación o protocolo). "STRAORD" es una hora extra, no una ausencia: debería ser una solicitud aparte. | Portal | P2 |
 | V8 | Avisos: nadie se entera de una solicitud nueva ni de una decisión (ver N1). ✅ **HECHO** por email (ver N1). | — | P1 |
 

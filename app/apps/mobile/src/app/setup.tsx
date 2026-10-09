@@ -1,13 +1,16 @@
 // First sign-in (or new phone): create this phone's keys and register them.
 import { useEffect, useState } from 'react';
-import { Platform } from 'react-native';
+import { AppState, Platform, Text, View } from 'react-native';
 import { router } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
 import { useT } from '../i18n/app';
 import { useSession } from '../lib/session';
 import { deviceLock, enrolDevice, unlock, type StoredKeys } from '../lib/vault';
 import { BrandIcon } from '../components/common/Icons';
 import { Colors } from '../theme/colors';
-import { Body, Button, Card, Eyebrow, Mono, Notice, Screen, Title } from '../ui/kit';
+import { Button, Eyebrow, Fonts, Notice, Screen, Small } from '../ui/kit';
+
+const panel = { backgroundColor: Colors.darkCard, borderWidth: 1, borderColor: Colors.darkBorder, borderRadius: 18, padding: 18, gap: 10 } as const;
 
 export default function Setup() {
   const { t } = useT();
@@ -17,8 +20,13 @@ export default function Setup() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Checked again on return from Settings, where the user sets the screen lock.
   useEffect(() => {
     deviceLock().then(setLock);
+    const sub = AppState.addEventListener('change', (state) => {
+      if (state === 'active') deviceLock().then(setLock);
+    });
+    return () => sub.remove();
   }, []);
 
   if (!membership) return null;
@@ -38,33 +46,43 @@ export default function Setup() {
   };
 
   return (
-    <Screen>
-      <Eyebrow>{membership.companies?.legal_name ?? ''}</Eyebrow>
-      <Title>{t('setup.title')}</Title>
-      <Card>
-        <BrandIcon name="cifrado" size={32} color={Colors.accent} />
-        <Body>{t('setup.body')}</Body>
-      </Card>
+    <Screen dark>
+      <StatusBar style="light" />
+      <View style={{ gap: 10 }}>
+        <Eyebrow light>{membership.companies?.legal_name ?? ''}</Eyebrow>
+        <Text style={{ fontFamily: Fonts.display, fontSize: 30, lineHeight: 34, letterSpacing: -0.6, color: Colors.bg }}>{t('setup.title')}</Text>
+      </View>
+
+      <View style={panel}>
+        <BrandIcon name="cifrado" size={28} color={Colors.accentLight} />
+        <Text style={{ fontFamily: Fonts.text, fontSize: 15, lineHeight: 22, color: Colors.darkText }}>{t('setup.body')}</Text>
+      </View>
       {keyState === 'replaced' && !created ? <Notice kind="warn">{t('setup.replaced')}</Notice> : null}
       {lock === 'no_lock' ? <Notice kind="warn">{t('setup.lockRequired')}</Notice> : null}
 
+      <View style={{ flex: 1, minHeight: 12 }} />
+
       {created ? (
-        <Card>
-          <Body muted>{t('setup.fingerprint')}</Body>
-          <Mono style={{ fontSize: 18, color: Colors.textPrimary, letterSpacing: 1 }}>{created.fingerprint}</Mono>
-          <Body muted>{t('setup.fingerprintHint')}</Body>
+        <View style={panel}>
+          <Small light>{t('setup.fingerprint')}</Small>
+          <Text style={{ fontFamily: Fonts.mono, fontSize: 18, letterSpacing: 1, color: Colors.accentLight }}>{created.fingerprint}</Text>
+          <Small light>{t('setup.fingerprintHint')}</Small>
           <Button
+            kind="mint"
             label={t('common.continue')}
             onPress={() => {
               setKeys(created);
               router.replace('/(tabs)');
             }}
           />
-        </Card>
+        </View>
       ) : (
-        <Button label={t('setup.create')} icon="huella" busy={busy} disabled={lock !== 'ok'} onPress={create} />
+        <Button kind="mint" label={t('setup.create')} icon="huella" busy={busy} disabled={lock !== 'ok'} onPress={create} />
       )}
       {error ? <Notice kind="danger">{error}</Notice> : null}
+      <View style={{ alignItems: 'center' }}>
+        <Small light>{t('login.footer')}</Small>
+      </View>
     </Screen>
   );
 }

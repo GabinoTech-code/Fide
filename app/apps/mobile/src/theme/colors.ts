@@ -38,4 +38,15 @@ export const Colors = {
   
   // Toggles
   toggleTrackInactive: '#B8C1BD',
+
+  // Design prototype details
+  chipBorder: '#D5DBD8',
+  neutralTile: '#EEF1EF',
+  inputBg: '#F9FAF8',
+  softButton: '#E2E7E4',
+  infoText: '#13372B',
+  darkText: '#E9EFEC',
+  pendingText: '#7A4200',
+  tabInactive: '#5E6B66',
+  backdrop: 'rgba(15,26,23,0.5)',
 };

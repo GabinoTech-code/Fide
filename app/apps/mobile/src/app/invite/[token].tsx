@@ -5,7 +5,10 @@ import { INVITE_TOKEN_PATTERN } from '@fide/shared';
 import { useT, type AppKey } from '../../i18n/app';
 import { useSession } from '../../lib/session';
 import { supabase } from '../../lib/supabase';
-import { Body, Button, Card, Notice, Screen, Title } from '../../ui/kit';
+import { StatusBar } from 'expo-status-bar';
+import { FideLogo } from '../../components/common/Icons';
+import { Colors } from '../../theme/colors';
+import { Body, Button, Notice, Screen, Title } from '../../ui/kit';
 
 const ERRORS: Record<string, AppKey> = {
   invitation_invalid: 'invite.invalid',
@@ -49,16 +52,18 @@ export default function Invite() {
   if (needsLogin) return <Redirect href="/login" />;
 
   return (
-    <Screen>
-      <Title>{t('invite.title')}</Title>
+    <Screen dark>
+      <StatusBar style="light" />
+      <FideLogo size={34} color={Colors.accentLight} />
+      <Title light>{t('invite.title')}</Title>
       {error || malformed ? (
-        <Card>
+        <>
           <Notice kind="danger">{t(error ?? 'invite.invalid')}</Notice>
-          {error === 'invite.mismatch' ? <Button kind="secondary" label={t('common.signOut')} onPress={signOut} /> : null}
-          <Button kind="secondary" label={t('common.continue')} onPress={() => router.replace('/')} />
-        </Card>
+          {error === 'invite.mismatch' ? <Button kind="soft" label={t('common.signOut')} onPress={signOut} /> : null}
+          <Button kind="mint" label={t('common.continue')} onPress={() => router.replace('/')} />
+        </>
       ) : (
-        <Body muted>{t('invite.redeeming')}</Body>
+        <Body light>{t('invite.redeeming')}</Body>
       )}
     </Screen>
   );

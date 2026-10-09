@@ -33,6 +33,8 @@ interface I18n {
   t(key: AppKey, vars?: Record<string, string | number>): string;
   time(iso: string | Date): string;
   date(iso: string | Date): string;
+  /** Any other date format, in the app language. */
+  format(iso: string | Date, options: Intl.DateTimeFormatOptions): string;
   rtl: boolean;
 }
 
@@ -66,6 +68,7 @@ export function AppI18nProvider({ children }: { children: ReactNode }) {
       t: (key, vars) => translate(lang, key, vars),
       time: (v) => new Date(v).toLocaleTimeString(tag, { hour: '2-digit', minute: '2-digit' }),
       date: (v) => new Date(v).toLocaleDateString(tag, { day: 'numeric', month: 'short', year: 'numeric' }),
+      format: (v, options) => new Date(v).toLocaleString(tag, options),
       rtl: LANGUAGES.find((l) => l.code === lang)?.direction === 'rtl',
     };
   }, [lang, setLang]);

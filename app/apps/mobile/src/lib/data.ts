@@ -2,6 +2,7 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useState } from 'react';
 import { AppState } from 'react-native';
+import { listDocuments } from './documents';
 import type { QueuedPunch } from './outbox';
 import { sqliteOutbox } from './outboxSqlite';
 import { useSession } from './session';
@@ -114,6 +115,121 @@ export function useBalances() {
     queryFn: () =>
       rows<Balance>(
         supabase.from('leave_balance_summary').select('leave_type_id, code, unit, remaining').eq('member_id', membership!.id).eq('year', year),
+      ),
+  });
+}
+
+export type RequestStatus = 'pending' | 'approved' | 'rejected' | 'cancelled';
+
+export interface LeaveType {
+  id: string;
+  code: string;
+  name: string;
+  unit: 'days' | 'hours';
+  requires_protocol: boolean;
+}
+
+export interface MyLeave {
+  id: string;
+  leave_type_id: string;
+  start_date: string;
+  end_date: string;
+  quantity: number;
+  status: RequestStatus;
+  /** Set when HR recorded it on the employee's behalf. */
+  entered_by: string | null;
+  decided_at: string | null;
+  decision_note: string | null;
+  leave_types: { name: string; unit: 'days' | 'hours' } | null;
+}
+
+export interface MyCorrection {
+  id: string;
+  punch_type: 'in' | 'out';
+  requested_ts: string;
+  reason: string;
+  status: RequestStatus;
+  entered_by: string | null;
+  decided_at: string | null;
+  decision_note: string | null;
+}
+
+// While something waits for HR, look for the decision every minute (only while the app is in front).
+const whilePending = (rows: { status: string }[] | undefined) => (rows?.some((r) => r.status === 'pending') ? 60_000 : false);
+
+export function useLeaveTypes() {
+  const { membership } = useSession();
+  return useQuery({
+    queryKey: ['leave_types', membership?.company_id],
+    enabled: Boolean(membership),
+    queryFn: () =>
+      rows<LeaveType>(supabase.from('leave_types').select('id, code, name, unit, requires_protocol').eq('active', true).order('name')),
+  });
+}
+
+export function useMyLeave() {
+  const { membership } = useSession();
+  return useQuery({
+    queryKey: ['my_leave', membership?.id],
+    enabled: Boolean(membership),
+    queryFn: () =>
+      rows<MyLeave>(
+        supabase
+          .from('leave_requests')
+          .select('id, leave_type_id, start_date, end_date, quantity, status, entered_by, decided_at, decision_note, leave_types(name, unit)')
+          .eq('member_id', membership!.id)
+          .order('start_date', { ascending: false })
+          .limit(30),
+      ),
+    refetchInterval: (q) => whilePending(q.state.data),
+  });
+}
+
+export function useMyCorrections() {
+  const { membership } = useSession();
+  return useQuery({
+    queryKey: ['my_corrections', membership?.id],
+    enabled: Boolean(membership),
+    queryFn: () =>
+      rows<MyCorrection>(
+        supabase
+          .from('punch_corrections')
+          .select('id, punch_type, requested_ts, reason, status, entered_by, decided_at, decision_note')
+          .eq('member_id', membership!.id)
+          .order('requested_ts', { ascending: false })
+          .limit(30),
+      ),
+    refetchInterval: (q) => whilePending(q.state.data),
+  });
+}
+
+export function useDocuments() {
+  const { membership } = useSession();
+  return useQuery({ queryKey: ['documents', membership?.id], enabled: Boolean(membership), queryFn: listDocuments });
+}
+
+export interface AccessEvent {
+  id: number;
+  document_id: string;
+  actor_member_id: string | null;
+  event: 'published' | 'downloaded' | 'opened' | 'superseded' | 'deleted';
+  created_at: string;
+}
+
+/** Who touched the member's documents and when (RLS: own rows only). */
+export function useAccessEvents() {
+  const { membership } = useSession();
+  return useQuery({
+    queryKey: ['access_events', membership?.id],
+    enabled: Boolean(membership),
+    queryFn: () =>
+      rows<AccessEvent>(
+        supabase
+          .from('document_access_events')
+          .select('id, document_id, actor_member_id, event, created_at')
+          .eq('member_id', membership!.id)
+          .order('created_at', { ascending: false })
+          .limit(50),
       ),
   });
 }
