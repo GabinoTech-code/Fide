@@ -56,8 +56,8 @@ Prioridades:
 | --- | --- | --- | --- |
 | V1 | **Saldos.** La tabla `leave_balances` existe, pero no hay pantalla ni importación: nadie puede cargar los días de vacaciones o ROL, y el trabajador ve sus saldos vacíos. Estaba planificado como importación CSV. | Portal | **P1** |
 | V2 | **HR no puede registrar una ausencia en nombre del trabajador** (por ejemplo, la malattia con el certificado INPS que le llega a la empresa, o la de un trabajador sin móvil). ✅ **HECHO** (RPC `hr_record_leave` (`20261009090200_hr_entries.sql`), test `hr-actions.test.ts`). | BD + Portal | **P0** |
-| V3 | El trabajador **no ve el motivo de un rechazo** (`decision_note`) y HR no puede escribirlo al rechazar. | Portal + App | P1 |
-| V4 | Solicitudes: solo se ven las pendientes. Falta historial, filtros y quién aprobó y cuándo. | Portal | P1 |
+| V3 | El trabajador **no ve el motivo de un rechazo** (`decision_note`) y HR no puede escribirlo al rechazar. ✅ **HECHO** (nota al decidir, obligatoria al rechazar; `RequestsPage.tsx`; la app ya la muestra). | Portal + App | P1 |
+| V4 | Solicitudes: solo se ven las pendientes. Falta historial, filtros y quién aprobó y cuándo. ✅ **HECHO** (pestaña Storico con filtros, quién y cuándo decidió; `lib/requestHistory.ts` + test). | Portal | P1 |
 | V5 | **Calendario de ausencias** de la empresa o del equipo, para ver quién falta y cuándo. | Portal | P1 |
 | V6 | El trabajador escribe las fechas a mano (`AAAA-MM-GG`) y calcula él los días. Falta un selector de fechas y el cálculo de días laborables (y medias jornadas). | App | P1 |
 | V7 | Configurar los tipos de ausencia (la BD lo permite: nombre, unidad, si necesita aprobación o protocolo). "STRAORD" es una hora extra, no una ausencia: debería ser una solicitud aparte. | Portal | P2 |

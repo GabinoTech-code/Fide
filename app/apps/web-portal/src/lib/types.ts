@@ -80,6 +80,8 @@ export interface Punch {
   flags: string[];
 }
 
+export type RequestStatus = 'pending' | 'approved' | 'rejected' | 'cancelled';
+
 export interface LeaveRequest {
   id: string;
   member_id: string;
@@ -87,8 +89,14 @@ export interface LeaveRequest {
   end_date: string;
   quantity: number;
   note: string | null;
-  status: 'pending' | 'approved' | 'rejected' | 'cancelled';
+  status: RequestStatus;
   leave_types: { code: string; name: string; unit: 'days' | 'hours' } | null;
+  created_at?: string;
+  decided_by?: string | null;
+  decided_at?: string | null;
+  decision_note?: string | null;
+  /** Set when HR recorded it on the employee's behalf. */
+  entered_by?: string | null;
 }
 
 export interface PunchCorrection {
@@ -97,7 +105,12 @@ export interface PunchCorrection {
   punch_type: 'in' | 'out';
   requested_ts: string;
   reason: string;
-  status: 'pending' | 'approved' | 'rejected' | 'cancelled';
+  status: RequestStatus;
+  created_at?: string;
+  decided_by?: string | null;
+  decided_at?: string | null;
+  decision_note?: string | null;
+  entered_by?: string | null;
 }
 
 export interface AuditEntry {

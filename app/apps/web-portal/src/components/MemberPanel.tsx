@@ -50,7 +50,7 @@ function useRefresh() {
   const queryClient = useQueryClient();
   return () =>
     Promise.all(
-      ['members', 'punches', 'leave', 'corrections', 'payroll'].map((key) => queryClient.invalidateQueries({ queryKey: [key] })),
+      ['members', 'punches', 'leave', 'corrections', 'requestHistory', 'payroll'].map((key) => queryClient.invalidateQueries({ queryKey: [key] })),
     );
 }
 
