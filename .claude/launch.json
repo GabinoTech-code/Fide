@@ -24,6 +24,12 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["--prefix", "app/apps/web-portal", "run", "preview", "--", "--port", "4173", "--strictPort"],
       "port": 4173
+    },
+    {
+      "name": "prototype",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "4321", "--directory", "prototype"],
+      "port": 4321
     }
   ]
 }
