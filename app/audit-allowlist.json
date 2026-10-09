@@ -9,6 +9,16 @@
       "id": "GHSA-86w9-cpqp-85rv",
       "package": "node-forge",
       "reason": "Pulled in by @expo/config-plugins for build-time code signing helpers; not shipped in the app bundle and not used to verify untrusted signatures. Revisit on each Expo SDK upgrade."
+    },
+    {
+      "id": "GHSA-vcc3-ghjq-m6fr",
+      "package": "decode-uri-component",
+      "reason": "Moderate. Pulled in by expo-router (query-string 7 pins 0.2.x; the patched 0.4+ is ESM-only and breaks it). Worst case a crafted deep link hangs the app of the person who opens it: no data exposure. Revisit on each Expo SDK upgrade."
+    },
+    {
+      "id": "GHSA-w5hq-g745-h8pq",
+      "package": "uuid",
+      "reason": "Moderate. Pulled in by xcode (Expo config plugins) at build time only, never in the app bundle; the bug is in v3/v5/v6 with a caller buffer, which xcode does not use. Revisit on each Expo SDK upgrade."
     }
   ]
 }
