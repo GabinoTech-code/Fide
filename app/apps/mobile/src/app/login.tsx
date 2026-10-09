@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { router } from 'expo-router';
+import { Redirect, router } from 'expo-router';
 import { View } from 'react-native';
 import { useT } from '../i18n/app';
 import { useSession } from '../lib/session';
@@ -8,7 +8,7 @@ import { Body, Button, Card, Eyebrow, Field, Notice, Screen, Title } from '../ui
 
 export default function Login() {
   const { t } = useT();
-  const { sendCode, verifyCode, pendingInvite } = useSession();
+  const { session, sendCode, verifyCode, pendingInvite } = useSession();
   const [email, setEmail] = useState('');
   const [code, setCode] = useState('');
   const [sent, setSent] = useState(false);
@@ -26,6 +26,9 @@ export default function Login() {
       setBusy(false);
     }
   };
+
+  // Already signed in (e.g. the session arrived after a redirect here): go on.
+  if (session) return <Redirect href="/" />;
 
   return (
     <Screen>

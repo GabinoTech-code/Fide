@@ -131,6 +131,10 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       async verifyCode(email, code) {
         const { error } = await supabase.auth.verifyOtp({ email: email.trim().toLowerCase(), token: code.trim(), type: 'email' });
         if (error) throw error;
+        // Load session, memberships and keys before the caller navigates: the
+        // SIGNED_IN listener refreshes asynchronously, and the entry gate would
+        // otherwise still see no session and send the user back to the login.
+        await refresh();
       },
       refresh,
       setKeys(next) {
