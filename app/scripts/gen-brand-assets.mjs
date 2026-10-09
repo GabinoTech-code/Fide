@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 // Renders every app/portal icon from the logo in @fide/shared/brand.
 //   node scripts/gen-brand-assets.mjs
-// Variants follow the identity reference: main icon (mint key on slate),
-// Android adaptive (mist key on forest), monochrome (Android 13+ themed icons),
-// splash and favicons without clock hands.
+// Variants follow the identity reference: main icon (mint key on slate) for iOS
+// and Android alike, monochrome (Android 13+ themed icons), splash and favicons
+// without clock hands. The reference also draws an "adaptive" variant (mist key
+// on forest); the founder chose the main one for Android too (2026-10-09).
 import { Resvg } from '@resvg/resvg-js';
 import { writeFileSync } from 'node:fs';
 import path from 'node:path';
@@ -25,10 +26,10 @@ function png(file, svg) {
 const adaptive = (80 / 140) * (72 / 108);
 
 png(mobile('icon.png'), logoSvg({ size: 1024, color: c.mint, background: c.slate, scale: 92 / 140 }));
-png(mobile('android-icon-foreground.png'), logoSvg({ size: 1024, color: c.mist, scale: adaptive }));
+png(mobile('android-icon-foreground.png'), logoSvg({ size: 1024, color: c.mint, scale: adaptive }));
 png(
   mobile('android-icon-background.png'),
-  `<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024"><rect width="1024" height="1024" fill="${c.forest}"/></svg>`,
+  `<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024"><rect width="1024" height="1024" fill="${c.slate}"/></svg>`,
 );
 png(mobile('android-icon-monochrome.png'), logoSvg({ size: 1024, color: '#FFFFFF', scale: adaptive }));
 png(mobile('splash-icon.png'), logoSvg({ size: 1024, color: c.mint, scale: 0.8 }));
