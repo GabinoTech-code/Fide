@@ -61,7 +61,7 @@ Prioridades:
 | V5 | **Calendario de ausencias** de la empresa o del equipo, para ver quién falta y cuándo. | Portal | P1 |
 | V6 | El trabajador escribe las fechas a mano (`AAAA-MM-GG`) y calcula él los días. Falta un selector de fechas y el cálculo de días laborables (y medias jornadas). | App | P1 |
 | V7 | Configurar los tipos de ausencia (la BD lo permite: nombre, unidad, si necesita aprobación o protocolo). "STRAORD" es una hora extra, no una ausencia: debería ser una solicitud aparte. | Portal | P2 |
-| V8 | Avisos: nadie se entera de una solicitud nueva ni de una decisión (ver N1). | — | P1 |
+| V8 | Avisos: nadie se entera de una solicitud nueva ni de una decisión (ver N1). ✅ **HECHO** por email (ver N1). | — | P1 |
 
 ## 5. Documentos y nóminas
 
@@ -78,7 +78,7 @@ Prioridades:
 | D3 | **Pendientes de entrega.** Si un trabajador aún no ha activado la app, su nómina se salta y nadie lo recuerda. Falta una cola "se enviará cuando active el móvil", o al menos un aviso persistente. | Portal | P1 |
 | D4 | **Historial por empleado**: qué documentos tiene, cuándo los abrió (prueba de entrega) y exportarlo. Hoy solo hay un recuento por lote. | Portal | P1 |
 | D5 | Empleados **sin CF** en Fide: nunca se emparejan automáticamente; avisar al subir el PDF. | Portal | P1 |
-| D6 | El trabajador no recibe aviso de un documento nuevo (ver N1). | — | P1 |
+| D6 | El trabajador no recibe aviso de un documento nuevo (ver N1). ✅ **HECHO** por email (ver N1). | — | P1 |
 
 ## 6. Privacidad y cumplimiento
 
@@ -91,7 +91,7 @@ Prioridades:
 
 | # | Hallazgo | Dónde | Prio |
 | --- | --- | --- | --- |
-| N1 | **Notificaciones.** Push sin configurar (falta Firebase) y sin emails de aviso. Ni HR se entera de las solicitudes nuevas, ni el trabajador de las decisiones o de los documentos. Alternativa rápida: emails por Brevo, que ya funciona. | BD + App | **P1** |
+| N1 | **Notificaciones.** Push sin configurar (falta Firebase) y sin emails de aviso. Ni HR se entera de las solicitudes nuevas, ni el trabajador de las decisiones o de los documentos. Alternativa rápida: emails por Brevo, que ya funciona. 🟡 **Email HECHO** (`20261009120000_notifications.sql`, función `notify-dispatch`, test `notifications.test.ts`); push sigue pendiente (Firebase). | BD + App | **P1** |
 | N2 | El email de invitación solo está en italiano; el trabajador tiene idioma preferido (`preferred_language`). | Funciones | P2 |
 
 ## 8. Empresa, cuenta y operación

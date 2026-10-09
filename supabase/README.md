@@ -23,6 +23,7 @@ Migraciones en `migrations/` (aplicadas en orden), seed local en `seed.sql` y co
 | Documentos | `payroll_batches`, `documents`, `document_key_wraps`, `document_access_events`; bucket `encrypted-documents` (solo `application/octet-stream`) |
 | Ausencias | `leave_types` (FERIE, ROL, EXFEST, L104, MALATTIA, STRAORD), `leave_balances`, `leave_requests`, vista `leave_balance_summary` |
 | Privacidad | `gdpr_requests`, `push_tokens`, `audit_log` (nombres de columnas, nunca valores) |
+| Avisos | `private.notification_outbox` (quién y qué evento, nunca el email ni el contenido; se borra a los 30 días) |
 
 ## Flujos
 
@@ -39,6 +40,7 @@ Migraciones en `migrations/` (aplicadas en orden), seed local en `seed.sql` y co
 | Ciclo de vida | `update_member()` (el email solo mientras está invitado: después es su login), `set_member_status()` (suspender, reactivar, cesar con fecha; anula las ausencias posteriores al último día y devuelve cuántas personas tenían a esta como responsable), `revoke_device_key()` |
 | Retirar un documento | `withdraw_document()` lo marca `deleted`, borra su key wrap (nadie puede descifrarlo ya) y dice si el destinatario lo había descargado; el portal borra el cifrado de Storage (política solo para documentos retirados) |
 | GDPR | `export_my_data()` (art. 15/20); inserción en `gdpr_requests` con plazo `due_at` de un mes puesto por la base de datos → `extend_gdpr_request()` (una vez, +2 meses, con motivo) → `resolve_gdpr_request()` (respuesta obligatoria al cerrar) o `gdpr_erase_former_member()` (ex empleado: revoca claves y avisos push) |
+| Avisos por email | triggers → `private.notification_outbox` → `pg_cron` cada minuto llama a `notify-dispatch` (token en Vault, rotado en cada deploy) → `svc_notification_claim()` / `svc_notification_done()`, hasta 5 intentos |
 | Fichajes pendientes al cambiar de estado | un fichaje firmado antes de la suspensión o el cese (`members.status_changed_at`) se acepta aunque sincronice después |
 
 ## Tests

@@ -102,3 +102,7 @@ policy = "per_worker"
 # The kiosk tablet has no user session when it pairs.
 [functions.kiosk-pair]
 verify_jwt = false
+
+# Called by pg_cron with its own rotating token (x-fide-dispatch-token), not a user JWT.
+[functions.notify-dispatch]
+verify_jwt = false
