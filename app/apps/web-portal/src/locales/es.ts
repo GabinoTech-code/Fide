@@ -478,6 +478,7 @@ export const es: Messages = {
   // Payslips: name cross-check
   'payroll.nameMissing': 'Nombre del empleado no encontrado en las páginas {pages}: comprueba que sean suyas.',
   'payroll.reviewTitle': 'Revisa antes de enviar',
-  'payroll.reviewBody': 'El codice fiscale indica estos destinatarios, pero su nombre no aparece en algunas páginas: {names}. Abre el PDF y comprueba que esas páginas son de verdad suyas. Una nómina a la persona equivocada es una violación de datos personales.',
-  'payroll.reviewConfirm': 'He revisado las páginas señaladas: son de los destinatarios indicados.',
+  'payroll.reviewBody': 'Abre cada página señalada del PDF y comprueba que corresponde al trabajador indicado. Las asignaciones manuales y las páginas sin su nombre requieren revisión individual.',
+  'payroll.reviewOpenPage': 'Abrir página {page} del PDF',
+  'payroll.reviewPageConfirm': 'Confirmo que la página {page} pertenece a {name}.',
 };

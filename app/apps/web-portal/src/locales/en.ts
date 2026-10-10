@@ -478,6 +478,7 @@ export const en: Messages = {
   // Payslips: name cross-check
   'payroll.nameMissing': 'Employee name not found on pages {pages}: check they are theirs.',
   'payroll.reviewTitle': 'Check before sending',
-  'payroll.reviewBody': 'The codice fiscale points to these recipients, but their name is missing on some pages: {names}. Open the PDF and check those pages really are theirs. A payslip sent to the wrong person is a personal data breach.',
-  'payroll.reviewConfirm': 'I checked the flagged pages: they belong to the recipients shown.',
+  'payroll.reviewBody': 'Open each flagged page in the PDF and check that it belongs to the named employee. Manual assignments and pages without the employee name require an individual review.',
+  'payroll.reviewOpenPage': 'Open PDF page {page}',
+  'payroll.reviewPageConfirm': 'I confirm page {page} belongs to {name}.',
 };

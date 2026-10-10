@@ -67,7 +67,7 @@ Prioridades:
 
 **Cómo funciona hoy.** HR sube el PDF con todas las nóminas.
 1. El portal busca el codice fiscale de cada página y lo empareja con los empleados que tienen ese CF en Fide.
-2. Una página sin CF se considera continuación de la nómina anterior; las páginas sin una asignación clara se pueden asignar a mano. El nombre del empleado se comprueba en cada página y cualquier página sin coincidencia queda marcada para revisión y confirmación explícita de HR.
+2. Una página sin CF se considera continuación de la nómina anterior; las páginas sin una asignación clara se pueden asignar a mano. El nombre del empleado se comprueba en cada página. Toda página asignada manualmente o donde falta el nombre se abre desde el portal y se confirma individualmente, vinculando la confirmación al destinatario elegido; sin todas las confirmaciones, no se cifra ni publica el lote.
 3. Enseña una tabla con cada destinatario, sus páginas y su estado (*listo*, *ya entregado*, *móvil nuevo*, *sin dispositivo*), además de las páginas que requieren revisión.
 4. Cada parte se cifra en el navegador para la clave pública activa del dispositivo de su destinatario; el servidor recibe y almacena solo el documento cifrado.
 
@@ -77,7 +77,7 @@ Prioridades:
 | D2 | **Documento suelto a una o varias personas** (contrato, comunicación, CU de uno solo): hoy hay que pasar por el flujo de nóminas y asignar las páginas a mano. Falta "Enviar documento", eligiendo destinatarios de una lista. | Portal | P1 |
 | D3 | **Pendientes de entrega.** Si un trabajador aún no ha activado la app, su nómina se salta y nadie lo recuerda. Falta una cola "se enviará cuando active el móvil", o al menos un aviso persistente. | Portal | P1 |
 | D4 | **Historial por empleado**: qué documentos tiene, cuándo los abrió (prueba de entrega) y exportarlo. Hoy solo hay un recuento por lote. | Portal | P1 |
-| D5 | Empleados **sin CF** en Fide: nunca se emparejan automáticamente; avisar al subir el PDF. | Portal | P1 |
+| D5 | Empleados **sin CF** en Fide: nunca se emparejan automáticamente. Las páginas desconocidas/ambiguas quedan fuera del envío hasta asignarlas; cada asignación manual y cada página sin nombre exige abrir la página del PDF y confirmarla para ese destinatario antes de cifrar. ✅ **HECHO** (portal `PayrollPage.tsx`, `allReviewPagesChecked`, test `payroll.test.ts`). | Portal | P1 |
 | D6 | El trabajador no recibe aviso de un documento nuevo (ver N1). ✅ **HECHO** por email (ver N1). | — | P1 |
 
 ## 6. Privacidad y cumplimiento
