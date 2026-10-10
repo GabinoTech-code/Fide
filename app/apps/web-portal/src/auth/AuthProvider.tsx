@@ -15,6 +15,8 @@ interface Auth {
   /** The selected company membership (HR/owner ones first). */
   active: Membership | null;
   isHr: boolean;
+  /** A team manager (capo turno): presence and requests of their own team only. */
+  isManager: boolean;
   setActiveCompany(companyId: string): void;
   refreshMemberships(): Promise<unknown>;
   signOut(): Promise<void>;
@@ -63,7 +65,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const memberships = useMemo(() => membershipsQuery.data ?? [], [membershipsQuery.data]);
   const active = useMemo(() => {
-    const ranked = [...memberships].sort((a, b) => Number(isHrRole(b.role)) - Number(isHrRole(a.role)));
+    const rank = (r: Membership['role']) => (isHrRole(r) ? 2 : r === 'manager' ? 1 : 0);
+    const ranked = [...memberships].sort((a, b) => rank(b.role) - rank(a.role));
     return ranked.find((m) => m.company_id === activeId) ?? ranked[0] ?? null;
   }, [memberships, activeId]);
 
@@ -83,6 +86,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     membershipsLoading: membershipsQuery.isLoading,
     active,
     isHr: active ? isHrRole(active.role) : false,
+    isManager: active?.role === 'manager',
     setActiveCompany,
     refreshMemberships: () => membershipsQuery.refetch(),
     signOut: async () => {

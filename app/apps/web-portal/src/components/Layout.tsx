@@ -6,6 +6,9 @@ import { useGdprRequests } from '../lib/queries';
 import { isOverdue } from '../pages/PrivacyPage';
 import { Icon, Logo } from './Brand';
 
+// Team managers see only presence and requests (of their team): the rest is HR's.
+const MANAGER_NAV = new Set(['/', '/richieste']);
+
 const NAV: Array<{ to: string; label: MessageKey; icon: IconName }> = [
   { to: '/', label: 'nav.presence', icon: 'fichar' },
   { to: '/dipendenti', label: 'nav.employees', icon: 'misdatos' },
@@ -19,7 +22,7 @@ const NAV: Array<{ to: string; label: MessageKey; icon: IconName }> = [
 
 export function Layout() {
   const { t, locale, setLocale } = useI18n();
-  const { memberships, active, setActiveCompany, signOut, session } = useAuth();
+  const { memberships, active, setActiveCompany, signOut, session, isHr } = useAuth();
   // Open GDPR requests have a legal deadline: keep them visible from every page.
   const gdpr = useGdprRequests().data ?? [];
   const gdprOpen = gdpr.filter((r) => r.status === 'pending' || r.status === 'in_progress');
@@ -54,9 +57,10 @@ export function Layout() {
             {active?.companies?.legal_name}
           </div>
         )}
+        {!isHr ? <div className="small" style={{ padding: '0 8px', color: 'var(--mint-pale)' }}>{t('access.managerScope')}</div> : null}
 
         <nav className="nav">
-          {NAV.map((item) => (
+          {NAV.filter((item) => isHr || MANAGER_NAV.has(item.to)).map((item) => (
             <NavLink key={item.to} to={item.to} end={item.to === '/'}>
               <Icon name={item.icon} />
               {t(item.label)}

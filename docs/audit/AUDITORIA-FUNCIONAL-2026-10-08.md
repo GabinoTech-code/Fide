@@ -35,7 +35,7 @@ Prioridades:
 
 | # | Hallazgo | Dónde | Prio |
 | --- | --- | --- | --- |
-| R1 | **El responsable no tiene herramienta.** La BD ya le deja aprobar las solicitudes de su equipo (`decide_leave_request` acepta al manager) y ver sus fichajes, pero el portal bloquea a todo el que no sea HR y la app no tiene pantallas de responsable. | Portal + App | **P1** |
+| R1 | **El responsable no tiene herramienta.** La BD ya le deja aprobar las solicitudes de su equipo (`decide_leave_request` acepta al manager) y ver sus fichajes, pero el portal bloquea a todo el que no sea HR y la app no tiene pantallas de responsable. ✅ **HECHO** en el portal: el responsable entra con Presenze y Richieste de su equipo; el rol se asigna en la ficha del empleado; el poder sigue al rol (migración `20261010100000_manager_role.sql`, test `managers.test.ts`). En la app no hace falta: el responsable usa el portal. | Portal + App | **P1** |
 | R2 | Vista "mi equipo hoy": quién ha entrado, quién falta y quién está de vacaciones. | Portal + App | P1 |
 
 ## 3. Fichajes y presencias

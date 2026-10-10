@@ -1,4 +1,5 @@
 import { Icon } from '../components/Brand';
+import { useAuth } from '../auth/AuthProvider';
 import { MonthlyReport } from '../components/MonthlyReport';
 import { ErrorNotice, PageHead } from '../components/ui';
 import { useI18n, type MessageKey } from '../lib/i18n';
@@ -17,6 +18,7 @@ function inNow(punches: Punch[]): Set<string> {
 
 export function PresencePage() {
   const { t, formatDateTime } = useI18n();
+  const { isHr } = useAuth();
   const names = useMemberNames();
   const { data: punches = [], isLoading, error } = useTodayPunches();
   const present = inNow(punches);
@@ -100,7 +102,8 @@ export function PresencePage() {
         )}
       </section>
 
-      <MonthlyReport />
+      {/* The consultant's report is HR's work; a team manager sees today's presence only. */}
+      {isHr ? <MonthlyReport /> : null}
     </>
   );
 }
