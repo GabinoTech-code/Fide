@@ -43,8 +43,9 @@ export type Decision = 'approved' | 'rejected';
 
 export type Notice =
   | { kind: 'document'; id: string; title: string; at: string }
-  | { kind: 'leave'; id: string; label: string; status: Decision; at: string }
-  | { kind: 'correction'; id: string; punchType: 'in' | 'out'; status: Decision; at: string };
+  // byHr: recorded by HR on the employee's behalf, not a request the employee made.
+  | { kind: 'leave'; id: string; label: string; status: Decision; byHr: boolean; at: string }
+  | { kind: 'correction'; id: string; punchType: 'in' | 'out'; status: Decision; byHr: boolean; at: string };
 
 interface DocumentLike {
   id: string;
@@ -57,6 +58,7 @@ interface DecidedLike {
   id: string;
   status: string;
   decided_at?: string | null;
+  entered_by?: string | null;
 }
 
 /** How long a decision stays in the feed. */
@@ -80,10 +82,10 @@ export function buildNotices(
       .map((d): Notice => ({ kind: 'document', id: d.id, title: d.title, at: d.published_at })),
     ...input.leave
       .filter(recent)
-      .map((r): Notice => ({ kind: 'leave', id: r.id, label: r.leave_types?.name ?? '', status: r.status as Decision, at: r.decided_at! })),
+      .map((r): Notice => ({ kind: 'leave', id: r.id, label: r.leave_types?.name ?? '', status: r.status as Decision, byHr: Boolean(r.entered_by), at: r.decided_at! })),
     ...input.corrections
       .filter(recent)
-      .map((c): Notice => ({ kind: 'correction', id: c.id, punchType: c.punch_type, status: c.status as Decision, at: c.decided_at! })),
+      .map((c): Notice => ({ kind: 'correction', id: c.id, punchType: c.punch_type, status: c.status as Decision, byHr: Boolean(c.entered_by), at: c.decided_at! })),
   ];
   return notices.sort((a, b) => b.at.localeCompare(a.at));
 }

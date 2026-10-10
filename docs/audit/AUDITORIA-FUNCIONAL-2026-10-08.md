@@ -22,14 +22,14 @@ Prioridades:
 | E2 | **Revocar el móvil de un empleado** (perdido o robado). `revoke_device_key` existe, sin botón. ✅ **HECHO** (panel «Gestisci» → Stato e telefono; `revoke_device_key` ya cubierto en `members.test.ts`). | Portal | **P0** |
 | E3 | **Editar un empleado** (nombre, email, CF, matrícula, sede, responsable). La BD lo permite, pero el portal solo deja crear. Un error al escribir el email bloquea la invitación para siempre. ✅ **HECHO** (RPC `update_member` (email solo mientras está invitado), test `lifecycle.test.ts`). | Portal | **P0** |
 | E4 | **Mansión y categoría.** No existen. Falta un catálogo de **mansioni** configurable por empresa (operaio comune, operaio specializzato, capo turno, capo impianto, magazziniere, impiegato…), más categoría (operaio / impiegato / quadro / apprendista), **livello CCNL**, tipo de contrato (indeterminato, determinato, apprendistato, somministrato), **horas semanales** o part-time, fecha de alta y de baja, y reparto. | BD + Portal + App | **P1** |
-| E5 | **Roles y jerarquía.** `set_member_role` existe, sin botón: no se puede nombrar a nadie HR ni responsable. `manager_member_id` (quién es su capo turno) tampoco se puede asignar. 🟡 **A medias**: el responsable ya se asigna en «Gestisci → Dati» (`update_member`); los roles siguen sin pantalla. | Portal | **P1** |
+| E5 | **Roles y jerarquía.** ✅ **HECHO** para permisos de Fide: en «Gestisci → Dati» se asigna el rol `employee`, `manager`, `hr_admin` o `company_owner`, y en «Responsabile» se asigna a cada empleado un aprobador activo de la misma empresa. Solo el titular puede promover a HR/titular; HR puede nombrar responsables. La BD vuelve a validar estas reglas (`20261010100000_manager_role.sql`, `managers.test.ts`). El rol `manager` da acceso al portal limitado al equipo. **Pendiente (E4):** puesto contractual, categoría, nivel CCNL y horas son datos laborales distintos del rol de acceso y aún no existen. | Portal | **P1** |
 | E6 | **Estado de la invitación.** No se ve si caducó (7 días), no se puede anular (`revoke_invitation`, sin botón) y "Invitar" crea una nueva cada vez. | Portal | P1 |
 | E7 | Buscar o filtrar empleados por sede, rol o estado; ordenar. | Portal | P2 |
 | E8 | La importación CSV no recoge mansión, contrato ni horas (depende de E4). | Portal | P1 |
 
 **Sobre "capo turno":** son dos cosas distintas que conviene separar.
 - La **mansión** es lo que hace en el contrato (capo turno, capo impianto). Sale en sus datos y en el informe para el consulente.
-- El **rol** es lo que puede hacer en Fide. Un capo turno sería *responsable* (manager) de su equipo: ve las presencias de su gente y aprueba sus solicitudes.
+- El **rol** es lo que puede hacer en Fide. Un capo turno sería `manager` y, además, se asigna como *responsable* de cada trabajador de su equipo: ve esas presencias y aprueba sus solicitudes. La empresa de prueba aún no tiene un usuario manager, por eso no aparece un capo turno elegible hasta crear/promover a alguien.
 
 ## 2. Responsables (capo turno, capo impianto)
 
@@ -42,7 +42,7 @@ Prioridades:
 
 | # | Hallazgo | Dónde | Prio |
 | --- | --- | --- | --- |
-| F1 | **HR no puede registrar un fichaje en nombre de un trabajador.** Solo el propio trabajador crea sus correcciones. La informativa y la DPIA **prometen** una alternativa sin móvil gestionada por HR, y el Garante la exige. ✅ **HECHO** (RPC `hr_record_punch` (`20261009090200_hr_entries.sql`), test `hr-actions.test.ts`). | BD + Portal | **P0** |
+| F1 | **HR no puede registrar un fichaje en nombre de un trabajador.** Solo el propio trabajador crea sus correcciones. La informativa y la DPIA **prometen** una alternativa sin móvil gestionada por HR, y el Garante la exige. ✅ **HECHO** (RPC `hr_record_punch` (`20261009090200_hr_entries.sql`), test `hr-actions.test.ts`; la app etiqueta por separado los registros hechos por HR en el inicio y en el historial, `dashboard.test.ts`). | BD + Portal + App | **P0** |
 | F2 | Historial de presencias por empleado y por mes en el portal (hoy solo existe "hoy" y el CSV mensual). | Portal | P1 |
 | F3 | Panel de **anomalías**: salidas olvidadas, turnos de más de 16 h, fichajes marcados. Hoy solo aparecen dentro del CSV. | Portal | P1 |
 | F4 | El trabajador solo ve los fichajes de **hoy**; no tiene su historial del mes ni sus horas. | App | P1 |
@@ -67,9 +67,9 @@ Prioridades:
 
 **Cómo funciona hoy.** HR sube el PDF con todas las nóminas.
 1. El portal busca el codice fiscale de cada página y lo empareja con los empleados que tienen ese CF en Fide.
-2. Enseña una tabla con cada destinatario, sus páginas y su estado (*listo*, *ya entregado*, *móvil nuevo*, *sin dispositivo*).
-3. Las páginas sin CF reconocible se pueden asignar a mano.
-4. Cada parte se cifra para el móvil de su destinatario.
+2. Una página sin CF se considera continuación de la nómina anterior; las páginas sin una asignación clara se pueden asignar a mano. El nombre del empleado se comprueba en cada página y cualquier página sin coincidencia queda marcada para revisión y confirmación explícita de HR.
+3. Enseña una tabla con cada destinatario, sus páginas y su estado (*listo*, *ya entregado*, *móvil nuevo*, *sin dispositivo*), además de las páginas que requieren revisión.
+4. Cada parte se cifra en el navegador para la clave pública activa del dispositivo de su destinatario; el servidor recibe y almacena solo el documento cifrado.
 
 | # | Hallazgo | Dónde | Prio |
 | --- | --- | --- | --- |

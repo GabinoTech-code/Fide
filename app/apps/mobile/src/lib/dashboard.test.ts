@@ -48,6 +48,7 @@ describe('notices', () => {
         ],
         leave: [
           { id: 'ok', status: 'approved', decided_at: '2026-10-09T08:00:00Z', leave_types: { name: 'Ferie' } },
+          { id: 'hr', status: 'approved', decided_at: '2026-10-08T08:00:00Z', entered_by: 'giulia', leave_types: { name: 'Malattia' } },
           { id: 'stale', status: 'approved', decided_at: '2026-09-01T08:00:00Z', leave_types: { name: 'Ferie' } },
           { id: 'wait', status: 'pending', decided_at: null, leave_types: { name: 'ROL' } },
         ],
@@ -55,8 +56,9 @@ describe('notices', () => {
       },
       now,
     );
-    expect(notices.map((n) => n.id)).toEqual(['ok', 'new', 'no']);
-    expect(notices[0]).toMatchObject({ kind: 'leave', label: 'Ferie', status: 'approved' });
-    expect(notices[2]).toMatchObject({ kind: 'correction', punchType: 'out', status: 'rejected' });
+    expect(notices.map((n) => n.id)).toEqual(['ok', 'new', 'hr', 'no']);
+    expect(notices[0]).toMatchObject({ kind: 'leave', label: 'Ferie', status: 'approved', byHr: false });
+    expect(notices[2]).toMatchObject({ kind: 'leave', label: 'Malattia', byHr: true });
+    expect(notices[3]).toMatchObject({ kind: 'correction', punchType: 'out', status: 'rejected', byHr: false });
   });
 });
