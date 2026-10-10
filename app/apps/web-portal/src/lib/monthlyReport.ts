@@ -3,6 +3,8 @@
 // summary. It feeds the payroll and the LUL; it does not replace them.
 // Everything is computed in Europe/Rome local time, in this browser.
 
+import { isItalianWorkingDay } from '@fide/shared';
+
 export const REPORT_TZ = 'Europe/Rome';
 
 export interface ReportPunch {
@@ -88,6 +90,38 @@ export function daysOf(month: string): string[] {
   return Array.from({ length: n }, (_, i) => `${month}-${String(i + 1).padStart(2, '0')}`);
 }
 
+/** Historical quantities are authoritative; never guess an ambiguous daily split. */
+export class LeaveAllocationError extends Error {
+  constructor(public readonly request: ReportLeave) {
+    super('report_leave_allocation_required');
+    this.name = 'LeaveAllocationError';
+  }
+}
+
+function allocateLeave(r: ReportLeave): Array<{ date: string; quantity: number }> {
+  const quantity = Number(r.quantity);
+  const start = Date.parse(`${r.start_date}T00:00:00Z`);
+  const end = Date.parse(`${r.end_date}T00:00:00Z`);
+  if (!Number.isFinite(quantity) || quantity <= 0 || !Number.isFinite(start) || !Number.isFinite(end)
+    || new Date(start).toISOString().slice(0, 10) !== r.start_date
+    || new Date(end).toISOString().slice(0, 10) !== r.end_date || start > end) {
+    throw new LeaveAllocationError(r);
+  }
+  // A single-day request already contains its precise approved quantity,
+  // including fractional days, hours and work on weekends/holidays.
+  if (start === end) return [{ date: r.start_date, quantity }];
+  if (r.leave_types?.unit !== 'days') throw new LeaveAllocationError(r);
+  const dates: string[] = [];
+  for (let time = start; time <= end; time += 86_400_000) {
+    const date = new Date(time).toISOString().slice(0, 10);
+    if (isItalianWorkingDay(date)) dates.push(date);
+  }
+  // This is the calendar currently used by the app. HR-entered quantities
+  // inconsistent with it need an explicit allocation, not proportional guesses.
+  if (dates.length !== quantity) throw new LeaveAllocationError(r);
+  return dates.map((date) => ({ date, quantity: 1 }));
+}
+
 export function buildMonthlyReport(input: {
   month: string;
   members: ReportMember[];
@@ -143,13 +177,14 @@ export function buildMonthlyReport(input: {
     if (open) emit(open, null);
   }
 
-  for (const r of input.leave) {
-    if (!r.leave_types) continue;
-    const { code, unit } = r.leave_types;
-    const single = r.start_date === r.end_date;
-    for (const date of daysOf(input.month)) {
-      if (date < r.start_date || date > r.end_date) continue;
-      line(r.member_id, date).absences.push(unit === 'hours' && single ? `${code} ${formatHours(r.quantity)}h` : code);
+  const allocations = input.leave.filter((r) => r.leave_types).map((request) => ({
+    request,
+    entries: allocateLeave(request).filter((entry) => days.has(entry.date)),
+  }));
+  for (const { request: r, entries } of allocations) {
+    const { code, unit } = r.leave_types!;
+    for (const { date, quantity } of entries) {
+      line(r.member_id, date).absences.push(unit === 'hours' ? `${code} ${formatHours(quantity)}h` : quantity === 1 ? code : `${code} ${formatHours(quantity)}g`);
     }
   }
 
@@ -157,13 +192,13 @@ export function buildMonthlyReport(input: {
   const summaries = input.members.map((m): MemberSummary => {
     const own = sorted.filter((l) => l.memberId === m.id);
     const absences: MemberSummary['absences'] = {};
-    for (const r of input.leave.filter((x) => x.member_id === m.id && x.leave_types)) {
+    for (const { request: r, entries } of allocations.filter((x) => x.request.member_id === m.id)) {
       const { code, unit } = r.leave_types!;
-      const inMonth = daysOf(input.month).filter((d) => d >= r.start_date && d <= r.end_date).length;
-      if (!inMonth) continue;
+      if (!entries.length) continue;
       const a = (absences[code] ??= { days: 0, hours: 0 });
-      if (unit === 'hours') a.hours += r.start_date === r.end_date ? Number(r.quantity) : 0;
-      else a.days += inMonth;
+      const quantity = entries.reduce((sum, entry) => sum + entry.quantity, 0);
+      if (unit === 'hours') a.hours += quantity;
+      else a.days += quantity;
     }
     return {
       memberId: m.id,

@@ -84,6 +84,7 @@ export const en: Messages = {
   'report.detail': 'Download daily detail (CSV)',
   'report.summary': 'Download per-employee summary (CSV)',
   'report.dayUnit': 'd',
+  'report.allocationRequired': 'Export blocked: {employee}, {code}, {from} to {to}, approved quantity {quantity}. Daily allocation cannot be determined with the current calendar (Mon–Fri, excluding national holidays). Agree the allocation with the payroll adviser; do not change the historical request to fit the calendar.',
   'report.col.number': 'Employee number',
   'report.col.cf': 'Codice fiscale',
   'report.col.employee': 'Employee',

@@ -8,6 +8,7 @@ import {
   daysOf,
   detailCsv,
   fetchWindow,
+  LeaveAllocationError,
   summaryCsv,
   type Anomaly,
   type ReportLabels,
@@ -151,7 +152,17 @@ export function MonthlyReport() {
           {busy ? t('report.loading') : t('report.prepare')}
         </button>
       </div>
-      <ErrorNotice error={error} />
+      {error instanceof LeaveAllocationError ? (
+        <div className="notice notice-danger" role="alert">
+          {t('report.allocationRequired', {
+            employee: members.find((m) => m.id === error.request.member_id)?.full_name ?? error.request.member_id,
+            from: error.request.start_date,
+            to: error.request.end_date,
+            quantity: error.request.quantity,
+            code: error.request.leave_types?.code ?? '',
+          })}
+        </div>
+      ) : <ErrorNotice error={error} />}
       {ready ? (
         ready.lines === 0 ? (
           <p className="empty">{t('report.empty')}</p>

@@ -84,6 +84,7 @@ export const es: Messages = {
   'report.detail': 'Descargar detalle diario (CSV)',
   'report.summary': 'Descargar resumen por empleado (CSV)',
   'report.dayUnit': 'd',
+  'report.allocationRequired': 'Exportación bloqueada: {employee}, {code}, del {from} al {to}, cantidad aprobada {quantity}. No se puede determinar el reparto diario con el calendario actual (lun–vie, sin festivos nacionales). Acordar el reparto con el consulente; no modificar la solicitud histórica para ajustarla al calendario.',
   'report.col.number': 'Matrícula',
   'report.col.cf': 'Codice fiscale',
   'report.col.employee': 'Empleado',

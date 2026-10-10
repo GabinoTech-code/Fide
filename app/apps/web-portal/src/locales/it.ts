@@ -83,6 +83,7 @@ export const it = {
   'report.detail': 'Scarica dettaglio giornaliero (CSV)',
   'report.summary': 'Scarica riepilogo per dipendente (CSV)',
   'report.dayUnit': 'g',
+  'report.allocationRequired': 'Esportazione bloccata: {employee}, {code}, dal {from} al {to}, quantità approvata {quantity}. Il riparto giornaliero non è determinabile con il calendario attuale (lun–ven, esclusi festivi nazionali). Concordare il riparto con il consulente; non modificare la richiesta storica per farla coincidere con il calendario.',
   'report.col.number': 'Matricola',
   'report.col.cf': 'Codice fiscale',
   'report.col.employee': 'Dipendente',
