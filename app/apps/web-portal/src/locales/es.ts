@@ -467,4 +467,17 @@ export const es: Messages = {
   'requests.decidedBy': 'Decidido por',
   'requests.byHr': 'Registrada por RR. HH.',
   'requests.historyLimit': 'Se muestran las últimas 300 solicitudes de cada tipo.',
+
+  // Roles: team managers in the portal
+  'member.role': 'Rol',
+  'member.roleSave': 'Cambiar rol',
+  'member.roleHint': 'El titular nombra a RR. HH.; RR. HH. nombra a los responsables.',
+  'member.roleManagerHint': 'El responsable entra en el portal y ve los fichajes y las solicitudes de su equipo, y las aprueba. No ve nóminas, datos personales ni privacidad. El equipo se asigna en el campo «Responsable» de cada empleado.',
+  'access.managerScope': 'Solo ves tu equipo.',
+
+  // Payslips: name cross-check
+  'payroll.nameMissing': 'Nombre del empleado no encontrado en las páginas {pages}: comprueba que sean suyas.',
+  'payroll.reviewTitle': 'Revisa antes de enviar',
+  'payroll.reviewBody': 'El codice fiscale indica estos destinatarios, pero su nombre no aparece en algunas páginas: {names}. Abre el PDF y comprueba que esas páginas son de verdad suyas. Una nómina a la persona equivocada es una violación de datos personales.',
+  'payroll.reviewConfirm': 'He revisado las páginas señaladas: son de los destinatarios indicados.',
 };

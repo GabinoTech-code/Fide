@@ -42,6 +42,8 @@ export interface Recipient {
   pages: number[];
   continuationPages: number[];
   manualPages: number[];
+  /** Pages where the employee's name was not found: HR checks them before sending. */
+  pagesWithoutName: number[];
   key: { id: string; x25519PublicKey: string } | null;
   trust: TrustState | null;
   existing: PublishedDoc | null;
@@ -53,7 +55,7 @@ const one = <T,>(value: T | T[] | null | undefined): T | null => (Array.isArray(
 export function knownEmployees(members: Member[]): KnownEmployee[] {
   return members.flatMap((m) => {
     const cf = one(m.member_identities)?.codice_fiscale;
-    return cf && m.status !== 'erased' ? [{ memberId: m.id, codiceFiscale: cf }] : [];
+    return cf && m.status !== 'erased' ? [{ memberId: m.id, codiceFiscale: cf, fullName: m.full_name }] : [];
   });
 }
 
@@ -77,10 +79,10 @@ export function planRecipients(input: {
     if (!seen || (doc.published_at ?? '') > (seen.published_at ?? '')) latest.set(doc.member_id, doc);
   }
 
-  const groups = new Map<string, { pages: Set<number>; continuation: number[]; manual: number[] }>();
+  const groups = new Map<string, { pages: Set<number>; continuation: number[]; manual: number[]; noName: number[] }>();
   const group = (memberId: string) => {
     let g = groups.get(memberId);
-    if (!g) groups.set(memberId, (g = { pages: new Set(), continuation: [], manual: [] }));
+    if (!g) groups.set(memberId, (g = { pages: new Set(), continuation: [], manual: [], noName: [] }));
     return g;
   };
   for (const doc of input.split.documents) {
@@ -88,6 +90,7 @@ export function planRecipients(input: {
     const g = group(doc.memberId);
     doc.pages.forEach((p) => g.pages.add(p));
     g.continuation.push(...doc.continuationPages);
+    g.noName.push(...(doc.pagesWithoutName ?? []));
   }
   const issuePages = new Set(input.split.issues.map((i) => i.page));
   for (const [pageKey, memberId] of Object.entries(input.manual)) {
@@ -120,6 +123,7 @@ export function planRecipients(input: {
       pages: [...g.pages].sort((a, b) => a - b),
       continuationPages: g.continuation.sort((a, b) => a - b),
       manualPages: g.manual.sort((a, b) => a - b),
+      pagesWithoutName: g.noName.sort((a, b) => a - b),
       key: active ? { id: active.id, x25519PublicKey: active.x25519_public_key } : null,
       trust,
       existing,
@@ -268,4 +272,9 @@ export async function sendBatch(
 export function defaultPeriod(today = new Date()): string {
   const d = new Date(today.getFullYear(), today.getMonth() - 1, 1);
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+}
+
+/** Recipients about to be sent whose pages HR must look at first (name not found on them). */
+export function needsReview(recipients: Recipient[], resend: ReadonlySet<string>): Recipient[] {
+  return recipients.filter((r) => willSend(r, resend) && r.pagesWithoutName.length > 0);
 }

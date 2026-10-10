@@ -14,6 +14,7 @@ import {
   pageRanges,
   planRecipients,
   sendBatch,
+  needsReview,
   unassignedPages,
   willSend,
   type BatchBackend,
@@ -63,13 +64,38 @@ function member(
   };
 }
 
-const split = (docs: Array<[string, number[], number[]?]>, issues: SplitResult['issues'] = [], pageCount = 10): SplitResult => ({
-  documents: docs.map(([memberId, pages, continuationPages = []]) => ({ memberId, codiceFiscale: 'X', pages, continuationPages })),
+const split = (docs: Array<[string, number[], number[]?, number[]?]>, issues: SplitResult['issues'] = [], pageCount = 10): SplitResult => ({
+  documents: docs.map(([memberId, pages, continuationPages = [], pagesWithoutName = []]) => ({
+    memberId,
+    codiceFiscale: 'X',
+    pages,
+    continuationPages,
+    pagesWithoutName,
+  })),
   issues,
   pageCount,
 });
 
 describe('planRecipients', () => {
+  it('carries pages without the employee’s name and holds the send until HR reviews them', () => {
+    const keys = { a: generateDeviceKeys(s), b: generateDeviceKeys(s) };
+    const plan = planRecipients({
+      split: split([
+        ['a', [1, 2], [2], [2]],
+        ['b', [3]],
+      ]),
+      members: [member('a', { cf: 'A', keys: keys.a }), member('b', { cf: 'B', keys: keys.b })],
+      published: [],
+      pinned: {},
+      manual: {},
+    });
+    expect(plan.map((r) => [r.memberId, r.pagesWithoutName])).toEqual([
+      ['a', [2]],
+      ['b', []],
+    ]);
+    expect(needsReview(plan, new Set()).map((r) => r.memberId)).toEqual(['a']);
+  });
+
   it('still sends to a former employee during the 12-month window, not after', () => {
     const keys = { recent: generateDeviceKeys(s), old: generateDeviceKeys(s) };
     const plan = planRecipients({
@@ -161,7 +187,7 @@ describe('planRecipients', () => {
       member('b'),
       member('c', { cf: 'GLLNNA95S48A944C', status: 'erased' }),
     ]);
-    expect(list).toEqual([{ memberId: 'a', codiceFiscale: 'CLMMRC88M03D612C' }]);
+    expect(list).toEqual([{ memberId: 'a', codiceFiscale: 'CLMMRC88M03D612C', fullName: 'Name a' }]);
   });
 });
 

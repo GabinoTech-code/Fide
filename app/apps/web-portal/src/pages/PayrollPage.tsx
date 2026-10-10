@@ -17,6 +17,7 @@ import {
   pageRanges,
   planRecipients,
   sendBatch,
+  needsReview,
   unassignedPages,
   willSend,
   type BatchBackend,
@@ -112,6 +113,8 @@ function PayrollWorkspace({ companyId }: { companyId: string }) {
   const [analysis, setAnalysis] = useState<Analysis | null>(null);
   const [analyzing, setAnalyzing] = useState(false);
   const [manual, setManual] = useState<Record<number, string>>({});
+  // Pages where an employee's name is missing hold the send until HR has looked at them.
+  const [reviewed, setReviewed] = useState(false);
   const [resend, setResend] = useState<ReadonlySet<string>>(new Set());
   const [trust, setTrust] = useState(() => loadPinnedDevices(companyId));
   const [verifying, setVerifying] = useState<Recipient | null>(null);
@@ -128,6 +131,7 @@ function PayrollWorkspace({ companyId }: { companyId: string }) {
     [analysis, members, trust.devices, manual],
   );
   const sending = recipients.filter((r) => willSend(r, resend));
+  const toReview = needsReview(recipients, resend);
   const skipped = analysis ? unassignedPages(analysis.split, manual) : [];
   const assignable = useMemo(() => assignableMembers(members), [members]);
 
@@ -139,6 +143,7 @@ function PayrollWorkspace({ companyId }: { companyId: string }) {
     setAnalysis(null);
     setPending(null);
     setManual({});
+    setReviewed(false);
     setResend(new Set());
     setFile(null);
     setError(null);
@@ -179,6 +184,7 @@ function PayrollWorkspace({ companyId }: { companyId: string }) {
         title: title.trim() || defaultTitle,
       });
       setManual({});
+      setReviewed(false);
       setResend(new Set());
     } catch (err) {
       setError(err);
@@ -329,6 +335,11 @@ function PayrollWorkspace({ companyId }: { companyId: string }) {
                           <div className="small muted">{t('payroll.continuation', { pages: pageRanges(r.continuationPages) })}</div>
                         ) : null}
                         {r.manualPages.length ? <div className="small muted">{t('payroll.manual', { pages: pageRanges(r.manualPages) })}</div> : null}
+                        {r.pagesWithoutName.length ? (
+                          <div className="small" style={{ color: 'var(--danger)' }}>
+                            {t('payroll.nameMissing', { pages: pageRanges(r.pagesWithoutName) })}
+                          </div>
+                        ) : null}
                       </td>
                       <td>
                         {r.trust && r.trust.kind !== 'mismatch' ? (
@@ -416,6 +427,18 @@ function PayrollWorkspace({ companyId }: { companyId: string }) {
             </div>
           ) : null}
           {skipped.length ? <div className="notice notice-warn">{t('payroll.skippedPages', { n: skipped.length })}</div> : null}
+          {toReview.length && !pending ? (
+            <div className="notice notice-warn stack" style={{ gap: 8 }} role="alert">
+              <strong>{t('payroll.reviewTitle')}</strong>
+              <span className="small">
+                {t('payroll.reviewBody', { names: toReview.map((r) => `${r.fullName} (${pageRanges(r.pagesWithoutName)})`).join(', ') })}
+              </span>
+              <label className="row" style={{ gap: 8 }}>
+                <input type="checkbox" checked={reviewed} onChange={(e) => setReviewed(e.target.checked)} />
+                {t('payroll.reviewConfirm')}
+              </label>
+            </div>
+          ) : null}
 
           <ErrorNotice error={error} />
           {work ? (
@@ -428,7 +451,11 @@ function PayrollWorkspace({ companyId }: { companyId: string }) {
           ) : null}
           <div className="row">
             <span className="spacer" />
-            <button className="btn btn-primary" disabled={Boolean(work) || (!pending && sending.length === 0)} onClick={publish}>
+            <button
+              className="btn btn-primary"
+              disabled={Boolean(work) || (!pending && (sending.length === 0 || (toReview.length > 0 && !reviewed)))}
+              onClick={publish}
+            >
               {pending ? t('payroll.retry') : t('payroll.publish', { n: sending.length })}
             </button>
           </div>
