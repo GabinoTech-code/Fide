@@ -28,10 +28,11 @@ lavoratori (interessati vulnerabili rispetto al datore) e una registrazione sist
 
 ## 3. Cosa Fide non fa, per progettazione
 
-- **Nessun dato biometrico.** Non ci sono impronte digitali né riconoscimento facciale. Le chiavi del telefono si
-  usano dopo lo sblocco del telefono con il metodo scelto dal lavoratore (basta il PIN). La verifica è del sistema
-  operativo e nessun dato arriva al titolare o a Fide. La passkey per entrare (obbligatoria per nessuno: per l'HR nel
-  portale, per il lavoratore nell'app se la attiva) funziona allo stesso modo.
+- **Nessuna raccolta di dati biometrici da parte di Fide.** La conferma locale del sistema operativo può usare
+  impronta o Face ID se configurati, con alternativa del PIN del dispositivo. La biometria non è obbligatoria.
+  L’app riceve l’esito della verifica e non acquisisce impronte o dati del volto; questi non sono comunicati al
+  titolare o a Fide. Anche la verifica della passkey facoltativa è gestita dal sistema operativo. La conferma
+  locale prima di firmare o aprire documenti resta attiva; non viene sostituita dal solo possesso di una sessione.
 - **Nessuna intelligenza artificiale** e nessuna decisione automatizzata sulle persone (art. 22 GDPR). Fide non
   contiene sistemi di IA ai sensi del Regolamento UE 2024/1689 (AI Act), quindi non ricade nella categoria ad alto
   rischio prevista per l'IA in ambito lavorativo.

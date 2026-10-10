@@ -13,7 +13,9 @@ Estas reglas vienen de las que se usan en AegisLink, adaptadas a Fide. Cada una 
 - **Las claves privadas no salen del móvil** (expo-secure-store, `WHEN_UNLOCKED_THIS_DEVICE_ONLY`).
 - **Ubicación mínima:** solo «dentro/fuera», nunca coordenadas. La geovalla está apagada por sede hasta que la empresa
   la active (art. 4 L. 300/1970).
-- **Sin biometría** ni datos biométricos: las claves se usan tras el desbloqueo normal del sistema operativo.
+- **Sin recopilar datos biométricos ni exigir biometría.** Se conserva la confirmación local del sistema operativo
+  (huella/Face ID o PIN del dispositivo) para proteger las claves y las passkeys. Fide recibe el resultado de la
+  verificación, nunca la huella ni el rostro. No retirar esta protección para cumplir una formulación ambigua.
 - **Los fichajes no se modifican:** firmados en el móvil, contrafirmados por el servidor, insertados solo por
   `punch-sync`; las correcciones son solicitudes aprobadas.
 - **Aislamiento entre empresas** con RLS, demostrado por tests.

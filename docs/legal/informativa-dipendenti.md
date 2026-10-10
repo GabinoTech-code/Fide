@@ -31,10 +31,11 @@ art. 88 GDPR e art. 4 L. 300/1970).
 **Cosa non trattiamo**:
 
 - **La tua posizione**: non viene mai inviata né salvata.
-- **Dati biometrici**: Fide non usa impronte digitali né riconoscimento facciale. Quando firmi una timbratura o apri
-  un documento, il telefono ti chiede il suo normale sblocco (PIN, sequenza o il metodo che hai scelto); la verifica
-  la fa il telefono e a noi non arriva nulla. Vale anche per la passkey, se scegli di entrare nell'app con quella invece
-  del codice via e-mail.
+- **Dati biometrici**: Fide non raccoglie impronte digitali né dati del volto e non richiede l’attivazione della
+  biometria. Quando firmi una timbratura o apri un documento, il sistema operativo ti chiede una conferma locale:
+  il PIN del dispositivo oppure impronta o Face ID, se configurati. L’app riceve l’esito della verifica, non i dati
+  biometrici. Questi dati non sono comunicati a Fide o all’azienda. La verifica della passkey, se scegli di usarla
+  al posto del codice via e-mail, è anch’essa gestita dal sistema operativo.
 - **Il contenuto dei cedolini**: è cifrato e si apre solo sul tuo telefono; né Fide né i suoi fornitori possono
   leggerlo. Se scegli di salvarne una copia sul telefono (per esempio nella cartella Download), quella copia non è
   più cifrata da Fide e la custodisci tu.

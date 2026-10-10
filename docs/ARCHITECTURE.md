@@ -42,6 +42,10 @@ flowchart LR
 
 ## Flussi
 
+**Conferma locale e passkey.** Si mantiene la verifica del sistema operativo con alternativa del PIN, senza
+raccogliere dati biometrici. Implementazione, distinzione dalla protezione dello storage e limiti nella
+[decisione tecnica](adr/0005-local-authentication.md).
+
 **Registrazione dell'azienda.** Il fondatore entra con un codice via e-mail (indirizzo in allowlist durante il
 pilota) e chiama `register_company()`, che crea azienda, ruolo di owner e tipi di assenza italiani.
 
