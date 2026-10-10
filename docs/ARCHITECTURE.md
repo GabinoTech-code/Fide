@@ -122,3 +122,9 @@ Questa base non attiva ancora accumulo ferie/ROL, né rappresenta un contratto f
 Accesso, RPC, conservazione e prove sono descritti nel [backend](../supabase/README.md#datos-laborales-versionados-t1).
 La propria riga nel portale apre «La mia scheda»; il selector dei ruoli blocca anche visivamente la degradazione
 dell'ultimo titolare attivo (`isLastActiveOwner`, `roleChange.test.ts`), con controllo definitivo nella RPC.
+
+### Organizzazione di Presenze per aziende numerose
+
+Il portale usa una finestra giornaliera semiaperta in Europe/Rome (anche 23/25 ore al cambio di ora). Fichajes e anagrafica autorizzata vengono caricati con cursore ID, in pagine API di 500 righe, fino alla pagina vuota; un errore interrompe la query e non pubblica totali parziali. La lettura dei fichajes fissa un limite `received_at` prima della prima pagina. RLS e filtro azienda restano su ogni richiesta. Non è uno snapshot transazionale della anagrafica: modifiche concorrenti saranno visibili al prossimo caricamento.
+
+Presenze filtra per data, nome/matricola/ricevuta, sede del fichaje, responsabile attualmente assegnato e tipo/segnalazione tecnica, e mostra 50 righe per pagina. I contatori si riferiscono ai risultati filtrati. «Dipendenti nei risultati» non afferma presenza attuale: i turni iniziati prima della mezzanotte richiedono ancora un calcolo dedicato. `hr_entry` e `manual_correction` sono provenienza, non segnalazioni tecniche da approvare. Nessuna nuova decisione automatica o scrittura sui fichajes. Ricerca, filtri e data non vengono salvati sul server. L’organizzazione delle richieste e la gestione delle segnalazioni restano nel piano T2.

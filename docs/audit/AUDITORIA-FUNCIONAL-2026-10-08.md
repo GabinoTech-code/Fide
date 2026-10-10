@@ -138,3 +138,7 @@ Prioridades:
 - V7;
 - N2;
 - G2.
+
+### Actualización del 10 de octubre: organización de Presenze
+
+✅ HECHO el primer tramo de organización: búsqueda, fecha italiana, filtros por sede/responsable/tipo/señales y páginas de 50 filas (`PresencePage.tsx`). Carga por cursor, sin truncar al límite de respuesta (`queries.ts`, `presenceView.ts`); cinco regresiones en `presenceView.test.ts`, incluidas 1.207 filas y jornadas de 23/25 horas. Los contadores fallan cerrado si alguna consulta falla. Se sustituye el contador engañoso de presentes actuales por empleados con fichajes en los resultados. La presencia real de turnos nocturnos, la bandeja de incidencias y la organización de solicitudes siguen pendientes en el [plan vigente](COMPARATIVA-Y-PLAN-2026-10-10.md). No se modifica ni elimina ningún fichaje.
