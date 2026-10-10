@@ -286,3 +286,8 @@ export function needsReview(recipients: Recipient[], resend: ReadonlySet<string>
 export function allReviewPagesChecked(recipients: Recipient[], checkedPages: Readonly<Record<number, string>>): boolean {
   return recipients.every((r) => r.pagesRequiringReview.every((page) => checkedPages[page] === r.memberId));
 }
+
+/** Shared guard for the button and the action, before preparing any ciphertext. */
+export function canPreparePayroll(recipients: Recipient[], resend: ReadonlySet<string>, checkedPages: Readonly<Record<number, string>>): boolean {
+  return recipients.some((r) => willSend(r, resend)) && allReviewPagesChecked(needsReview(recipients, resend), checkedPages);
+}

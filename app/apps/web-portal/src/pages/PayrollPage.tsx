@@ -10,7 +10,7 @@ import { useI18n, type MessageKey } from '../lib/i18n';
 import { loadPinnedDevices, pinDevices, type PinnedDevices } from '../lib/deviceTrust';
 import {
   assignableMembers,
-  allReviewPagesChecked,
+  canPreparePayroll,
   cutPdf,
   defaultPeriod,
   encryptForRecipient,
@@ -133,14 +133,17 @@ function PayrollWorkspace({ companyId }: { companyId: string }) {
   );
   const sending = recipients.filter((r) => willSend(r, resend));
   const toReview = needsReview(recipients, resend);
-  const sourcePdfUrl = useMemo(
-    () => (analysis ? URL.createObjectURL(new Blob([analysis.source.slice().buffer as ArrayBuffer], { type: 'application/pdf' })) : null),
-    [analysis],
-  );
-  useEffect(() => () => {
-    if (sourcePdfUrl) URL.revokeObjectURL(sourcePdfUrl);
-  }, [sourcePdfUrl]);
-  const reviewComplete = allReviewPagesChecked(toReview, reviewedPages);
+  const [sourcePdfUrl, setSourcePdfUrl] = useState<string | null>(null);
+  useEffect(() => {
+    if (!analysis) {
+      setSourcePdfUrl(null);
+      return;
+    }
+    const url = URL.createObjectURL(new Blob([analysis.source.slice().buffer as ArrayBuffer], { type: 'application/pdf' }));
+    setSourcePdfUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [analysis]);
+  const readyToPrepare = canPreparePayroll(recipients, resend, reviewedPages);
   const skipped = analysis ? unassignedPages(analysis.split, manual) : [];
   const assignable = useMemo(() => assignableMembers(members), [members]);
 
@@ -222,7 +225,13 @@ function PayrollWorkspace({ companyId }: { companyId: string }) {
   }
 
   async function publish() {
-    if (!analysis) return;
+    if (!analysis || work) return;
+    // Retries resume the already-reviewed encrypted snapshot; new batches must
+    // pass the same guard as the button, even if the handler is invoked directly.
+    if (!pending && !canPreparePayroll(recipients, resend, reviewedPages)) {
+      setError(new Error(t('payroll.reviewTitle')));
+      return;
+    }
     setError(null);
     let job = pending;
     try {
@@ -474,7 +483,7 @@ function PayrollWorkspace({ companyId }: { companyId: string }) {
             <span className="spacer" />
             <button
               className="btn btn-primary"
-              disabled={Boolean(work) || (!pending && (sending.length === 0 || !reviewComplete))}
+              disabled={Boolean(work) || (!pending && !readyToPrepare)}
               onClick={publish}
             >
               {pending ? t('payroll.retry') : t('payroll.publish', { n: sending.length })}
