@@ -114,3 +114,9 @@ Usar una lista de recorridos con evidencia: configurar → asignar → crear →
 Cada release tendrá una matriz de pantallas del prototipo frente al producto, estados vacío/error/cargado, IT/ES/EN en portal y las nueve lenguas en app. La verificación incluirá Android e iOS antes de declarar paridad entre plataformas.
 
 **Siguiente implementación recomendada:** T0, empezando por la discrepancia de vacaciones en el resumen mensual; después T1, sin construir acumulación automática sobre contratos y horarios que aún no están definidos.
+
+**Revisión de dependencias de T0 (10 de octubre):** comprobadas las cuatro alertas abiertas de GitHub contra
+`npm ls` y `npm run audit`. `braces`, `node-forge` y `uuid` proceden del tooling de Expo; `decode-uri-component`
+sí llega a la app vía Expo Router y mantiene un riesgo de bloqueo mediante enlace manipulado. El audit pasa
+con las excepciones existentes; eso no significa que las vulnerabilidades hayan sido corregidas. La fuente
+de las aceptaciones y motivos sigue siendo `app/audit-allowlist.json` y el [informe vigente de seguridad](../security/AUDIT-2026-10-07.md).
