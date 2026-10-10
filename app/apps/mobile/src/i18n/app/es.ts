@@ -1,6 +1,20 @@
 import type { AppMessages } from './index';
 
 export const es: AppMessages = {
+  "employment.title": "Datos laborales",
+  "employment.hint": "Referencias introducidas por HR: no son un contrato firmado ni activan el cálculo de saldos. El cargo no concede permisos de acceso.",
+  "employment.job_title": "Mansione / cargo",
+  "employment.category": "Categoría",
+  "employment.level": "Nivel",
+  "employment.contract_type": "Tipo de contrato",
+  "employment.ccnl_reference": "Referencia CCNL",
+  "employment.weekly_hours": "Horas semanales",
+  "employment.effective_from": "Vigente desde",
+  "employment.empty": "HR todavía no ha cargado los datos laborales.",
+  "employment.current": "Vigente",
+  "employment.past": "Histórico",
+  "employment.future": "Programado",
+  "employment.voided": "Anulado / sustituido",
   'common.loading': 'Cargando…',
   'common.retry': 'Reintentar',
   'common.cancel': 'Cancelar',

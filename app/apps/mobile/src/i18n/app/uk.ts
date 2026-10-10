@@ -1,6 +1,20 @@
 import type { AppMessages } from './index';
 
 export const uk: AppMessages = {
+  "employment.title": "Трудові дані",
+  "employment.hint": "Дані, введені HR: це не підписаний договір і вони не вмикають нарахування залишків. Посада не надає прав доступу.",
+  "employment.job_title": "Посада",
+  "employment.category": "Категорія",
+  "employment.level": "Рівень",
+  "employment.contract_type": "Тип договору",
+  "employment.ccnl_reference": "Посилання на CCNL",
+  "employment.weekly_hours": "Години на тиждень",
+  "employment.effective_from": "Чинний з",
+  "employment.empty": "HR ще не додав трудові дані.",
+  "employment.current": "Чинний",
+  "employment.past": "Історичний",
+  "employment.future": "Запланований",
+  "employment.voided": "Скасований / замінений",
   'common.loading': 'Завантаження…',
   'common.retry': 'Спробувати ще раз',
   'common.cancel': 'Скасувати',

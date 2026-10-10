@@ -86,3 +86,19 @@ Proyecto `saehchpgnbcciqimrqsj`, región `eu-west-1` (Irlanda).
 
   La privada solo existe como secreto `FIDE_RECEIPT_PRIVATE_KEY` del entorno `production` y de las funciones. Si
   se cambia, los recibos antiguos siguen siendo verificables solo con la clave pública antigua: guárdala aquí.
+
+## Datos laborales versionados (T1)
+
+`employment_terms` guarda referencias operativas de mansione, categoría, livello, tipo de contrato, CCNL y horas
+semanales, con fecha de vigencia. No es el contrato firmado ni un motor de pagas/acumulación.
+`add_employment_terms` deriva empresa y autor del miembro autenticado, bloquea empleados/responsables y HR
+suspendido, protege las fichas de HR/titulares y serializa por trabajador. El ID de la última versión actúa como
+control de concurrencia. La primera carga puede recoger una vigencia histórica; después no se reescribe el
+pasado. Las versiones del día actual o futuras pueden sustituirse conservando la anterior anulada.
+`void_employment_terms` solo anula versiones futuras; ambas operaciones quedan en audit_log sin valores personales.
+RLS permite consulta a HR/titular y al propio trabajador durante su ventana de acceso, nunca al responsable
+por pertenencia al equipo. La exportación personal incluye las versiones sin IDs del autor.
+`private.purge_employment_terms` elimina referencias operativas 12 meses después de la baja o cuando el miembro
+está borrado. pg_cron lo ejecuta diariamente a las 02:17 UTC cuando está disponible; en entornos sin cron debe
+invocarse con service_role. No elimina contratos/cedolini sujetos a sus propios plazos. Realtime y refresco
+al volver a la pantalla actualizan la consulta móvil. Evidencia: `employment.test.ts`, `grants.test.ts`.

@@ -131,3 +131,11 @@ Il Titolare ____________________  Il Responsabile ____________________
 | Brevo (Sendinblue SAS) | Invio delle e-mail di invito, dei codici di accesso e degli avvisi di servizio (nuovo documento, richiesta gestita, richiesta privacy) | E-mail, nome, nome dell'azienda; negli avvisi all'HR il nome del richiedente | Francia (UE) |
 | Hetzner Online GmbH | Server del portale e del sito (file statici, nessun dato del database) | Indirizzi IP e dati tecnici delle richieste (log del server web) | Finlandia (UE); società tedesca |
 | *Solo quando attivate:* Expo (650 Industries, Inc.), Apple, Google | Notifiche push («nuovo documento disponibile», senza contenuti personali) | Identificativo del dispositivo per le notifiche | USA [verificare garanzie al momento dell'attivazione] |
+
+### Riferimenti operativi del rapporto
+
+Rientrano nei dati dell’allegato 1 mansione, categoria, livello, tipo di contratto, riferimento CCNL,
+ore settimanali, decorrenza e storia delle versioni. Finalità: consulta dei propri dati e preparazione della
+configurazione operativa, senza elaborazione di paghe o maturazione automatica. Nessun salario o diagnosi.
+Accesso: interessato e HR/titolare. Copie operative eliminate giornalmente dopo 12 mesi dalla cessazione
+o quando il profilo è cancellato; i contratti originali e i cedolini mantengono le loro regole di conservazione.

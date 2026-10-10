@@ -10,13 +10,14 @@ import { useI18n, type MessageKey } from '../lib/i18n';
 import { activeKey, APP_LANGUAGES, one } from '../lib/members';
 import { accessUntil, todayInRome } from '../lib/memberStatus';
 import { useLeaveTypes, useMembers, useSites } from '../lib/queries';
-import { APPROVER_ROLES, MEMBER_CHANGE_QUERY_KEYS, releasedTeam } from '../lib/roleChange';
+import { APPROVER_ROLES, MEMBER_CHANGE_QUERY_KEYS, releasedTeam, isLastActiveOwner } from '../lib/roleChange';
 import { supabase } from '../lib/supabase';
 import type { Member, MemberStatus } from '../lib/types';
 import { ErrorNotice, Modal } from './ui';
 import { MemberBalances } from './MemberBalances';
+import { MemberEmployment } from './MemberEmployment';
 
-type Tab = 'data' | 'status' | 'entries' | 'balances';
+type Tab = 'data' | 'status' | 'entries' | 'balances' | 'employment';
 
 export function MemberPanel({ member, onClose }: { member: Member; onClose: () => void }) {
   const { t } = useI18n();
@@ -28,7 +29,7 @@ export function MemberPanel({ member, onClose }: { member: Member; onClose: () =
   return (
     <Modal title={member.full_name} onClose={onClose} wide>
       <div className="tabs" role="tablist">
-        {(['data', 'status', 'entries', 'balances'] as const).map((k) => (
+        {(['data', 'employment', 'status', 'entries', 'balances'] as const).map((k) => (
           <button
             key={k}
             role="tab"
@@ -45,6 +46,7 @@ export function MemberPanel({ member, onClose }: { member: Member; onClose: () =
       {tab === 'status' ? <StatusTab member={member} isSelf={isSelf} /> : null}
       {tab === 'entries' && canRecord ? <EntriesTab member={member} /> : null}
       {tab === 'balances' ? <MemberBalances member={member} /> : null}
+      {tab === 'employment' ? <MemberEmployment member={member} /> : null}
     </Modal>
   );
 }
@@ -71,6 +73,7 @@ function RoleField({ member }: { member: Member }) {
   const [confirming, setConfirming] = useState(false);
   const { data: members = [] } = useMembers();
   const owner = active?.role === 'company_owner';
+  const lastOwner = isLastActiveOwner(member, members);
   const options: Member['role'][] = owner ? ['employee', 'manager', 'hr_admin', 'company_owner'] : ['employee', 'manager'];
   const locked = !owner && (member.role === 'hr_admin' || member.role === 'company_owner');
   const released = releasedTeam(member, role, members);
@@ -80,7 +83,7 @@ function RoleField({ member }: { member: Member }) {
   }, [member.id, member.role]);
 
   const save = async () => {
-    if (!confirming || locked || busy || role === member.role) return;
+    if (!confirming || locked || busy || role === member.role || (lastOwner && role !== 'company_owner')) return;
     setBusy(true);
     setError(null);
     const { error } = await supabase.rpc('set_member_role', { p_member_id: member.id, p_role: role });
@@ -96,7 +99,7 @@ function RoleField({ member }: { member: Member }) {
       <div className="row" style={{ gap: 8 }}>
         <select value={role} onChange={(e) => { setRole(e.target.value as Member['role']); setConfirming(false); setError(null); }} disabled={locked || busy} aria-label={t('member.role')} style={{ flex: 1 }}>
           {(locked ? [member.role] : options).map((r) => (
-            <option key={r} value={r}>
+            <option key={r} value={r} disabled={lastOwner && r !== 'company_owner'}>
               {t(`role.${r}` as MessageKey)}
             </option>
           ))}
@@ -108,6 +111,7 @@ function RoleField({ member }: { member: Member }) {
         ) : null}
       </div>
       <small className="muted">{t(role === 'manager' ? 'member.roleManagerHint' : 'member.roleHint')}</small>
+      {lastOwner ? <small className="muted">{t('error.lastOwner')}</small> : null}
       <p className="small">{t(`roles.scope.${role}` as MessageKey)}</p>
       {confirming ? (
         <div className="notice notice-warn stack" role="alert">

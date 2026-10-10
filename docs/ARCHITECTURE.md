@@ -111,3 +111,14 @@ allegato 2. Stato effettivo dei controlli: [security/AUDIT-2026-10-07.md](securi
 
 NFC, assistente IA, notifiche push (per ora solo e-mail), firma del mittente sui cedolini, trasferimento delle chiavi tra
 telefoni, Spagna, SSO.
+
+## Riferimenti lavorativi con decorrenza
+
+Le versioni di `employment_terms` contengono mansione, categoria, livello, tipo di contratto, riferimento CCNL
+e ore settimanali. Il portale HR gestisce storia, sostituzioni di versioni odierne/future e annullamenti futuri;
+il lavoratore consulta i propri dati e li esporta. `employmentState` identifica versione in vigore, futura,
+storica o annullata in entrambe le app. Il ruolo di accesso è separato e non deriva dalla mansione.
+Questa base non attiva ancora accumulo ferie/ROL, né rappresenta un contratto firmato.
+Accesso, RPC, conservazione e prove sono descritti nel [backend](../supabase/README.md#datos-laborales-versionados-t1).
+La propria riga nel portale apre «La mia scheda»; il selector dei ruoli blocca anche visivamente la degradazione
+dell'ultimo titolare attivo (`isLastActiveOwner`, `roleChange.test.ts`), con controllo definitivo nella RPC.

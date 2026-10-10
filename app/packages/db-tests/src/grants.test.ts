@@ -63,6 +63,7 @@ describe('authenticated', () => {
       expect(fns.map((r) => r.fn)).toEqual(
         [
           'add_member(uuid,text,text,text,uuid,uuid,text,member_role,text)',
+          'add_employment_terms(uuid,date,text,text,text,text,text,numeric,uuid)',
           'b64_len(text)',
           'cancel_leave_request(uuid)',
           'cancel_punch_correction(uuid)',
@@ -103,6 +104,7 @@ describe('authenticated', () => {
           'set_my_language(text)',
           'update_member(uuid,text,text,text,text,uuid,uuid,text)',
           'withdraw_document(uuid,text)',
+          'void_employment_terms(uuid)',
         ].sort(),
       );
     });

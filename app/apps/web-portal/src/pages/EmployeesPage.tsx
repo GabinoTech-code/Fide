@@ -14,6 +14,7 @@ import type { Member } from '../lib/types';
 
 export function EmployeesPage() {
   const { t } = useI18n();
+  const { active } = useAuth();
   const { data: members = [], isLoading, error } = useMembers();
   const { data: sites = [] } = useSites();
   const [adding, setAdding] = useState(false);
@@ -105,7 +106,7 @@ export function EmployeesPage() {
                           ) : null}
                           {m.status !== 'erased' ? (
                             <button className="btn btn-sm" onClick={() => setManagingId(m.id)}>
-                              {t('employees.manage')}
+                              {t(active?.id === m.id ? 'employees.myProfile' : 'employees.manage')}
                             </button>
                           ) : null}
                         </div>

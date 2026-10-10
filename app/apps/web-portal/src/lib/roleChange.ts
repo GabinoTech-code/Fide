@@ -5,6 +5,11 @@ export const APPROVER_ROLES: readonly MemberRole[] = ['manager', 'hr_admin', 'co
 /** Include the signed-in user's membership so self-demotion updates route access. */
 export const MEMBER_CHANGE_QUERY_KEYS = ['memberships', 'members', 'punches', 'leave', 'corrections', 'requestHistory', 'payroll'] as const;
 
+export function isLastActiveOwner(member: Pick<Member, 'role' | 'status' | 'company_id'>, members: ReadonlyArray<Pick<Member, 'role' | 'status' | 'company_id'>>) {
+  return member.role === 'company_owner' && member.status === 'active'
+    && members.filter((item) => item.company_id === member.company_id && item.role === 'company_owner' && item.status === 'active').length <= 1;
+}
+
 /** UI explanation only: the RPC and triggers remain the authority. */
 export function releasedTeam(
   member: Pick<Member, 'id' | 'company_id' | 'role'>,

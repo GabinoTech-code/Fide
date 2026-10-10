@@ -69,3 +69,12 @@ esterne viene richiesto; il riferimento facoltativo non deve contenere diagnosi 
 - Consultazione delle rappresentanze sindacali, se presenti, e accordo o autorizzazione solo se attiva la posizione.
 - Tempi di conservazione e alternativa per chi non usa il telefono.
 - Esito della valutazione e data del riesame (consigliato ogni 12 mesi o a ogni cambiamento del servizio).
+
+## Riferimenti lavorativi operativi
+
+Mansione, categoria, livello, tipo di contratto, riferimento CCNL, ore settimanali e decorrenza sono versionati.
+Nessun salario, diagnosi o allegato contrattuale è richiesto da questo modulo. Accesso limitato a interessato e
+HR/titolare, esportazione propria e audit senza valori personali. Le versioni pregresse non sono riscritte;
+le sostituzioni odierne/future conservano il record precedente. Conservazione della copia operativa: rapporto
+attivo più 12 mesi, poi eliminazione giornaliera. Nessun calcolo di maturazione o decisione automatizzata.
+Il processo non sostituisce la conservazione dei contratti originali presso il titolare.

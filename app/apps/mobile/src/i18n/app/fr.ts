@@ -1,6 +1,20 @@
 import type { AppMessages } from './index';
 
 export const fr: AppMessages = {
+  "employment.title": "Données professionnelles",
+  "employment.hint": "Références saisies par les RH : ni contrat signé ni activation du calcul des soldes. Le poste ne donne aucun droit d’accès.",
+  "employment.job_title": "Poste",
+  "employment.category": "Catégorie",
+  "employment.level": "Niveau",
+  "employment.contract_type": "Type de contrat",
+  "employment.ccnl_reference": "Référence CCNL",
+  "employment.weekly_hours": "Heures hebdomadaires",
+  "employment.effective_from": "Applicable à partir du",
+  "employment.empty": "Les RH n’ont pas encore saisi les données professionnelles.",
+  "employment.current": "En vigueur",
+  "employment.past": "Historique",
+  "employment.future": "Prévu",
+  "employment.voided": "Annulé / remplacé",
   'common.loading': 'Chargement…',
   'common.retry': 'Réessayer',
   'common.cancel': 'Annuler',

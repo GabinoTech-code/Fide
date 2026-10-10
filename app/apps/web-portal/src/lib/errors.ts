@@ -2,6 +2,9 @@ import type { MessageKey } from './i18n';
 
 // Codes raised by the SQL functions (`raise exception '<code>'`) and Edge Functions.
 const KNOWN: Record<string, MessageKey> = {
+  employment_stale: 'employment.stale',
+  employment_date_invalid: 'employment.dateInvalid',
+  employment_not_future: 'employment.notFuture',
   signup_not_allowed: 'error.signupNotAllowed',
   email_not_confirmed: 'error.emailNotConfirmed',
   forbidden: 'error.forbidden',

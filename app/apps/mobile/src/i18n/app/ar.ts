@@ -1,6 +1,20 @@
 import type { AppMessages } from './index';
 
 export const ar: AppMessages = {
+  "employment.title": "بيانات العمل",
+  "employment.hint": "مراجع أدخلتها الموارد البشرية: ليست عقدًا موقّعًا ولا تُفعّل تراكم الأرصدة. المسمى الوظيفي لا يمنح صلاحيات وصول.",
+  "employment.job_title": "المسمى الوظيفي",
+  "employment.category": "الفئة",
+  "employment.level": "المستوى",
+  "employment.contract_type": "نوع العقد",
+  "employment.ccnl_reference": "مرجع CCNL",
+  "employment.weekly_hours": "الساعات الأسبوعية",
+  "employment.effective_from": "ساري من",
+  "employment.empty": "لم تُدخل الموارد البشرية بيانات العمل بعد.",
+  "employment.current": "ساري",
+  "employment.past": "سابق",
+  "employment.future": "مجدول",
+  "employment.voided": "ملغى / مستبدل",
   'common.loading': 'جارٍ التحميل…',
   'common.retry': 'أعد المحاولة',
   'common.cancel': 'إلغاء',

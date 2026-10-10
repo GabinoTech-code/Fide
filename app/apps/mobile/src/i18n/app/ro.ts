@@ -1,6 +1,20 @@
 import type { AppMessages } from './index';
 
 export const ro: AppMessages = {
+  "employment.title": "Date de muncă",
+  "employment.hint": "Referințe introduse de HR: nu sunt un contract semnat și nu activează acumularea soldurilor. Funcția nu acordă drepturi de acces.",
+  "employment.job_title": "Funcție",
+  "employment.category": "Categorie",
+  "employment.level": "Nivel",
+  "employment.contract_type": "Tip de contract",
+  "employment.ccnl_reference": "Referință CCNL",
+  "employment.weekly_hours": "Ore săptămânale",
+  "employment.effective_from": "Valabil de la",
+  "employment.empty": "HR nu a introdus încă datele de muncă.",
+  "employment.current": "În vigoare",
+  "employment.past": "Istoric",
+  "employment.future": "Programat",
+  "employment.voided": "Anulat / înlocuit",
   'common.loading': 'Se încarcă…',
   'common.retry': 'Încearcă din nou',
   'common.cancel': 'Anulează',
