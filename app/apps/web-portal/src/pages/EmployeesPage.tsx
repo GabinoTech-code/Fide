@@ -34,6 +34,18 @@ export function EmployeesPage() {
           {t('employees.add')}
         </button>
       </PageHead>
+      <details className="card stack">
+        <summary>{t('roles.guideTitle')}</summary>
+        <p className="small">{t('roles.guideBody')}</p>
+        <dl>
+          {(['employee', 'manager', 'hr_admin', 'company_owner'] as const).map((role) => (
+            <div key={role}>
+              <dt><strong>{t(`role.${role}` as MessageKey)}</strong></dt>
+              <dd>{t(`roles.scope.${role}` as MessageKey)}</dd>
+            </div>
+          ))}
+        </dl>
+      </details>
       <ErrorNotice error={error} />
       <section className="card">
         {isLoading ? (
@@ -47,6 +59,7 @@ export function EmployeesPage() {
                 <tr>
                   <th>{t('employees.fullName')}</th>
                   <th>{t('employees.role')}</th>
+                  <th>{t('member.manager')}</th>
                   <th>{t('employees.site')}</th>
                   <th>{t('employees.status')}</th>
                   <th>{t('employees.device')}</th>
@@ -67,6 +80,7 @@ export function EmployeesPage() {
                         </div>
                       </td>
                       <td className="small">{t(`role.${m.role}` as MessageKey)}</td>
+                      <td className="small">{members.find((manager) => manager.id === m.manager_member_id)?.full_name ?? '—'}</td>
                       <td className="small">{m.site_id ? siteName.get(m.site_id) : '—'}</td>
                       <td>
                         <span className={`badge ${m.status === 'active' ? '' : m.status === 'terminated' ? 'badge-warn' : 'badge-muted'}`}>

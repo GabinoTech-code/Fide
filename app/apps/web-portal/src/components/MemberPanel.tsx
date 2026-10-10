@@ -2,7 +2,7 @@
 //   Dati     — update_member (the e-mail only while invited: it is the login)
 //   Stato    — suspend / reactivate / terminate, revoke the phone
 //   Registra — punches and absences recorded by HR on the employee's behalf
-import { useMemo, useState, type FormEvent } from 'react';
+import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { isValidCodiceFiscale, normalizeCodiceFiscale, romeLocalToIso, romeNowLocal } from '@fide/shared';
 import { useAuth } from '../auth/AuthProvider';
@@ -10,6 +10,7 @@ import { useI18n, type MessageKey } from '../lib/i18n';
 import { activeKey, APP_LANGUAGES, one } from '../lib/members';
 import { accessUntil, todayInRome } from '../lib/memberStatus';
 import { useLeaveTypes, useMembers, useSites } from '../lib/queries';
+import { APPROVER_ROLES, MEMBER_CHANGE_QUERY_KEYS, releasedTeam } from '../lib/roleChange';
 import { supabase } from '../lib/supabase';
 import type { Member, MemberStatus } from '../lib/types';
 import { ErrorNotice, Modal } from './ui';
@@ -50,11 +51,9 @@ function useRefresh() {
   const queryClient = useQueryClient();
   return () =>
     Promise.all(
-      ['members', 'punches', 'leave', 'corrections', 'requestHistory', 'payroll'].map((key) => queryClient.invalidateQueries({ queryKey: [key] })),
+      MEMBER_CHANGE_QUERY_KEYS.map((key) => queryClient.invalidateQueries({ queryKey: [key] })),
     );
 }
-
-const APPROVER_ROLES: Member['role'][] = ['manager', 'hr_admin', 'company_owner'];
 
 /**
  * The member's role, saved on its own (set_member_role). HR names team
@@ -67,16 +66,25 @@ function RoleField({ member }: { member: Member }) {
   const [role, setRole] = useState(member.role);
   const [error, setError] = useState<unknown>(null);
   const [busy, setBusy] = useState(false);
+  const [confirming, setConfirming] = useState(false);
+  const { data: members = [] } = useMembers();
   const owner = active?.role === 'company_owner';
   const options: Member['role'][] = owner ? ['employee', 'manager', 'hr_admin', 'company_owner'] : ['employee', 'manager'];
   const locked = !owner && (member.role === 'hr_admin' || member.role === 'company_owner');
+  const released = releasedTeam(member, role, members);
+  useEffect(() => {
+    setRole(member.role);
+    setConfirming(false);
+  }, [member.id, member.role]);
 
   const save = async () => {
+    if (!confirming || locked || busy || role === member.role) return;
     setBusy(true);
     setError(null);
     const { error } = await supabase.rpc('set_member_role', { p_member_id: member.id, p_role: role });
     setBusy(false);
     if (error) return setError(error);
+    setConfirming(false);
     await refresh();
   };
 
@@ -84,7 +92,7 @@ function RoleField({ member }: { member: Member }) {
     <div className="field">
       {t('member.role')}
       <div className="row" style={{ gap: 8 }}>
-        <select value={role} onChange={(e) => setRole(e.target.value as Member['role'])} disabled={locked} aria-label={t('member.role')} style={{ flex: 1 }}>
+        <select value={role} onChange={(e) => { setRole(e.target.value as Member['role']); setConfirming(false); setError(null); }} disabled={locked || busy} aria-label={t('member.role')} style={{ flex: 1 }}>
           {(locked ? [member.role] : options).map((r) => (
             <option key={r} value={r}>
               {t(`role.${r}` as MessageKey)}
@@ -92,12 +100,25 @@ function RoleField({ member }: { member: Member }) {
           ))}
         </select>
         {role !== member.role ? (
-          <button type="button" className="btn btn-sm" onClick={save} disabled={busy}>
+          <button type="button" className="btn btn-sm" onClick={() => setConfirming(true)} disabled={busy || locked || confirming}>
             {t('member.roleSave')}
           </button>
         ) : null}
       </div>
       <small className="muted">{t(role === 'manager' ? 'member.roleManagerHint' : 'member.roleHint')}</small>
+      <p className="small">{t(`roles.scope.${role}` as MessageKey)}</p>
+      {confirming ? (
+        <div className="notice notice-warn stack" role="alert">
+          <strong>{t('roles.confirmTitle', { name: member.full_name, from: t(`role.${member.role}` as MessageKey), to: t(`role.${role}` as MessageKey) })}</strong>
+          <span>{t('roles.confirmBody')}</span>
+          {released.length ? <span>{t('roles.releasesTeam', { n: released.length, names: released.map((m) => m.full_name).join(', ') })}</span> : null}
+          {active?.id === member.id ? <span>{t('roles.selfChange')}</span> : null}
+          <div className="row">
+            <button type="button" className="btn" disabled={busy} onClick={() => setConfirming(false)}>{t('common.cancel')}</button>
+            <button type="button" className="btn btn-primary" disabled={busy || locked} onClick={save}>{t('roles.confirm')}</button>
+          </div>
+        </div>
+      ) : null}
       <ErrorNotice error={error} />
     </div>
   );
