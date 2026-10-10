@@ -10,6 +10,7 @@ import {
   fetchWindow,
   hhmm,
   localParts,
+  LeaveAllocationError,
   summaryCsv,
   type ReportLabels,
   type ReportLeave,
@@ -97,7 +98,7 @@ describe('buildMonthlyReport', () => {
     leave: [
       leave('anna', 'FERIE', 'days', '2026-03-09', '2026-03-13', 5),
       leave('anna', 'ROL', 'hours', '2026-03-16', '2026-03-16', 2.5),
-      leave('marco', 'MALATTIA', 'days', '2026-02-26', '2026-03-02', 5),
+      leave('marco', 'MALATTIA', 'days', '2026-02-26', '2026-03-02', 3),
     ],
   });
   const day = (memberId: string, date: string) => report.lines.find((l) => l.memberId === memberId && l.date === date);
@@ -124,7 +125,7 @@ describe('buildMonthlyReport', () => {
 
   it('keeps night shifts on the day they start, inside the month only', () => {
     expect(day('marco', '2026-02-28')).toBeUndefined();
-    expect(day('marco', '2026-03-01')).toMatchObject({ intervals: [], absences: ['MALATTIA'] });
+    expect(day('marco', '2026-03-01')).toBeUndefined();
     expect(day('marco', '2026-03-31')).toMatchObject({ intervals: [{ in: '22:00', out: '06:00', minutes: 480 }] });
     expect(report.lines.some((l) => l.date.startsWith('2026-04'))).toBe(false);
   });
@@ -137,8 +138,8 @@ describe('buildMonthlyReport', () => {
   it('summarises each employee', () => {
     expect(report.summaries).toEqual([
       { memberId: 'anna', daysWorked: 3, workedMinutes: 480 + 570 + 540, absences: { FERIE: { days: 5, hours: 0 }, ROL: { days: 0, hours: 2.5 } }, anomalies: 2 },
-      // 4th: 0 min (missing exit), 5th: 8 h, 10th: 17 h, 31st: 8 h; sick leave 1–2 March only.
-      { memberId: 'marco', daysWorked: 3, workedMinutes: 480 + 17 * 60 + 480, absences: { MALATTIA: { days: 2, hours: 0 } }, anomalies: 3 },
+      // 4th: 0 min (missing exit), 5th: 8 h, 10th: 17 h, 31st: 8 h; one approved working day in March.
+      { memberId: 'marco', daysWorked: 3, workedMinutes: 480 + 17 * 60 + 480, absences: { MALATTIA: { days: 1, hours: 0 } }, anomalies: 3 },
     ]);
   });
 
@@ -149,6 +150,67 @@ describe('buildMonthlyReport', () => {
     expect(detail).toContain(';Marco Colombo;04/03/2026;08:00-?;0:00;0,00;;missing_out\r\n');
     const summary = summaryCsv(report, members, labels);
     expect(summary).toContain('007;GLLNNA95S48A944C;Anna Galli;3;26:30;26,50;FERIE 5g ROL 2,5h;2\r\n');
+  });
+});
+
+describe('approved leave allocation', () => {
+  const build = (month: string, request: ReportLeave) => buildMonthlyReport({ month, members, punches: [], leave: [request] });
+
+  it('counts Friday to Monday as two days in both detail and summary', () => {
+    const report = build('2026-09', leave('anna', 'FERIE', 'days', '2026-09-11', '2026-09-14', 2));
+    expect(report.lines.map((line) => line.date)).toEqual(['2026-09-11', '2026-09-14']);
+    expect(report.summaries[0].absences.FERIE).toEqual({ days: 2, hours: 0 });
+    expect(summaryCsv(report, members, labels)).toContain('FERIE 2g');
+    expect(detailCsv(report, members, labels)).not.toContain('12/09/2026');
+  });
+
+  it('excludes Easter Monday and weekends without changing approved quantities', () => {
+    const request = leave('anna', 'FERIE', 'days', '2026-04-03', '2026-04-07', 2);
+    const report = build('2026-04', request);
+    expect(report.lines.map((line) => line.date)).toEqual(['2026-04-03', '2026-04-07']);
+    expect(report.summaries[0].absences.FERIE.days).toBe(request.quantity);
+  });
+
+  it('splits the same approved days across months and years without double counting', () => {
+    for (const [from, to, first, second] of [
+      ['2026-03-30', '2026-04-02', '2026-03', '2026-04'],
+      ['2026-12-30', '2027-01-05', '2026-12', '2027-01'],
+    ]) {
+      const request = leave('anna', 'FERIE', 'days', from, to, 4);
+      const reports = [build(first, request), build(second, request)];
+      expect(reports.map((r) => r.summaries[0].absences.FERIE.days)).toEqual([2, 2]);
+      expect(reports.flatMap((r) => r.lines).length).toBe(4);
+    }
+  });
+
+  it('preserves single-day fractional days and hours, even on a weekend', () => {
+    const fractional = build('2026-09', leave('anna', 'FERIE', 'days', '2026-09-12', '2026-09-12', 0.5));
+    expect(fractional.summaries[0].absences.FERIE.days).toBe(0.5);
+    expect(fractional.lines[0].absences).toEqual(['FERIE 0,5g']);
+    const hourly = build('2026-09', leave('anna', 'ROL', 'hours', '2026-09-12', '2026-09-12', 2.5));
+    expect(hourly.summaries[0].absences.ROL.hours).toBe(2.5);
+    expect(hourly.lines[0].absences).toEqual(['ROL 2,5h']);
+  });
+
+  it('blocks ambiguous historical quantities and multi-day hours rather than dropping them', () => {
+    for (const request of [
+      leave('anna', 'FERIE', 'days', '2026-09-11', '2026-09-14', 4),
+      leave('anna', 'FERIE', 'days', '2026-09-11', '2026-09-14', 1.5),
+      leave('anna', 'ROL', 'hours', '2026-09-11', '2026-09-14', 5),
+      leave('anna', 'FERIE', 'days', '2026-09-12', '2026-09-13', 1),
+    ]) {
+      expect(() => build('2026-09', request)).toThrow(LeaveAllocationError);
+      expect(request.quantity).toBeGreaterThan(0);
+    }
+  });
+
+  it('blocks invalid dates, ranges and quantities', () => {
+    for (const request of [
+      leave('anna', 'FERIE', 'days', '2026-09-15', '2026-09-14', 1),
+      leave('anna', 'FERIE', 'days', '2026-02-30', '2026-02-30', 1),
+      leave('anna', 'FERIE', 'days', '2026-09-14', '2026-09-14', 0),
+      leave('anna', 'FERIE', 'days', '2026-09-14', '2026-09-14', NaN),
+    ]) expect(() => build('2026-09', request)).toThrow(LeaveAllocationError);
   });
 });
 

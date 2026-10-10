@@ -43,7 +43,7 @@ Las rutas siguientes son evidencia dentro del repositorio; los tests prueban com
 | Calendario italiano para solicitudes | Parcial | `italy/calendar.ts`: laborables y festivos nacionales. No incorpora jornada de seis días, turno dominical o festivo patronal de la sede. | T1 |
 | Vacaciones/ROL/EXFEST acumulados y disponibles | Parcial | PR #40: carga manual de acreditado, arrastre y utilizado externo; desglose móvil. Falta publicar/distribuir, CSV y acumulación mensual configurada. | T0 / T3 |
 | Contabilidad anual de saldos | Parcial | `leave_balance_summary` asigna toda la solicitud al año de inicio. Falta repartir rangos entre ejercicios y conciliar cierres. | T3 |
-| Ausencia aprobada y report mensual coherentes | Error confirmado | La app descuenta laborables; el report resume días naturales. Ejemplo documentado abajo. | T0 |
+| Ausencia aprobada y report mensual coherentes | ✅ Corrección del calendario actual HECHA; límites explícitos | `monthlyReport.ts` comparte reparto entre detalle y resumen; `monthlyReport.test.ts` cubre fines de semana, festivos, fracciones y cruces. Cantidades incompatibles o horas multidiarias bloquean la exportación. Faltan calendarios personales y reparto explícito. | T0 / T1 / T3 |
 | Catálogo y reglas de ausencias | Parcial | Tipos italianos predefinidos en BD; falta UI de configuración, elegibilidad y reglas por contrato. | T3 |
 | Extra y banca ore | Falta flujo adecuado | `STRAORD` está dentro de tipos de ausencia. No hay autorización de horas extra ni libro de banca ore. | T2 / T3 |
 | Plan de turnos y cambios | Falta | No hay tablas/rutas para publicar turnos ni solicitar intercambios. | T4 |
@@ -70,6 +70,13 @@ En un caso sintético, una solicitud FERIE del **11 al 14 de septiembre de 2026*
 Se ejecutaron ambas funciones sobre el mismo rango y cantidad, sin acceso a datos reales. La causa está en `app/apps/web-portal/src/lib/monthlyReport.ts`: el resumen cuenta los días del calendario dentro del rango, sin usar la cantidad de la solicitud ni el calendario laboral de la persona. La app usa `app/packages/shared/src/italy/calendar.ts`.
 
 **Prioridad T0:** definir una única distribución diaria de la ausencia, con el calendario aplicable, y usarla tanto para solicitud/saldo como para informe. Casos mínimos: fin de semana, festivo, mes/año cruzados, horas, seis días y turnos. Las cantidades ya aprobadas no deben alterarse retroactivamente en silencio. Hasta corregir y validar, la exportación requiere revisión del consulente.
+
+**Actualización:** ✅ corregido el caso reproducido y los rangos compatibles con el calendario actual de la app.
+Detalle y resumen comparten un único reparto; solicitudes de un día conservan la cantidad aprobada, incluso
+fracciones u horas. Los rangos multidiarios con cantidad distinta de los laborables y las horas multidiarias
+bloquean ambos CSV e identifican la solicitud que requiere revisión. No se altera la historia ni se asume que
+una baja médica deba contarse con el mismo calendario que FERIE. Faltan reglas por tipo/contrato y reparto
+explícito para esos casos; no se declara T0 completo. Evidencia: `monthlyReport.test.ts`.
 
 ## Orden propuesto de construcción
 
@@ -107,3 +114,9 @@ Usar una lista de recorridos con evidencia: configurar → asignar → crear →
 Cada release tendrá una matriz de pantallas del prototipo frente al producto, estados vacío/error/cargado, IT/ES/EN en portal y las nueve lenguas en app. La verificación incluirá Android e iOS antes de declarar paridad entre plataformas.
 
 **Siguiente implementación recomendada:** T0, empezando por la discrepancia de vacaciones en el resumen mensual; después T1, sin construir acumulación automática sobre contratos y horarios que aún no están definidos.
+
+**Revisión de dependencias de T0 (10 de octubre):** comprobadas las cuatro alertas abiertas de GitHub contra
+`npm ls` y `npm run audit`. `braces`, `node-forge` y `uuid` proceden del tooling de Expo; `decode-uri-component`
+sí llega a la app vía Expo Router y mantiene un riesgo de bloqueo mediante enlace manipulado. El audit pasa
+con las excepciones existentes; eso no significa que las vulnerabilidades hayan sido corregidas. La fuente
+de las aceptaciones y motivos sigue siendo `app/audit-allowlist.json` y el [informe vigente de seguridad](../security/AUDIT-2026-10-07.md).

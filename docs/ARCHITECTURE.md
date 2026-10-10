@@ -82,6 +82,12 @@ dicono mai il tipo di assenza né cosa contiene un documento.
 
 **Report mensile.** Il portale legge timbrature e assenze approvate del mese e produce i CSV per il consulente del
 lavoro, in ora italiana.
+Il dettaglio e il riepilogo condividono il riparto delle assenze: richieste di un solo giorno conservano la quantità
+approvata (anche frazionaria o in ore); intervalli di più giorni vengono ripartiti su lun–ven esclusi i festivi
+nazionali soltanto se il totale coincide con la quantità approvata. Quantità non compatibili, ore su più giorni e
+date non valide bloccano entrambi i CSV con dipendente, tipo, intervallo e quantità da verificare col consulente.
+Non vengono modificati i dati storici né ipotizzati riparti proporzionali. Calendari personali, giorni naturali per
+tipi specifici e riparti espliciti restano da implementare. Prove: `monthlyReport.test.ts` e `italy/calendar.test.ts`.
 
 **Ora dell'azienda.** Nel database gli istanti sono in UTC; tutto ciò che una persona legge o scrive è in ora
 italiana (`Europe/Rome`, `app/packages/shared/src/italy/time.ts`), qualunque sia il fuso del telefono o del
