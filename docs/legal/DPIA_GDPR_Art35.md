@@ -20,7 +20,9 @@ lavoratori (interessati vulnerabili rispetto al datore) e una registrazione sist
   derivare un controllo a distanza (art. 4, comma 1). In Fide è **disattivata per ogni sede** e il titolare la
   attiva solo dopo l'accordo sindacale o l'autorizzazione dell'Ispettorato del lavoro. Anche quando è attiva, il
   telefono legge la posizione una sola volta al momento della timbratura, calcola «dentro/fuori» e invia solo
-  l'esito: nessuna coordinata viene trasmessa o salvata, nessun tracciamento continuo o in background.
+  l'esito, più l'indicazione «posizione simulata» se il sistema operativo la segnala (visibile all'HR accanto alla
+  timbratura, per scoraggiare le app di posizione finta): nessuna coordinata viene trasmessa o salvata, nessun
+  tracciamento continuo o in background.
 - **Telefono personale non obbligatorio**: il titolare deve prevedere un'alternativa (registrazione da parte
   dell'HR con correzione tracciata).
 
@@ -28,11 +30,15 @@ lavoratori (interessati vulnerabili rispetto al datore) e una registrazione sist
 
 - **Nessun dato biometrico.** Non ci sono impronte digitali né riconoscimento facciale. Le chiavi del telefono si
   usano dopo lo sblocco del telefono con il metodo scelto dal lavoratore (basta il PIN). La verifica è del sistema
-  operativo e nessun dato arriva al titolare o a Fide. Per l'HR la passkey funziona allo stesso modo.
+  operativo e nessun dato arriva al titolare o a Fide. La passkey per entrare (obbligatoria per nessuno: per l'HR nel
+  portale, per il lavoratore nell'app se la attiva) funziona allo stesso modo.
 - **Nessuna intelligenza artificiale** e nessuna decisione automatizzata sulle persone (art. 22 GDPR). Fide non
   contiene sistemi di IA ai sensi del Regolamento UE 2024/1689 (AI Act), quindi non ricade nella categoria ad alto
   rischio prevista per l'IA in ambito lavorativo.
-- **Nessun accesso al contenuto dei cedolini**: sono cifrati nel browser dell'HR per il telefono del lavoratore.
+- **Nessun accesso al contenuto dei cedolini**: sono cifrati nel browser dell'HR per il telefono del lavoratore. La
+  copia decifrata per la lettura resta nella memoria temporanea dell'app e si cancella al successivo avvio; il
+  lavoratore può scegliere di salvarne una copia in una cartella del telefono, che da quel momento custodisce lui
+  (l'app lo avvisa).
 
 ## 4. Rischi e misure
 

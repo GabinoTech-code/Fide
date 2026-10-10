@@ -2,13 +2,13 @@
 // allows it (QR-first, art. 4 L. 300/1970). Every punch is signed after a
 // biometric/PIN check, queued locally and synced; the server receipt is shown.
 import { useEffect, useMemo, useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import * as Location from 'expo-location';
 import { useT, type AppKey } from '../../i18n/app';
 import { useOutbox, useSites, useTodayPunches } from '../../lib/data';
 import { evaluateGeofence } from '../../lib/geofence';
-import { useLiveQueries } from '../../lib/refresh';
+import { useClock, useLiveQueries } from '../../lib/refresh';
 import { enqueue } from '../../lib/outbox';
 import { sqliteOutbox } from '../../lib/outboxSqlite';
 import { buildPunch, uuidFromBytes } from '../../lib/punch';
@@ -17,7 +17,8 @@ import { useSession } from '../../lib/session';
 import { getSodium } from '../../lib/sodium';
 import { unlock } from '../../lib/vault';
 import { Colors } from '../../theme/colors';
-import { Badge, Body, Button, Card, Fonts, Mono, Notice, Row, Screen, Title } from '../../ui/kit';
+import { formatDuration, workday } from '../../lib/dashboard';
+import { Button, Card, Chip, ChipGrid, Fonts, Header, ListItem, Mono, Notice, Screen, SectionTitle, Small } from '../../ui/kit';
 
 type Feedback = { kind: 'info' | 'warn' | 'danger'; text: string } | null;
 
@@ -31,6 +32,7 @@ export default function Punch() {
   const [siteId, setSiteId] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [feedback, setFeedback] = useState<Feedback>(null);
+  const [method, setMethod] = useState<'qr' | 'geo'>('qr');
 
   // Default: the member's own site, else the first one.
   const site =
@@ -40,6 +42,7 @@ export default function Punch() {
     const server = (punches.data ?? []).map((p) => ({
       key: p.id,
       type: p.punch_type,
+      method: p.method,
       ts: p.device_ts,
       // Recorded by HR on the employee's behalf: no device signature, shown as such.
       status: p.flags.includes('hr_entry')
@@ -49,6 +52,7 @@ export default function Punch() {
     const local = queue.map((q) => ({
       key: q.submission.client_punch_id,
       type: q.submission.punch_type,
+      method: q.submission.method as 'geo' | 'qr' | 'manual',
       ts: q.submission.device_ts,
       status: q.rejected
         ? { kind: 'danger' as const, text: t('punch.statusRejected', { reason: rejectText(q.rejected) }) }
@@ -59,6 +63,10 @@ export default function Punch() {
 
   const lastActive = timeline.filter((e) => e.status.kind !== 'danger').at(-1);
   const nextType: 'in' | 'out' = lastActive?.type === 'in' ? 'out' : 'in';
+  const now = useClock(nextType === 'out');
+  const day = workday(timeline.filter((e) => e.status.kind !== 'danger'), now);
+  // Geofence only where the site allows it (art. 4 L. 300/1970); QR always.
+  const activeMethod = site?.geo_enabled ? method : 'qr';
 
   function rejectText(code: string) {
     const key = `reject.${code}` as AppKey;
@@ -135,53 +143,96 @@ export default function Punch() {
 
   if (sites.data && !sites.data.length) {
     return (
-      <Screen>
-        <Title>{t('punch.title')}</Title>
+      <Screen refresh={refresh}>
+        <Header eyebrow={t('punch.eyebrow')} title={t('punch.title')} privacyLabel={t('tabs.privacy')} />
         <Notice kind="warn">{t('punch.noSite')}</Notice>
       </Screen>
     );
   }
 
+  const queued = queue.filter((q) => !q.rejected).length;
+  const inNext = nextType === 'in';
+
   return (
     <Screen refresh={refresh}>
-      <Title>{t('punch.title')}</Title>
+      <Header eyebrow={t('punch.eyebrow')} title={t('punch.title')} privacyLabel={t('tabs.privacy')} />
 
       {(sites.data ?? []).length > 1 ? (
-        <Row>
+        <ChipGrid>
           {sites.data!.map((s) => (
-            <Pressable key={s.id} onPress={() => setSiteId(s.id)} accessibilityRole="radio" accessibilityState={{ selected: s.id === site?.id }}>
-              <Badge label={s.name} kind={s.id === site?.id ? 'ok' : 'muted'} />
-            </Pressable>
+            <Chip key={s.id} label={s.name} selected={s.id === site?.id} onPress={() => setSiteId(s.id)} />
           ))}
-        </Row>
+        </ChipGrid>
       ) : null}
 
-      <Card dark>
-        <Body light>{site?.name ?? ''}</Body>
-        <Text style={{ fontFamily: Fonts.display, fontSize: 34, color: Colors.textWhite }}>
-          {t(nextType === 'in' ? 'punch.nextIn' : 'punch.nextOut')}
-        </Text>
-        <Button kind="mint" icon="qr" label={t('punch.withQr')} busy={busy} onPress={() => router.push('/scan')} />
-        {site?.geo_enabled ? <Button kind="secondary" icon="geo" label={t('punch.withGeo')} disabled={busy} onPress={punchWithLocation} /> : null}
-        {site?.geo_enabled ? <Body light>{t('punch.privacy')}</Body> : null}
-      </Card>
+      <View style={{ alignItems: 'center', gap: 14, paddingVertical: 8 }}>
+        <Text style={{ fontFamily: Fonts.mono, fontSize: 34, color: Colors.textPrimary }}>{formatDuration(day.workedMs)}</Text>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={`${t(inNext ? 'punch.nextIn' : 'punch.nextOut')} · ${t(`punch.method.${activeMethod}`)}`}
+          disabled={busy || !site}
+          onPress={() => (activeMethod === 'qr' ? router.push('/scan') : punchWithLocation())}
+          style={({ pressed }) => ({
+            width: 168,
+            height: 168,
+            borderRadius: 84,
+            borderWidth: 10,
+            borderColor: inNext ? Colors.accentRing : Colors.chipBorder,
+            backgroundColor: inNext ? Colors.accent : Colors.dark,
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 4,
+            opacity: pressed || busy ? 0.85 : 1,
+          })}
+        >
+          {busy ? (
+            <ActivityIndicator color={Colors.textWhite} />
+          ) : (
+            <>
+              <Text style={{ fontFamily: Fonts.display, fontSize: 22, color: Colors.textWhite }}>{t(inNext ? 'punch.nextIn' : 'punch.nextOut')}</Text>
+              <Text style={{ fontFamily: Fonts.text, fontSize: 12, color: Colors.textWhite, opacity: 0.85 }}>{t(`punch.method.${activeMethod}`)}</Text>
+            </>
+          )}
+        </Pressable>
+        {site && (sites.data ?? []).length === 1 ? <Small>{site.name}</Small> : null}
+      </View>
 
       {feedback ? <Notice kind={feedback.kind}>{feedback.text}</Notice> : null}
 
-      <Card>
-        <Row style={{ justifyContent: 'space-between' }}>
-          <Body muted>{t('punch.today')}</Body>
-          {queue.some((q) => !q.rejected) ? <Button kind="secondary" label={t('punch.syncNow')} onPress={() => sync().catch(() => undefined)} /> : null}
-        </Row>
+      <View style={{ gap: 10 }}>
+        <SectionTitle>{t('punch.verification')}</SectionTitle>
+        {site?.geo_enabled ? (
+          <ChipGrid>
+            <Chip label={t('punch.method.qr')} selected={activeMethod === 'qr'} onPress={() => setMethod('qr')} />
+            <Chip label={t('punch.method.geo')} selected={activeMethod === 'geo'} onPress={() => setMethod('geo')} />
+          </ChipGrid>
+        ) : null}
+        <Notice>{t(activeMethod === 'qr' ? 'punch.info.qr' : 'punch.info.geo')}</Notice>
+      </View>
+
+      {queued ? (
+        <Card style={{ gap: 8 }}>
+          <Text style={{ fontFamily: Fonts.textBold, fontSize: 14, color: Colors.textPrimary }}>{t('home.queued', { n: queued })}</Text>
+          <Small>{t('punch.queueHint')}</Small>
+          <Button kind="secondary" label={t('punch.syncNow')} onPress={() => sync().catch(() => undefined)} />
+        </Card>
+      ) : null}
+
+      <View style={{ gap: 8 }}>
+        <SectionTitle>{t('punch.today')}</SectionTitle>
+        {timeline.length === 0 ? <Small>{t('punch.none')}</Small> : null}
         {timeline.map((e) => (
-          <View key={e.key} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
-            <Mono style={{ fontSize: 16, color: Colors.textPrimary }}>
-              {time(e.ts)} · {t(e.type === 'in' ? 'punch.nextIn' : 'punch.nextOut')}
-            </Mono>
-            <Badge label={e.status.text} kind={e.status.kind} />
-          </View>
+          <ListItem
+            key={e.key}
+            title={`${t(e.type === 'in' ? 'punch.nextIn' : 'punch.nextOut')} · ${t(`punch.method.${e.method}`)}`}
+            subtitle={e.status.text}
+            subtitleColor={STATUS_COLOR[e.status.kind]}
+            trailing={<Mono style={{ fontSize: 16, color: Colors.textPrimary }}>{time(e.ts)}</Mono>}
+          />
         ))}
-      </Card>
+      </View>
     </Screen>
   );
 }
+
+const STATUS_COLOR = { ok: Colors.success, muted: Colors.textSecondary, warn: Colors.warningText, danger: Colors.danger } as const;

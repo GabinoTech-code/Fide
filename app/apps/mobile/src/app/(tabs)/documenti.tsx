@@ -1,14 +1,16 @@
 import { useState } from 'react';
-import { Pressable, View } from 'react-native';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { Text, View } from 'react-native';
+import { useQueryClient } from '@tanstack/react-query';
 import { useT, type AppKey } from '../../i18n/app';
-import { DocumentError, listDocuments, openDocument, type DocumentRow } from '../../lib/documents';
+import { AccessLine } from '../../components/AccessLine';
+import { useAccessEvents, useDocuments } from '../../lib/data';
+import { DocumentError, openDocument, saveDocument, type DocumentRow } from '../../lib/documents';
 import { useLiveQueries } from '../../lib/refresh';
 import { useSession } from '../../lib/session';
 import { unlock, LockedError } from '../../lib/vault';
 import { BrandIcon } from '../../components/common/Icons';
 import { Colors } from '../../theme/colors';
-import { Badge, Body, Card, Mono, Notice, Row, Screen, Title } from '../../ui/kit';
+import { Badge, Button, Fonts, Header, ListItem, Mono, Notice, Row, Screen, Sheet, Small } from '../../ui/kit';
 
 const ERRORS: Record<string, AppKey> = {
   not_for_device: 'docs.notForDevice',
@@ -16,23 +18,35 @@ const ERRORS: Record<string, AppKey> = {
   needs_update: 'docs.needsUpdate',
 };
 
+const caps = { fontFamily: Fonts.text, fontSize: 12, letterSpacing: 1, textTransform: 'uppercase', color: Colors.textSecondary } as const;
+
 export default function Documents() {
   const { t, date } = useT();
   const { membership, keys } = useSession();
   const queryClient = useQueryClient();
-  const [opening, setOpening] = useState<string | null>(null);
+  const [opening, setOpening] = useState<{ id: string; action: 'open' | 'save' } | null>(null);
+  const [saved, setSaved] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const docs = useQuery({ queryKey: ['documents', membership?.id], enabled: Boolean(membership), queryFn: listDocuments });
-  const refresh = useLiveQueries(docs);
+  const [sheet, setSheet] = useState<DocumentRow | null>(null);
+  const docs = useDocuments();
+  const events = useAccessEvents();
+  const refresh = useLiveQueries(docs, events);
 
-  async function open(doc: DocumentRow) {
+  async function run(doc: DocumentRow, action: 'open' | 'save') {
     if (!keys) return;
     setError(null);
-    setOpening(doc.id);
+    setSaved(null);
+    setOpening({ id: doc.id, action });
     try {
       await unlock(t('unlock.document'), t('unlock.fallback'));
-      await openDocument(doc, keys, doc.title);
+      if (action === 'open') {
+        await openDocument(doc, keys, doc.title);
+        setSheet(null);
+      } else if (await saveDocument(doc, keys, doc.title)) {
+        setSaved(doc.id);
+      }
       queryClient.invalidateQueries({ queryKey: ['documents'] });
+      queryClient.invalidateQueries({ queryKey: ['access_events'] });
     } catch (err) {
       if (err instanceof DocumentError) setError(t(ERRORS[err.code]));
       else if (err instanceof LockedError) setError(t('unlock.failed'));
@@ -43,26 +57,85 @@ export default function Documents() {
     }
   }
 
+  const docEvents = sheet ? (events.data ?? []).filter((e) => e.document_id === sheet.id).slice(0, 4) : [];
+
   return (
     <Screen refresh={refresh}>
-      <Title>{t('docs.title')}</Title>
-      {error ? <Notice kind="danger">{error}</Notice> : null}
+      <Header eyebrow={t('docs.eyebrow')} title={t('docs.title')} privacyLabel={t('tabs.privacy')} />
+
+      <View style={{ backgroundColor: Colors.dark, borderRadius: 16, padding: 14, flexDirection: 'row', gap: 12, alignItems: 'center' }}>
+        <BrandIcon name="cifrado" size={20} color={Colors.accentLight} />
+        <Text style={{ flex: 1, fontFamily: Fonts.text, fontSize: 13, lineHeight: 19, color: Colors.darkText }}>{t('docs.e2ee')}</Text>
+      </View>
+
+      {error && !sheet ? <Notice kind="danger">{error}</Notice> : null}
       {docs.data && docs.data.length === 0 ? <Notice>{t('docs.empty')}</Notice> : null}
-      {(docs.data ?? []).map((doc) => (
-        <Pressable key={doc.id} onPress={() => open(doc)} disabled={Boolean(opening)} accessibilityRole="button">
-          <Card style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}>
-            <BrandIcon name="cifrado" size={28} color={Colors.accent} />
-            <View style={{ flex: 1, gap: 4 }}>
-              <Body>{doc.title}</Body>
-              <Mono>{opening === doc.id ? t('docs.opening') : `${date(doc.published_at)} · ${t('docs.encrypted')}`}</Mono>
+
+      <View style={{ gap: 12 }}>
+        {(docs.data ?? []).map((doc) => (
+          <ListItem
+            key={doc.id}
+            icon="docs"
+            title={doc.title}
+            subtitle={`PDF · ${date(doc.published_at)}`}
+            onPress={() => {
+              setError(null);
+              setSaved(null);
+              setSheet(doc);
+            }}
+            trailing={
+              doc.status === 'superseded' ? (
+                <Badge label={t('docs.superseded')} kind="muted" />
+              ) : !doc.first_opened_at ? (
+                <Badge label={t('docs.new')} />
+              ) : null
+            }
+          />
+        ))}
+      </View>
+
+      <Sheet visible={Boolean(sheet)} onClose={() => setSheet(null)}>
+        {sheet ? (
+          <>
+            <Text style={{ fontFamily: Fonts.display, fontSize: 20, color: Colors.textPrimary }}>{sheet.title}</Text>
+            <View style={{ backgroundColor: Colors.bg, borderRadius: 14, paddingVertical: 12, paddingHorizontal: 14, gap: 6 }}>
+              <Text style={caps}>{t('docs.cipher')}</Text>
+              <Text style={{ fontFamily: Fonts.text, fontSize: 13, color: Colors.textPrimary }}>{t('docs.cipherValue')}</Text>
+              <Small>{t('docs.deviceKey')}</Small>
+              <Mono style={{ color: Colors.textPrimary, letterSpacing: 0.5 }}>{keys?.fingerprint}</Mono>
+              {keys && sheet.device_key_id !== keys.deviceKeyId ? <Small color={Colors.warningText}>{t('docs.notForDevice')}</Small> : null}
             </View>
-            <Row>
-              {doc.status === 'superseded' ? <Badge label={t('docs.superseded')} kind="muted" /> : null}
-              {!doc.first_opened_at && doc.status === 'published' ? <Badge label={t('docs.new')} /> : null}
+            <View style={{ gap: 4 }}>
+              <Text style={caps}>{t('docs.access')}</Text>
+              {docEvents.length === 0 ? <Small>{t('docs.noAccess')}</Small> : null}
+              {docEvents.map((e) => (
+                <AccessLine key={e.id} event={e} me={membership?.id} />
+              ))}
+              {!sheet.first_opened_at ? <Small>{t('docs.notOpenedYet')}</Small> : null}
+            </View>
+            {error ? <Notice kind="danger">{error}</Notice> : null}
+            {saved === sheet.id ? <Notice>{t('docs.saved')}</Notice> : null}
+            <Button
+              kind="outline"
+              icon="exportar"
+              label={t('docs.save')}
+              busy={opening?.id === sheet.id && opening.action === 'save'}
+              disabled={Boolean(opening)}
+              onPress={() => run(sheet, 'save')}
+            />
+            <Row style={{ flexWrap: 'nowrap' }}>
+              <Button kind="secondary" label={t('docs.close')} onPress={() => setSheet(null)} style={{ flex: 1 }} />
+              <Button
+                label={t('docs.decryptOpen')}
+                busy={opening?.id === sheet.id && opening.action === 'open'}
+                disabled={Boolean(opening)}
+                onPress={() => run(sheet, 'open')}
+                style={{ flex: 1 }}
+              />
             </Row>
-          </Card>
-        </Pressable>
-      ))}
+          </>
+        ) : null}
+      </Sheet>
     </Screen>
   );
 }

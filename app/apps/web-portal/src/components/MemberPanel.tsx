@@ -4,7 +4,7 @@
 //   Registra — punches and absences recorded by HR on the employee's behalf
 import { useMemo, useState, type FormEvent } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { isValidCodiceFiscale, normalizeCodiceFiscale } from '@fide/shared';
+import { isValidCodiceFiscale, normalizeCodiceFiscale, romeLocalToIso, romeNowLocal } from '@fide/shared';
 import { useAuth } from '../auth/AuthProvider';
 import { useI18n, type MessageKey } from '../lib/i18n';
 import { activeKey, APP_LANGUAGES, one } from '../lib/members';
@@ -368,12 +368,8 @@ function PhoneSection({ member }: { member: Member }) {
   );
 }
 
-/** "YYYY-MM-DDTHH:mm" in the browser's local time, for datetime-local inputs. */
-function localNow(): string {
-  const d = new Date();
-  d.setMinutes(d.getMinutes() - d.getTimezoneOffset(), 0, 0);
-  return d.toISOString().slice(0, 16);
-}
+/** Now in Italian time, for datetime-local inputs: company time, whatever the browser's zone. */
+const localNow = () => romeNowLocal();
 
 function EntriesTab({ member }: { member: Member }) {
   const { t } = useI18n();
@@ -406,7 +402,7 @@ function PunchEntry({ member }: { member: Member }) {
     const { error } = await supabase.rpc('hr_record_punch', {
       p_member_id: member.id,
       p_punch_type: form.type,
-      p_ts: new Date(form.when).toISOString(),
+      p_ts: romeLocalToIso(form.when),
       p_site_id: form.site || null,
       p_reason: form.reason.trim(),
     });

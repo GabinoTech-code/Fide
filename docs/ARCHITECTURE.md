@@ -72,6 +72,10 @@ dicono mai il tipo di assenza né cosa contiene un documento.
 **Report mensile.** Il portale legge timbrature e assenze approvate del mese e produce i CSV per il consulente del
 lavoro, in ora italiana.
 
+**Ora dell'azienda.** Nel database gli istanti sono in UTC; tutto ciò che una persona legge o scrive è in ora
+italiana (`Europe/Rome`, `app/packages/shared/src/italy/time.ts`), qualunque sia il fuso del telefono o del
+browser: «08:30» in una timbratura dimenticata è le 08:30 in Italia, e app e portale mostrano lo stesso orario.
+
 ## Dati e conservazione
 
 Cosa si tratta e cosa no: allegato 1 dell'[accordo art. 28](legal/DPA_GDPR_Art28.md). Misure di sicurezza:

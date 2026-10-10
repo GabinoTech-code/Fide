@@ -108,6 +108,7 @@ export const it = {
   'flag.outside_geofence': 'Fuori dalla sede',
   'flag.mock_location': 'Posizione simulata',
   'flag.manual_correction': 'Correzione approvata',
+  'flag.hr_entry': 'Registrata da HR',
 
   'employees.title': 'Dipendenti',
   'employees.add': 'Nuovo dipendente',

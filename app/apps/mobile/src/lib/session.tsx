@@ -3,6 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import type { Session } from '@supabase/supabase-js';
 import * as SecureStore from 'expo-secure-store';
+import { signInWithPasskey as passkeySignIn } from './passkey';
 import { supabase } from './supabase';
 import { keyIsActive, loadKeys, type StoredKeys } from './vault';
 
@@ -33,6 +34,8 @@ interface SessionValue {
   setPendingInvite(token: string | null): Promise<void>;
   sendCode(email: string): Promise<void>;
   verifyCode(email: string, code: string): Promise<void>;
+  /** Signs in with this phone's passkey, then loads everything like verifyCode. */
+  signInWithPasskey(): Promise<void>;
   refresh(): Promise<void>;
   setKeys(keys: StoredKeys): void;
   signOut(): Promise<void>;
@@ -134,6 +137,10 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         // Load session, memberships and keys before the caller navigates: the
         // SIGNED_IN listener refreshes asynchronously, and the entry gate would
         // otherwise still see no session and send the user back to the login.
+        await refresh();
+      },
+      async signInWithPasskey() {
+        await passkeySignIn();
         await refresh();
       },
       refresh,

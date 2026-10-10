@@ -33,9 +33,11 @@ art. 88 GDPR e art. 4 L. 300/1970).
 - **La tua posizione**: non viene mai inviata né salvata.
 - **Dati biometrici**: Fide non usa impronte digitali né riconoscimento facciale. Quando firmi una timbratura o apri
   un documento, il telefono ti chiede il suo normale sblocco (PIN, sequenza o il metodo che hai scelto); la verifica
-  la fa il telefono e a noi non arriva nulla.
+  la fa il telefono e a noi non arriva nulla. Vale anche per la passkey, se scegli di entrare nell'app con quella invece
+  del codice via e-mail.
 - **Il contenuto dei cedolini**: è cifrato e si apre solo sul tuo telefono; né Fide né i suoi fornitori possono
-  leggerlo.
+  leggerlo. Se scegli di salvarne una copia sul telefono (per esempio nella cartella Download), quella copia non è
+  più cifrata da Fide e la custodisci tu.
 
 Fide non usa sistemi di intelligenza artificiale e non prende decisioni automatiche su di te.
 
@@ -46,8 +48,10 @@ timbratura.
 
 *[Solo se attivata per la tua sede, dopo [l'accordo sindacale del [●]] / [l'autorizzazione dell'Ispettorato del
 lavoro del [●]]:]* puoi timbrare anche **con la posizione**. Il telefono legge la posizione una sola volta, nel
-momento in cui timbri, calcola se sei dentro la sede e invia solo «sì» o «no». Non c'è alcun tracciamento continuo
-né in background.
+momento in cui timbri, calcola se sei dentro la sede e invia solo «sì» o «no». Se il sistema del telefono segnala che la posizione è simulata
+(per esempio da un'app di «posizione finta»), la timbratura arriva con l'indicazione «posizione simulata», che
+l'ufficio del personale vede accanto alla timbratura; anche in quel caso nessuna coordinata. Non c'è alcun
+tracciamento continuo né in background.
 
 **Il telefono personale non è obbligatorio**: se non vuoi o non puoi usarlo, [timbri con [●]] / [l'ufficio del
 personale registra le tue presenze].

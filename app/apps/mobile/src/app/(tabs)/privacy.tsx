@@ -1,15 +1,19 @@
-import { useState } from 'react';
-import { Alert, Pressable, Share } from 'react-native';
+import { useEffect, useState } from 'react';
+import { Alert, Share, View } from 'react-native';
+import { router } from 'expo-router';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useT, type AppKey } from '../../i18n/app';
 import { LANGUAGES } from '../../i18n/types';
 import { clearLocalPunches } from '../../lib/outboxSqlite';
+import { hasPasskeyHere, PasskeyCancelled, passkeySupported, registerPasskey } from '../../lib/passkey';
 import { useLiveQueries } from '../../lib/refresh';
 import { useSession } from '../../lib/session';
 import { supabase } from '../../lib/supabase';
+import { AccessLine } from '../../components/AccessLine';
 import { DiagnosticsModal } from '../../components/modals/DiagnosticsModal';
+import { useAccessEvents, useDocuments } from '../../lib/data';
 import { Colors } from '../../theme/colors';
-import { Badge, Body, Button, Card, Mono, Notice, Row, Screen, Title } from '../../ui/kit';
+import { Badge, Body, Button, Card, Chip, ChipGrid, Header, Mono, Notice, Row, Screen, SectionTitle, Small, Strong } from '../../ui/kit';
 
 interface GdprRequest {
   id: string;
@@ -29,6 +33,21 @@ export default function Privacy() {
   const { membership, keys, signOut } = useSession();
   const [message, setMessage] = useState<string | null>(null);
   const [diagnostics, setDiagnostics] = useState(false);
+  const [passkeyHere, setPasskeyHere] = useState(false);
+
+  useEffect(() => {
+    hasPasskeyHere().then(setPasskeyHere);
+  }, []);
+
+  async function activatePasskey() {
+    try {
+      await registerPasskey();
+      setPasskeyHere(true);
+      setMessage(t('passkey.activated'));
+    } catch (err) {
+      if (!(err instanceof PasskeyCancelled)) setMessage(t('passkey.failed'));
+    }
+  }
 
   const identity = useQuery({
     queryKey: ['identity', membership?.id],
@@ -54,7 +73,10 @@ export default function Privacy() {
       return data as GdprRequest[];
     },
   });
-  const refresh = useLiveQueries(identity, requests);
+  const events = useAccessEvents();
+  const docs = useDocuments();
+  const refresh = useLiveQueries(identity, requests, events);
+  const titles = new Map((docs.data ?? []).map((d) => [d.id, d.title]));
 
   async function exportData() {
     const { data, error } = await supabase.rpc('export_my_data');
@@ -93,62 +115,93 @@ export default function Privacy() {
 
   return (
     <Screen refresh={refresh}>
-      <Title>{t('privacy.title')}</Title>
+      <Header
+        eyebrow={t('privacy.eyebrow')}
+        title={t('privacy.title')}
+        closeLabel={t('docs.close')}
+        onClose={() => (router.canGoBack() ? router.back() : router.navigate('/(tabs)'))}
+      />
       {message ? <Notice>{message}</Notice> : null}
 
       <Card>
-        <Body muted>{t('privacy.company')}</Body>
-        <Body>{membership?.companies?.legal_name}</Body>
+        <Strong size={15}>{t('privacy.seesTitle')}</Strong>
+        {(['punches', 'docs', 'data'] as const).map((k) => (
+          <View key={k} style={{ gap: 2 }}>
+            <Strong>{t(`privacy.sees.${k}` as AppKey)}</Strong>
+            <Small>{t(`privacy.sees.${k}Body` as AppKey)}</Small>
+          </View>
+        ))}
+      </Card>
+
+      <Card>
+        <Small>{t('privacy.company')}</Small>
+        <Strong size={15}>{membership?.companies?.legal_name}</Strong>
         <Body>{membership?.full_name}</Body>
         <Mono>{identity.data?.email}</Mono>
         <Mono>{identity.data?.codice_fiscale}</Mono>
       </Card>
 
       <Card>
-        <Body muted>{t('privacy.device')}</Body>
-        <Mono style={{ fontSize: 16, color: Colors.textPrimary }}>{keys?.fingerprint}</Mono>
-        <Body muted>{t('privacy.fingerprintHint')}</Body>
+        <Small>{t('privacy.device')}</Small>
+        <Mono style={{ fontSize: 16, color: Colors.textPrimary, letterSpacing: 0.5 }}>{keys?.fingerprint}</Mono>
+        <Small>{t('privacy.fingerprintHint')}</Small>
       </Card>
 
       <Card>
-        <Body muted>{t('privacy.what')}</Body>
-        <Body>{t('privacy.whatBody')}</Body>
-        <Button kind="secondary" icon="exportar" label={t('privacy.export')} onPress={exportData} />
-        <Button kind="danger" icon="supresion" label={t('privacy.erasure')} onPress={requestErasure} />
+        <Small>{t('privacy.access')}</Small>
+        {passkeyHere ? (
+          <Body>{t('passkey.active')}</Body>
+        ) : (
+          <>
+            <Small>{t('passkey.offerBody')}</Small>
+            {passkeySupported() ? <Button kind="outline" icon="passkey" label={t('passkey.activate')} onPress={activatePasskey} /> : null}
+          </>
+        )}
       </Card>
 
+      <Row style={{ flexWrap: 'nowrap' }}>
+        <Button kind="outline" label={t('privacy.export')} onPress={exportData} style={{ flex: 1 }} />
+        <Button kind="danger" label={t('privacy.erasure')} onPress={requestErasure} style={{ flex: 1 }} />
+      </Row>
+
       {(requests.data ?? []).length ? (
-        <Card>
-          <Body muted>{t('privacy.myRequests')}</Body>
+        <View style={{ gap: 8 }}>
+          <SectionTitle>{t('privacy.myRequests')}</SectionTitle>
           {requests.data!.map((r) => (
-            <Card key={r.id}>
+            <Card key={r.id} style={{ borderRadius: 14, paddingVertical: 12, paddingHorizontal: 14, gap: 6 }}>
               <Row style={{ justifyContent: 'space-between' }}>
-                <Body>
+                <Strong>
                   {t(`gdpr.kind.${r.kind}` as AppKey)} · {date(r.created_at)}
-                </Body>
+                </Strong>
                 <Badge label={t(`gdpr.status.${r.status}` as AppKey)} kind={gdprBadge[r.status]} />
               </Row>
-              {r.status === 'pending' || r.status === 'in_progress' ? <Body muted>{t('privacy.dueBy', { date: date(r.due_at) })}</Body> : null}
-              {r.extension_note ? <Body muted>{t('privacy.extendedNote', { note: r.extension_note })}</Body> : null}
+              {r.status === 'pending' || r.status === 'in_progress' ? <Small>{t('privacy.dueBy', { date: date(r.due_at) })}</Small> : null}
+              {r.extension_note ? <Small>{t('privacy.extendedNote', { note: r.extension_note })}</Small> : null}
               {r.resolution_note ? <Body>{t('privacy.answerText', { note: r.resolution_note })}</Body> : null}
             </Card>
           ))}
-        </Card>
+        </View>
       ) : null}
 
-      <Card>
-        <Body muted>{t('privacy.language')}</Body>
-        <Row>
-          {LANGUAGES.map((l) => (
-            <Pressable key={l.code} onPress={() => changeLanguage(l.code)} accessibilityRole="radio" accessibilityState={{ selected: l.code === lang }}>
-              <Badge label={l.name === 'Italiano' ? 'Italiano' : l.nativeName} kind={l.code === lang ? 'ok' : 'muted'} />
-            </Pressable>
-          ))}
-        </Row>
-      </Card>
+      <View style={{ gap: 6 }}>
+        <SectionTitle>{t('privacy.accessLog')}</SectionTitle>
+        {(events.data ?? []).length === 0 ? <Small>{t('privacy.accessEmpty')}</Small> : null}
+        {(events.data ?? []).slice(0, 8).map((e) => (
+          <AccessLine key={e.id} event={e} me={membership?.id} title={titles.get(e.document_id)} />
+        ))}
+      </View>
 
-      <Button kind="secondary" label={t('privacy.diagnostics')} onPress={() => setDiagnostics(true)} />
-      <Button kind="secondary" label={t('common.signOut')} onPress={logout} />
+      <View style={{ gap: 8 }}>
+        <SectionTitle>{t('privacy.language')}</SectionTitle>
+        <ChipGrid columns={3}>
+          {LANGUAGES.map((l) => (
+            <Chip key={l.code} label={l.code === 'it' ? l.name : l.nativeName} selected={l.code === lang} onPress={() => changeLanguage(l.code)} />
+          ))}
+        </ChipGrid>
+      </View>
+
+      <Button kind="soft" label={t('privacy.diagnostics')} onPress={() => setDiagnostics(true)} />
+      <Button kind="soft" label={t('common.signOut')} onPress={logout} />
       <DiagnosticsModal visible={diagnostics} onClose={() => setDiagnostics(false)} />
     </Screen>
   );

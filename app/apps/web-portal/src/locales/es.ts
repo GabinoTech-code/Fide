@@ -109,6 +109,7 @@ export const es: Messages = {
   'flag.outside_geofence': 'Fuera de la sede',
   'flag.mock_location': 'Ubicación simulada',
   'flag.manual_correction': 'Corrección aprobada',
+  'flag.hr_entry': 'Registrada por RR. HH.',
 
   'employees.title': 'Empleados',
   'employees.add': 'Nuevo empleado',
