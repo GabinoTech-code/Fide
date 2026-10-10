@@ -10,7 +10,7 @@ import { useI18n, type MessageKey } from '../lib/i18n';
 import { activeKey, APP_LANGUAGES, one } from '../lib/members';
 import { accessUntil, todayInRome } from '../lib/memberStatus';
 import { useLeaveTypes, useMembers, useSites } from '../lib/queries';
-import { APPROVER_ROLES, releasedTeam } from '../lib/roleChange';
+import { APPROVER_ROLES, MEMBER_CHANGE_QUERY_KEYS, releasedTeam } from '../lib/roleChange';
 import { supabase } from '../lib/supabase';
 import type { Member, MemberStatus } from '../lib/types';
 import { ErrorNotice, Modal } from './ui';
@@ -51,7 +51,7 @@ function useRefresh() {
   const queryClient = useQueryClient();
   return () =>
     Promise.all(
-      ['members', 'punches', 'leave', 'corrections', 'requestHistory', 'payroll'].map((key) => queryClient.invalidateQueries({ queryKey: [key] })),
+      MEMBER_CHANGE_QUERY_KEYS.map((key) => queryClient.invalidateQueries({ queryKey: [key] })),
     );
 }
 

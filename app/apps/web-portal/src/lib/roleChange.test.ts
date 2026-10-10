@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { releasedTeam } from './roleChange';
+import { MEMBER_CHANGE_QUERY_KEYS, releasedTeam } from './roleChange';
+import { QueryClient } from '@tanstack/react-query';
 import type { MemberRole } from './types';
 
 const manager = { id: 'manager-a', company_id: 'company-a', role: 'manager' as const };
@@ -10,6 +11,14 @@ const team = [
 ];
 
 describe('role change explanation', () => {
+  it('invalidates the signed-in membership as well as employee data after a change', async () => {
+    const client = new QueryClient();
+    const keys = [['memberships', 'owner-user'], ['members', 'company-a']];
+    keys.forEach((key) => client.setQueryData(key, { role: 'company_owner' }));
+    await Promise.all(MEMBER_CHANGE_QUERY_KEYS.map((key) => client.invalidateQueries({ queryKey: [key] })));
+    keys.forEach((key) => expect(client.getQueryState(key)?.isInvalidated).toBe(true));
+    client.clear();
+  });
   it.each<MemberRole>(['manager', 'hr_admin', 'company_owner'])('warns about released workers when %s becomes an employee', (role) => {
     expect(releasedTeam({ ...manager, role }, 'employee', team).map((m) => m.id)).toEqual(['worker-a']);
   });
