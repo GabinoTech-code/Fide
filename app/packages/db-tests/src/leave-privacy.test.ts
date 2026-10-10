@@ -173,8 +173,8 @@ describe('push tokens and preferences', () => {
   it('a token belongs to its user only', async () => {
     await inTx(db, async (s) => {
       await s.as(users.marco);
-      await s.rows(`insert into public.push_tokens (expo_push_token, platform) values ('ExponentPushToken[abc123]', 'ios')`);
-      expect((await s.error(`insert into public.push_tokens (expo_push_token, platform) values ('not-a-token', 'ios')`)).code).toBe(
+      await s.rows(`select public.register_push_token($1, 'ExponentPushToken[abc123]', 'ios')`, [seed.keys.marco]);
+      expect((await s.error(`select public.register_push_token($1, 'not-a-token', 'ios')`, [seed.keys.marco])).code).toBe(
         '23514',
       );
       await s.as(users.anna);

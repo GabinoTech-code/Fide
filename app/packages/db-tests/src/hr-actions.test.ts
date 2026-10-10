@@ -272,10 +272,10 @@ describe('GDPR inbox', () => {
     });
   });
 
-  it('erasure for a former employee revokes the phone keys and push tokens', async () => {
+  it('erasure revokes former employee keys after termination already removed push tokens', async () => {
     await inTx(db, async (s) => {
       await s.as(users.marco);
-      await s.rows(`insert into public.push_tokens (expo_push_token, platform) values ('ExponentPushToken[marco1]', 'android')`);
+      await s.rows(`select public.register_push_token($1, 'ExponentPushToken[marco1]', 'android')`, [seed.keys.marco]);
       const id = await fileErasure(s, users.marco, members.marco);
 
       await s.as(users.giulia);
@@ -283,9 +283,12 @@ describe('GDPR inbox', () => {
         'member_not_terminated',
       );
       await s.rows(`select public.set_member_status($1, 'terminated', current_date)`, [members.marco]);
+      await s.superuser();
+      expect(await s.value(`select count(*)::int from public.push_tokens`)).toBe(0);
+      await s.as(users.giulia);
       expect(await s.value(`select public.gdpr_erase_former_member($1, 'Rimosse le chiavi del telefono e le notifiche.')`, [id])).toEqual({
         revoked_keys: 1,
-        deleted_push_tokens: 1,
+        deleted_push_tokens: 0,
       });
       await s.superuser();
       expect(await s.value(`select status from public.device_keys where id = $1`, [seed.keys.marco])).toBe('revoked');
