@@ -48,18 +48,18 @@ export function PresencePage() {
       <ErrorNotice error={failed} />
       <section className="card stack">
         <div className="row" style={{ flexWrap: 'wrap', alignItems: 'end' }}>
-          <label>{t('presence.date')}<input type="date" value={day} max={today} onChange={(e) => { setSelectedDay(e.target.value); setPage(0); }} /></label>
+          <label className="field">{t('presence.date')}<input type="date" value={day} max={today} onChange={(e) => { setSelectedDay(e.target.value); setPage(0); }} /></label>
           <button className="btn" onClick={() => { setSelectedDay(''); setPage(0); }}>{t('presence.resetToday')}</button>
-          <label>{t('presence.search')}<input type="search" value={filters.search} onChange={(e) => change({ search: e.target.value })} /></label>
-          <label>{t('presence.siteFilter')}<select value={filters.site} onChange={(e) => change({ site: e.target.value })}>
+          <label className="field">{t('presence.search')}<input type="search" value={filters.search} onChange={(e) => change({ search: e.target.value })} /></label>
+          <label className="field">{t('presence.siteFilter')}<select value={filters.site} onChange={(e) => change({ site: e.target.value })}>
             <option value="">{t('presence.all')}</option>
             {(sites.data ?? []).map((site) => <option key={site.id} value={site.id}>{site.name}</option>)}
           </select></label>
-          <label>{t('presence.managerFilter')}<select value={filters.manager} onChange={(e) => change({ manager: e.target.value })}>
+          <label className="field">{t('presence.managerFilter')}<select value={filters.manager} onChange={(e) => change({ manager: e.target.value })}>
             <option value="">{t('presence.all')}</option>
             {(members.data ?? []).filter((m) => (members.data ?? []).some((worker) => worker.manager_member_id === m.id)).map((m) => <option key={m.id} value={m.id}>{m.full_name}</option>)}
           </select></label>
-          <label>{t('presence.kindFilter')}<select value={filters.kind} onChange={(e) => change({ kind: e.target.value as PresenceFilters['kind'] })}>
+          <label className="field">{t('presence.kindFilter')}<select value={filters.kind} onChange={(e) => change({ kind: e.target.value as PresenceFilters['kind'] })}>
             <option value="">{t('presence.all')}</option><option value="in">{t('presence.in')}</option><option value="out">{t('presence.out')}</option><option value="review">{t('presence.review')}</option>
           </select></label>
         </div>
