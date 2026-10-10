@@ -70,3 +70,5 @@ nessun tracciamento di lettura. Token cancellati al logout/revoca/sospensione/ce
 [Trattamento e rollout](docs/legal/DPIA_GDPR_Art35.md#avvisi-push-facoltativi-rollout-da-completare),
 [setup e prova su telefono](deploy/README.md#notifiche-push). Firebase Android pubblico in `app/apps/mobile`;
 credenziali private FCM/APNs e token Expo mai nelle app client o nel repository.
+
+La CI può essere eseguita anche manualmente da GitHub Actions → CI → Run workflow, scegliendo la rama da verificare; non distribuisce il prodotto.
