@@ -6,7 +6,7 @@ Fuente vigente del plan de construcción. Reemplaza el plan de la [comparativa d
 
 Se contrastaron páginas y guías oficiales de seis proveedores con el código de Fide en `main`, commit `dbf7f98` (PR #40). Las ofertas comerciales describen capacidades anunciadas, no una prueba de funcionamiento independiente ni disponibilidad en cualquier licencia, país o configuración. No se han contratado demos ni aceptado condiciones.
 
-«Existe» significa que hay una implementación identificable; no certifica ausencia de errores. «Parcial» indica un flujo incompleto o una limitación concreta. Los saldos de la PR #40 están integrados y con CI verde, pero todavía requieren publicar el portal y distribuir un nuevo APK. No se inició otro build antes de este plan.
+«Existe» significa que hay una implementación identificable; no certifica ausencia de errores. «Parcial» indica un flujo incompleto o una limitación concreta. Los saldos de la PR #40 están integrados y con CI verde. El portal está publicado en la release `20261010202035` junto con la corrección de informes de la PR #42 (`074548e`); el desglose móvil todavía requiere distribuir un nuevo APK. No se inició otro build antes de este plan.
 
 ## Qué ofrecen y cómo organizan el trabajo
 
@@ -41,7 +41,7 @@ Las rutas siguientes son evidencia dentro del repositorio; los tests prueban com
 | Historial y motivo de decisiones | Existe | `RequestsPage.tsx`, `requestHistory.ts`, `richieste.tsx`: pendientes e historial, motivo y fecha. | Mantener T0 |
 | Fechas y solicitud por horas | Existe con límites | Calendario móvil y cantidad por horas; medias jornadas y cantidad por día no siguen todavía horarios personales. | T1 / T3 |
 | Calendario italiano para solicitudes | Parcial | `italy/calendar.ts`: laborables y festivos nacionales. No incorpora jornada de seis días, turno dominical o festivo patronal de la sede. | T1 |
-| Vacaciones/ROL/EXFEST acumulados y disponibles | Parcial | PR #40: carga manual de acreditado, arrastre y utilizado externo; desglose móvil. Falta publicar/distribuir, CSV y acumulación mensual configurada. | T0 / T3 |
+| Vacaciones/ROL/EXFEST acumulados y disponibles | Parcial | PR #40: carga manual de acreditado, arrastre y utilizado externo publicada en portal; desglose móvil integrado. Falta distribuir APK, CSV y acumulación mensual configurada. | T0 / T3 |
 | Contabilidad anual de saldos | Parcial | `leave_balance_summary` asigna toda la solicitud al año de inicio. Falta repartir rangos entre ejercicios y conciliar cierres. | T3 |
 | Ausencia aprobada y report mensual coherentes | ✅ Corrección del calendario actual HECHA; límites explícitos | `monthlyReport.ts` comparte reparto entre detalle y resumen; `monthlyReport.test.ts` cubre fines de semana, festivos, fracciones y cruces. Cantidades incompatibles o horas multidiarias bloquean la exportación. Faltan calendarios personales y reparto explícito. | T0 / T1 / T3 |
 | Catálogo y reglas de ausencias | Parcial | Tipos italianos predefinidos en BD; falta UI de configuración, elegibilidad y reglas por contrato. | T3 |
@@ -77,6 +77,9 @@ fracciones u horas. Los rangos multidiarios con cantidad distinta de los laborab
 bloquean ambos CSV e identifican la solicitud que requiere revisión. No se altera la historia ni se asume que
 una baja médica deba contarse con el mismo calendario que FERIE. Faltan reglas por tipo/contrato y reparto
 explícito para esos casos; no se declara T0 completo. Evidencia: `monthlyReport.test.ts`.
+La PR #42 se integró con toda la CI verde y se publicó. Verificación en navegador: el informe de octubre se
+preparó y descargó correctamente con sus avisos de anomalías. El caso sintético 2→4 queda cubierto por las
+pruebas de regresión; no se crearon ausencias en producción para reproducirlo.
 
 ## Orden propuesto de construcción
 
