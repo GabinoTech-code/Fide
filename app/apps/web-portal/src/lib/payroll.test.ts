@@ -16,6 +16,7 @@ import {
   sendBatch,
   needsReview,
   allReviewPagesChecked,
+  canPreparePayroll,
   unassignedPages,
   willSend,
   type BatchBackend,
@@ -99,6 +100,11 @@ describe('planRecipients', () => {
     expect(allReviewPagesChecked(review, {})).toBe(false);
     expect(allReviewPagesChecked(review, { 2: 'a' })).toBe(true);
     expect(allReviewPagesChecked(review, { 2: 'b' })).toBe(false);
+    expect(canPreparePayroll(plan, new Set(), {})).toBe(false);
+    expect(canPreparePayroll(plan, new Set(), { 2: 'b' })).toBe(false);
+    expect(canPreparePayroll(plan, new Set(), { 2: 'a' })).toBe(true);
+    expect(canPreparePayroll([], new Set(), {})).toBe(false);
+    expect(canPreparePayroll(plan.map((r) => ({ ...r, state: 'no_key' })), new Set(), { 2: 'a' })).toBe(false);
   });
 
   it('requires individual review for pages manually assigned after an ambiguous parse', () => {
