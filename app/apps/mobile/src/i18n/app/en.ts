@@ -231,4 +231,21 @@ export const en: AppMessages = {
   // Saving a document outside the app
   'docs.save': 'Save to phone',
   'docs.saved': 'Saved. This copy is outside Fide and no longer encrypted: keep it somewhere safe.',
+
+  // Passkey sign-in and the invitation preview
+  'passkey.signIn': 'Sign in with a passkey',
+  'passkey.useCode': 'Use an e-mail code',
+  'passkey.activate': 'Turn on the passkey',
+  'passkey.later': 'Later',
+  'passkey.offerTitle': 'Next time, sign in without a code',
+  'passkey.offerBody': 'A passkey (FIDO2) stays on this phone and is used with its unlock: PIN or the method you already use. No passwords, no codes, no biometric data for Fide.',
+  'passkey.active': 'Passkey on for this phone: you sign in without a code.',
+  'passkey.activated': 'Passkey turned on.',
+  'passkey.none': 'There is no Fide passkey on this phone: sign in with the e-mail code.',
+  'passkey.failed': 'The passkey could not be used. Sign in with the e-mail code.',
+  'privacy.access': 'Sign-in',
+  'role.employee': 'Employee',
+  'role.manager': 'Manager',
+  'role.hr_admin': 'HR',
+  'role.company_owner': 'Owner',
 };

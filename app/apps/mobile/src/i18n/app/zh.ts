@@ -229,4 +229,21 @@ export const zh: AppMessages = {
   // Saving a document outside the app
   'docs.save': '保存到手机',
   'docs.saved': '已保存。此副本在 Fide 之外，不再加密：请妥善保管。',
+
+  // Passkey sign-in and the invitation preview
+  'passkey.signIn': '使用通行密钥登录',
+  'passkey.useCode': '使用邮件验证码',
+  'passkey.activate': '启用通行密钥',
+  'passkey.later': '稍后',
+  'passkey.offerTitle': '下次无需验证码即可登录',
+  'passkey.offerBody': '通行密钥（FIDO2）保存在这部手机上，配合手机解锁使用：PIN 码或你已在用的方式。无需密码和验证码，Fide 不获取任何生物识别数据。',
+  'passkey.active': '本机已启用通行密钥：无需验证码即可登录。',
+  'passkey.activated': '通行密钥已启用。',
+  'passkey.none': '本机没有 Fide 通行密钥：请使用邮件验证码登录。',
+  'passkey.failed': '无法使用通行密钥，请使用邮件验证码登录。',
+  'privacy.access': '登录方式',
+  'role.employee': '员工',
+  'role.manager': '主管',
+  'role.hr_admin': '人事',
+  'role.company_owner': '负责人',
 };

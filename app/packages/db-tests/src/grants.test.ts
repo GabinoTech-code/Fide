@@ -9,7 +9,7 @@ beforeAll(async () => {
 afterAll(async () => db?.close());
 
 describe('anon (the publishable key) reaches nothing', () => {
-  it('has no table, column or function privileges in public/private', async () => {
+  it('has no table or column privileges, and executes only invitation_preview', async () => {
     await inTx(db, async (s) => {
       expect(
         await s.rows(`select table_schema, table_name, privilege_type from information_schema.role_table_grants
@@ -23,7 +23,8 @@ describe('anon (the publishable key) reaches nothing', () => {
         await s.rows(`select p.oid::regprocedure::text as fn
                       from pg_proc p join pg_namespace n on n.oid = p.pronamespace
                       where n.nspname in ('public', 'private') and has_function_privilege('anon', p.oid, 'execute')`),
-      ).toEqual([]);
+        // The welcome screen's preview, keyed on the e-mailed secret token (see invitation-preview.test.ts).
+      ).toEqual([{ fn: 'invitation_preview(text)' }]);
     });
   });
 
@@ -76,6 +77,7 @@ describe('authenticated', () => {
           'hr_record_leave(uuid,uuid,date,date,numeric,text,text)',
           'hr_record_punch(uuid,punch_type,timestamp with time zone,uuid,text)',
           'import_members(uuid,jsonb)',
+          'invitation_preview(text)',
           'is_valid_codice_fiscale(text)',
           'is_valid_partita_iva(text)',
           'key_fingerprint(text,text)',

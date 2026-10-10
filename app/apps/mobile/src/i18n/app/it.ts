@@ -230,4 +230,21 @@ export const it = {
   // Saving a document outside the app
   'docs.save': 'Salva sul telefono',
   'docs.saved': 'Salvato. Questa copia è fuori da Fide e non è più cifrata: conservala in un posto sicuro.',
+
+  // Passkey sign-in and the invitation preview
+  'passkey.signIn': 'Entra con passkey',
+  'passkey.useCode': 'Usa un codice via e-mail',
+  'passkey.activate': 'Attiva la passkey',
+  'passkey.later': 'Più tardi',
+  'passkey.offerTitle': 'La prossima volta entri senza codice',
+  'passkey.offerBody': 'Una passkey (FIDO2) resta in questo telefono e si usa con il suo sblocco: PIN o il metodo che usi già. Niente password, niente codici, nessun dato biometrico a Fide.',
+  'passkey.active': 'Passkey attiva su questo telefono: entri senza codice.',
+  'passkey.activated': 'Passkey attivata.',
+  'passkey.none': 'Su questo telefono non c’è una passkey per Fide: entra con il codice via e-mail.',
+  'passkey.failed': 'Non è stato possibile usare la passkey. Entra con il codice via e-mail.',
+  'privacy.access': 'Accesso',
+  'role.employee': 'Dipendente',
+  'role.manager': 'Responsabile',
+  'role.hr_admin': 'Ufficio HR',
+  'role.company_owner': 'Titolare',
 } as const;

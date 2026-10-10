@@ -231,4 +231,21 @@ export const es: AppMessages = {
   // Saving a document outside the app
   'docs.save': 'Guardar en el móvil',
   'docs.saved': 'Guardado. Esta copia está fuera de Fide y ya no va cifrada: guárdala en un sitio seguro.',
+
+  // Passkey sign-in and the invitation preview
+  'passkey.signIn': 'Entrar con passkey',
+  'passkey.useCode': 'Usar un código por e-mail',
+  'passkey.activate': 'Activar la passkey',
+  'passkey.later': 'Más tarde',
+  'passkey.offerTitle': 'La próxima vez entras sin código',
+  'passkey.offerBody': 'Una passkey (FIDO2) se queda en este móvil y se usa con su desbloqueo: PIN o el método que ya usas. Sin contraseñas, sin códigos, sin datos biométricos para Fide.',
+  'passkey.active': 'Passkey activa en este móvil: entras sin código.',
+  'passkey.activated': 'Passkey activada.',
+  'passkey.none': 'En este móvil no hay una passkey de Fide: entra con el código por e-mail.',
+  'passkey.failed': 'No se ha podido usar la passkey. Entra con el código por e-mail.',
+  'privacy.access': 'Acceso',
+  'role.employee': 'Empleado',
+  'role.manager': 'Responsable',
+  'role.hr_admin': 'RR. HH.',
+  'role.company_owner': 'Titular',
 };

@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Alert, Share, View } from 'react-native';
 import { router } from 'expo-router';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useT, type AppKey } from '../../i18n/app';
 import { LANGUAGES } from '../../i18n/types';
 import { clearLocalPunches } from '../../lib/outboxSqlite';
+import { hasPasskeyHere, PasskeyCancelled, passkeySupported, registerPasskey } from '../../lib/passkey';
 import { useLiveQueries } from '../../lib/refresh';
 import { useSession } from '../../lib/session';
 import { supabase } from '../../lib/supabase';
@@ -32,6 +33,21 @@ export default function Privacy() {
   const { membership, keys, signOut } = useSession();
   const [message, setMessage] = useState<string | null>(null);
   const [diagnostics, setDiagnostics] = useState(false);
+  const [passkeyHere, setPasskeyHere] = useState(false);
+
+  useEffect(() => {
+    hasPasskeyHere().then(setPasskeyHere);
+  }, []);
+
+  async function activatePasskey() {
+    try {
+      await registerPasskey();
+      setPasskeyHere(true);
+      setMessage(t('passkey.activated'));
+    } catch (err) {
+      if (!(err instanceof PasskeyCancelled)) setMessage(t('passkey.failed'));
+    }
+  }
 
   const identity = useQuery({
     queryKey: ['identity', membership?.id],
@@ -129,6 +145,18 @@ export default function Privacy() {
         <Small>{t('privacy.device')}</Small>
         <Mono style={{ fontSize: 16, color: Colors.textPrimary, letterSpacing: 0.5 }}>{keys?.fingerprint}</Mono>
         <Small>{t('privacy.fingerprintHint')}</Small>
+      </Card>
+
+      <Card>
+        <Small>{t('privacy.access')}</Small>
+        {passkeyHere ? (
+          <Body>{t('passkey.active')}</Body>
+        ) : (
+          <>
+            <Small>{t('passkey.offerBody')}</Small>
+            {passkeySupported() ? <Button kind="outline" icon="passkey" label={t('passkey.activate')} onPress={activatePasskey} /> : null}
+          </>
+        )}
       </Card>
 
       <Row style={{ flexWrap: 'nowrap' }}>

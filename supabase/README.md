@@ -4,7 +4,7 @@ Migraciones en `migrations/` (aplicadas en orden), seed local en `seed.sql` y co
 
 ## Modelo de seguridad
 
-- **anon no ve nada.** No hay ningún permiso sobre tablas ni funciones para la clave publicable; todo exige sesión.
+- **anon no ve nada.** No hay ningún permiso sobre tablas para la clave publicable y una sola función: `invitation_preview(token)`, que con el token secreto de la invitación (32 bytes, enviado por e-mail) devuelve empresa, rol y sede para la pantalla de bienvenida de la app, lo mismo que ya dice el e-mail, y nada para un token inválido, caducado o usado (`invitation-preview.test.ts`). Todo lo demás exige sesión.
 - **Aislamiento por empresa y rol.** Cada tabla tiene RLS basada en la pertenencia activa a una empresa (`members.auth_user_id = auth.uid()` y `status = 'active'`). Los helpers de `private` (`my_member_ids`, `my_company_ids`, `my_hr_company_ids`, `my_managed_member_ids`) se usan como `x in (select private.fn())`.
 - **Ex empleados.** Un miembro `terminated` conserva durante 12 meses desde `terminated_on` la **lectura** de sus propios datos (documentos, fichajes, solicitudes, export) y puede presentar solicitudes RGPD: así recibe la nómina final, el TFR y la CU. Las lecturas propias usan `my_readable_member_ids()` / `my_readable_company_ids()` (regla en `has_own_access()`); las escrituras siguen exigiendo `active`. `suspended` bloquea todo y es reversible.
 - **Roles:** `employee` < `manager` (ve a su equipo, pero no su codice fiscale ni su email) < `hr_admin` < `company_owner`. Solo un owner da o quita poderes de HR u owner, y el último owner no se puede degradar.
@@ -74,8 +74,9 @@ Proyecto `saehchpgnbcciqimrqsj`, región `eu-west-1` (Irlanda).
   aplica con `supabase secrets set` antes de desplegar.
 - **Auth.** El mismo workflow fija por la API de gestión la URL del portal, el código de 6 cifras, el SMTP de Brevo y
   las **passkeys**: `webauthn_rp_id = fide-work.it` (variable `FIDE_PASSKEY_RP_ID`; elegido una vez, porque cambiarlo
-  invalida todas las passkeys) y como origen el portal (`FIDE_PASSKEY_ORIGINS`, separados por comas; el hash de la
-  app Android se añade cuando exista la build). `config.toml` mantiene `localhost` para el desarrollo local.
+  invalida todas las passkeys) y como orígenes el portal y la app (`https://fide-work.it` para iOS y
+  `android:apk-key-hash:…` del certificado de firma de EAS, el mismo de `assetlinks.json`); `FIDE_PASSKEY_ORIGINS`
+  los sustituye, separados por comas. Una clave de firma nueva necesita su origen. `config.toml` mantiene `localhost` para el desarrollo local.
 - **Clave pública de los recibos de fichaje** (Ed25519, `raw`, base64). Sirve para verificar que un recibo lo
   firmó Fide sobre `"FIDE-RECEIPT-v1|<punch_id>|<sha256(signed_payload)>|<received_at>"`:
 

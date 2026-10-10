@@ -100,7 +100,11 @@ jobs:
           # passkey). fide-work.it covers app.fide-work.it and, through the
           # webcredentials association it serves, the employee app.
           rp_id="${FIDE_PASSKEY_RP_ID:-fide-work.it}"
-          rp_origins="${FIDE_PASSKEY_ORIGINS:-$portal}"
+          # The employee app signs in with passkeys too: iOS sends https://<rp_id>,
+          # Android its signing certificate (SHA-256 of the EAS keystore, the one in
+          # assetlinks.json, base64url). A new signing key needs a new origin here.
+          app_origins="https://fide-work.it,android:apk-key-hash:Pqjxo8_9JaEV2Qi-xfR6jXKY0hIqPs9q8KAwdWqDKXg"
+          rp_origins="${FIDE_PASSKEY_ORIGINS:-$portal,$app_origins}"
           base=(--arg site "$portal" --arg allow "$portal/**,fide://**,http://localhost:5173/**"
                 --arg rp "$rp_id" --arg origins "$rp_origins")
           passkeys='passkey_enabled: true, webauthn_rp_display_name: "Fide", webauthn_rp_id: $rp, webauthn_rp_origins: $origins'

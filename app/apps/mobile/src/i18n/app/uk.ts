@@ -231,4 +231,21 @@ export const uk: AppMessages = {
   // Saving a document outside the app
   'docs.save': 'Зберегти на телефоні',
   'docs.saved': 'Збережено. Ця копія поза Fide і більше не зашифрована: зберігай її в надійному місці.',
+
+  // Passkey sign-in and the invitation preview
+  'passkey.signIn': 'Увійти з ключем доступу',
+  'passkey.useCode': 'Використати код з e-mail',
+  'passkey.activate': 'Увімкнути ключ доступу',
+  'passkey.later': 'Пізніше',
+  'passkey.offerTitle': 'Наступного разу — вхід без коду',
+  'passkey.offerBody': 'Ключ доступу (FIDO2) зберігається на цьому телефоні й використовується з його розблокуванням: PIN або спосіб, яким ти вже користуєшся. Без паролів, без кодів, жодних біометричних даних для Fide.',
+  'passkey.active': 'Ключ доступу на цьому телефоні ввімкнено: вхід без коду.',
+  'passkey.activated': 'Ключ доступу ввімкнено.',
+  'passkey.none': 'На цьому телефоні немає ключа доступу Fide: увійди з кодом з e-mail.',
+  'passkey.failed': 'Не вдалося використати ключ доступу. Увійди з кодом з e-mail.',
+  'privacy.access': 'Вхід',
+  'role.employee': 'Працівник',
+  'role.manager': 'Керівник',
+  'role.hr_admin': 'HR',
+  'role.company_owner': 'Власник',
 };

@@ -231,4 +231,21 @@ export const sq: AppMessages = {
   // Saving a document outside the app
   'docs.save': 'Ruaje në telefon',
   'docs.saved': 'U ruajt. Kjo kopje është jashtë Fide dhe nuk është më e enkriptuar: mbaje në një vend të sigurt.',
+
+  // Passkey sign-in and the invitation preview
+  'passkey.signIn': 'Hyr me passkey',
+  'passkey.useCode': 'Përdor një kod me e-mail',
+  'passkey.activate': 'Aktivizo passkey',
+  'passkey.later': 'Më vonë',
+  'passkey.offerTitle': 'Herën tjetër hyn pa kod',
+  'passkey.offerBody': 'Një passkey (FIDO2) mbetet në këtë telefon dhe përdoret me zhbllokimin e tij: PIN ose metodën që përdor tashmë. Pa fjalëkalime, pa kode, pa të dhëna biometrike për Fide.',
+  'passkey.active': 'Passkey aktive në këtë telefon: hyn pa kod.',
+  'passkey.activated': 'Passkey u aktivizua.',
+  'passkey.none': 'Në këtë telefon nuk ka passkey për Fide: hyr me kodin me e-mail.',
+  'passkey.failed': 'Passkey nuk mund të përdorej. Hyr me kodin me e-mail.',
+  'privacy.access': 'Hyrja',
+  'role.employee': 'Punonjës',
+  'role.manager': 'Përgjegjës',
+  'role.hr_admin': 'BNJ',
+  'role.company_owner': 'Pronar',
 };

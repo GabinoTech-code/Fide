@@ -231,4 +231,21 @@ export const ar: AppMessages = {
   // Saving a document outside the app
   'docs.save': 'حفظ على الهاتف',
   'docs.saved': 'تم الحفظ. هذه النسخة خارج Fide ولم تعد مشفّرة: احفظها في مكان آمن.',
+
+  // Passkey sign-in and the invitation preview
+  'passkey.signIn': 'الدخول بمفتاح المرور',
+  'passkey.useCode': 'استخدم رمزًا عبر البريد الإلكتروني',
+  'passkey.activate': 'تفعيل مفتاح المرور',
+  'passkey.later': 'لاحقًا',
+  'passkey.offerTitle': 'في المرة القادمة تدخل بدون رمز',
+  'passkey.offerBody': 'يبقى مفتاح المرور (FIDO2) على هذا الهاتف ويُستخدم مع فتح قفله: الرمز أو الطريقة التي تستخدمها. بلا كلمات مرور ولا رموز ولا بيانات بيومترية لدى Fide.',
+  'passkey.active': 'مفتاح المرور مفعّل على هذا الهاتف: تدخل بدون رمز.',
+  'passkey.activated': 'تم تفعيل مفتاح المرور.',
+  'passkey.none': 'لا يوجد مفتاح مرور لـ Fide على هذا الهاتف: ادخل بالرمز عبر البريد.',
+  'passkey.failed': 'تعذّر استخدام مفتاح المرور. ادخل بالرمز عبر البريد.',
+  'privacy.access': 'الدخول',
+  'role.employee': 'موظف',
+  'role.manager': 'مسؤول',
+  'role.hr_admin': 'الموارد البشرية',
+  'role.company_owner': 'المالك',
 };

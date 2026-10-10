@@ -231,4 +231,21 @@ export const ro: AppMessages = {
   // Saving a document outside the app
   'docs.save': 'Salvează pe telefon',
   'docs.saved': 'Salvat. Această copie e în afara Fide și nu mai e criptată: păstreaz-o într-un loc sigur.',
+
+  // Passkey sign-in and the invitation preview
+  'passkey.signIn': 'Intră cu passkey',
+  'passkey.useCode': 'Folosește un cod prin e-mail',
+  'passkey.activate': 'Activează passkey',
+  'passkey.later': 'Mai târziu',
+  'passkey.offerTitle': 'Data viitoare intri fără cod',
+  'passkey.offerBody': 'O passkey (FIDO2) rămâne pe acest telefon și se folosește cu deblocarea lui: PIN sau metoda pe care o folosești deja. Fără parole, fără coduri, fără date biometrice pentru Fide.',
+  'passkey.active': 'Passkey activ pe acest telefon: intri fără cod.',
+  'passkey.activated': 'Passkey activat.',
+  'passkey.none': 'Pe acest telefon nu există un passkey Fide: intră cu codul prin e-mail.',
+  'passkey.failed': 'Passkey-ul nu a putut fi folosit. Intră cu codul prin e-mail.',
+  'privacy.access': 'Acces',
+  'role.employee': 'Angajat',
+  'role.manager': 'Responsabil',
+  'role.hr_admin': 'HR',
+  'role.company_owner': 'Titular',
 };

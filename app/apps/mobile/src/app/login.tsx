@@ -1,21 +1,45 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Redirect, router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { Text, View } from 'react-native';
-import { useT } from '../i18n/app';
+import { useT, type AppKey } from '../i18n/app';
+import { hasPasskeyHere, NoPasskeyHere, PasskeyCancelled, passkeySupported } from '../lib/passkey';
 import { useSession } from '../lib/session';
+import { supabase } from '../lib/supabase';
 import { FideLogo } from '../components/common/Icons';
 import { Colors } from '../theme/colors';
 import { Button, Field, Fonts, Notice, Screen, Small } from '../ui/kit';
 
+interface InvitePreview {
+  company_name: string;
+  role: 'employee' | 'manager' | 'hr_admin' | 'company_owner';
+  site_name: string | null;
+}
+
 export default function Login() {
   const { t } = useT();
-  const { session, sendCode, verifyCode, pendingInvite } = useSession();
+  const { session, sendCode, verifyCode, signInWithPasskey, pendingInvite } = useSession();
   const [email, setEmail] = useState('');
   const [code, setCode] = useState('');
   const [sent, setSent] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [invite, setInvite] = useState<InvitePreview | null>(null);
+  const [passkeyHere, setPasskeyHere] = useState(false);
+  const [useCode, setUseCode] = useState(false);
+  const canPasskey = passkeySupported();
+
+  // The invitation's company, role and site, read with the e-mailed token (as in the prototype).
+  useEffect(() => {
+    if (!pendingInvite) return;
+    supabase
+      .rpc('invitation_preview', { p_token: pendingInvite })
+      .then(({ data }) => setInvite(((data as InvitePreview[] | null) ?? [])[0] ?? null), () => undefined);
+  }, [pendingInvite]);
+
+  useEffect(() => {
+    hasPasskeyHere().then(setPasskeyHere);
+  }, []);
 
   const run = async (fn: () => Promise<void>) => {
     setBusy(true);
@@ -23,6 +47,12 @@ export default function Login() {
     try {
       await fn();
     } catch (err) {
+      if (err instanceof PasskeyCancelled) return;
+      if (err instanceof NoPasskeyHere) {
+        setUseCode(true);
+        setError(t('passkey.none'));
+        return;
+      }
       setError(err instanceof TypeError ? t('common.offline') : (err as Error).message || t('common.error'));
     } finally {
       setBusy(false);
@@ -31,6 +61,14 @@ export default function Login() {
 
   // Already signed in (e.g. the session arrived after a redirect here): go on.
   if (session) return <Redirect href="/" />;
+
+  // A new invitation always starts with the e-mail code: it proves the invited address.
+  const passkeyFirst = canPasskey && passkeyHere && !pendingInvite && !useCode;
+  const passkey = () =>
+    run(async () => {
+      await signInWithPasskey();
+      router.replace('/');
+    });
 
   return (
     <Screen dark>
@@ -54,12 +92,22 @@ export default function Login() {
             <Text style={{ fontFamily: Fonts.text, fontSize: 12, letterSpacing: 1.2, textTransform: 'uppercase', color: Colors.textMuted }}>
               {t('login.inviteReceived')}
             </Text>
-            <Text style={{ fontFamily: Fonts.textBold, fontSize: 17, color: Colors.bg }}>{t('login.inviteTitle')}</Text>
-            <Text style={{ fontFamily: Fonts.text, fontSize: 14, color: Colors.textLight }}>{t('login.inviteHint')}</Text>
+            <Text style={{ fontFamily: Fonts.textBold, fontSize: 17, color: Colors.bg }}>{invite?.company_name ?? t('login.inviteTitle')}</Text>
+            {invite ? (
+              <Text style={{ fontFamily: Fonts.text, fontSize: 14, color: Colors.textLight }}>
+                {[t(`role.${invite.role}` as AppKey), invite.site_name].filter(Boolean).join(' · ')}
+              </Text>
+            ) : null}
+            <Text style={{ fontFamily: Fonts.text, fontSize: 13, color: Colors.textMuted }}>{t('login.inviteHint')}</Text>
           </View>
         ) : null}
 
-        {!sent ? (
+        {passkeyFirst ? (
+          <>
+            <Button kind="mint" icon="passkey" label={t('passkey.signIn')} busy={busy} onPress={passkey} />
+            <Button kind="soft" label={t('passkey.useCode')} onPress={() => setUseCode(true)} />
+          </>
+        ) : !sent ? (
           <>
             <Field
               dark
@@ -83,6 +131,7 @@ export default function Login() {
                 })
               }
             />
+            {canPasskey && !pendingInvite ? <Button kind="soft" icon="passkey" label={t('passkey.signIn')} disabled={busy} onPress={passkey} /> : null}
           </>
         ) : (
           <>

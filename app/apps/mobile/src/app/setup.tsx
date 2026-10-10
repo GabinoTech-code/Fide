@@ -4,6 +4,7 @@ import { AppState, Platform, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useT } from '../i18n/app';
+import { PasskeyCancelled, passkeySupported, registerPasskey } from '../lib/passkey';
 import { useSession } from '../lib/session';
 import { deviceLock, enrolDevice, unlock, type StoredKeys } from '../lib/vault';
 import { BrandIcon } from '../components/common/Icons';
@@ -30,6 +31,26 @@ export default function Setup() {
   }, []);
 
   if (!membership) return null;
+
+  const finish = (k: StoredKeys) => {
+    setKeys(k);
+    router.replace('/(tabs)');
+  };
+
+  // As in the prototype: "activate with passkey" right after the keys, so the next sign-in needs no code.
+  const activatePasskey = async () => {
+    if (!created) return;
+    setBusy(true);
+    setError(null);
+    try {
+      await registerPasskey();
+      finish(created);
+    } catch (err) {
+      if (!(err instanceof PasskeyCancelled)) setError(err instanceof TypeError ? t('common.offline') : t('passkey.failed'));
+    } finally {
+      setBusy(false);
+    }
+  };
 
   const create = async () => {
     setBusy(true);
@@ -67,14 +88,16 @@ export default function Setup() {
           <Small light>{t('setup.fingerprint')}</Small>
           <Text style={{ fontFamily: Fonts.mono, fontSize: 18, letterSpacing: 1, color: Colors.accentLight }}>{created.fingerprint}</Text>
           <Small light>{t('setup.fingerprintHint')}</Small>
-          <Button
-            kind="mint"
-            label={t('common.continue')}
-            onPress={() => {
-              setKeys(created);
-              router.replace('/(tabs)');
-            }}
-          />
+          {passkeySupported() ? (
+            <>
+              <Text style={{ fontFamily: Fonts.textBold, fontSize: 15, color: Colors.bg, marginTop: 8 }}>{t('passkey.offerTitle')}</Text>
+              <Small light>{t('passkey.offerBody')}</Small>
+              <Button kind="mint" icon="passkey" label={t('passkey.activate')} busy={busy} onPress={activatePasskey} />
+              <Button kind="soft" label={t('passkey.later')} disabled={busy} onPress={() => finish(created)} />
+            </>
+          ) : (
+            <Button kind="mint" label={t('common.continue')} onPress={() => finish(created)} />
+          )}
         </View>
       ) : (
         <Button kind="mint" label={t('setup.create')} icon="huella" busy={busy} disabled={lock !== 'ok'} onPress={create} />

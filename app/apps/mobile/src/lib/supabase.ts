@@ -10,6 +10,8 @@ export const supabase = createClient(configured ? SUPABASE_URL : 'http://supabas
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: false,
+    // Supabase Auth passkeys (beta): the two-step API in lib/passkey.ts.
+    experimental: { passkey: true },
   },
 });
 
