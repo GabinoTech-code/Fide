@@ -54,7 +54,7 @@ Prioridades:
 
 | # | Hallazgo | Dónde | Prio |
 | --- | --- | --- | --- |
-| V1 | **Saldos.** La tabla `leave_balances` existe, pero no hay pantalla ni importación: nadie puede cargar los días de vacaciones o ROL, y el trabajador ve sus saldos vacíos. Estaba planificado como importación CSV. | Portal | **P1** |
+| V1 | **Saldos.** ✅ **Carga manual y consulta HECHAS**: HR carga acreditado y arrastre por empleado/tipo/año en `MemberBalances.tsx`; la app muestra disponible, acreditado, arrastre, utilizado y pendiente, o «no cargado». Actualizaciones por Realtime y al refrescar. Evidencia: `balances.test.ts`, `leave-privacy.test.ts`. **Pendientes**: importación CSV y cálculo de maturazione mensual por contrato; no se simulan. | Portal + app | **P1** |
 | V2 | **HR no puede registrar una ausencia en nombre del trabajador** (por ejemplo, la malattia con el certificado INPS que le llega a la empresa, o la de un trabajador sin móvil). ✅ **HECHO** (RPC `hr_record_leave` (`20261009090200_hr_entries.sql`), test `hr-actions.test.ts`). | BD + Portal | **P0** |
 | V3 | El trabajador **no ve el motivo de un rechazo** (`decision_note`) y HR no puede escribirlo al rechazar. ✅ **HECHO** (nota al decidir, obligatoria al rechazar; `RequestsPage.tsx`; la app ya la muestra). | Portal + App | P1 |
 | V4 | Solicitudes: solo se ven las pendientes. Falta historial, filtros y quién aprobó y cuándo. ✅ **HECHO** (pestaña Storico con filtros, quién y cuándo decidió; `lib/requestHistory.ts` + test). | Portal | P1 |

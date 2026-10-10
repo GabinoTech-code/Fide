@@ -21,7 +21,7 @@ Migraciones en `migrations/` (aplicadas en orden), seed local en `seed.sql` y co
 | Dispositivos | `device_keys` (X25519 + Ed25519, huella generada), `key_events`, `kiosk_devices` |
 | Presencias | `punches`, `punch_corrections` |
 | Documentos | `payroll_batches`, `documents`, `document_key_wraps`, `document_access_events`; bucket `encrypted-documents` (solo `application/octet-stream`) |
-| Ausencias | `leave_types` (FERIE, ROL, EXFEST, L104, MALATTIA, STRAORD), `leave_balances`, `leave_requests`, vista `leave_balance_summary` |
+| Ausencias | `leave_types` (FERIE, ROL, EXFEST, L104, MALATTIA, STRAORD), `leave_balances`, `leave_requests`, vista `leave_balance_summary`. HR carga acreditado/arrastre/utilizado externo por empleado, tipo y año desde el portal; `remaining` descuenta `used_external` y aprobadas en Fide. La app recibe actualizaciones de `leave_balances` por Realtime, con RLS. |
 | Privacidad | `gdpr_requests`, `push_tokens`, `audit_log` (nombres de columnas, nunca valores) |
 | Avisos | `private.notification_outbox` (quién y qué evento, nunca el email ni el contenido; se borra a los 30 días) |
 

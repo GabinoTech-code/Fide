@@ -104,17 +104,22 @@ export interface Balance {
   code: string;
   unit: 'days' | 'hours';
   remaining: number;
+  entitled: number;
+  used_external: number;
+  carried_over: number;
+  used: number;
+  pending: number;
 }
 
 export function useBalances() {
   const { membership } = useSession();
-  const year = new Date().getFullYear();
+  const year = Number(romeDate(new Date()).slice(0, 4));
   return useQuery({
     queryKey: ['balances', membership?.id, year],
     enabled: Boolean(membership),
     queryFn: () =>
       rows<Balance>(
-        supabase.from('leave_balance_summary').select('leave_type_id, code, unit, remaining').eq('member_id', membership!.id).eq('year', year),
+        supabase.from('leave_balance_summary').select('leave_type_id, code, unit, entitled, carried_over, used, used_external, pending, remaining').eq('member_id', membership!.id).eq('year', year),
       ),
   });
 }
@@ -127,6 +132,7 @@ export interface LeaveType {
   name: string;
   unit: 'days' | 'hours';
   requires_protocol: boolean;
+  tracks_balance: boolean;
 }
 
 export interface MyLeave {
@@ -163,7 +169,7 @@ export function useLeaveTypes() {
     queryKey: ['leave_types', membership?.company_id],
     enabled: Boolean(membership),
     queryFn: () =>
-      rows<LeaveType>(supabase.from('leave_types').select('id, code, name, unit, requires_protocol').eq('active', true).order('name')),
+      rows<LeaveType>(supabase.from('leave_types').select('id, code, name, unit, requires_protocol, tracks_balance').eq('company_id', membership!.company_id).eq('active', true).order('name')),
   });
 }
 

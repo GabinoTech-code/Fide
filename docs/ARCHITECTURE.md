@@ -89,6 +89,15 @@ browser: «08:30» in una timbratura dimenticata è le 08:30 in Italia, e app e 
 
 ## Dati e conservazione
 
+**Saldi ferie e permessi.** HR inserisce per lavoratore, tipo e anno il maturato/accreditato, il riporto e il totale
+utilizzato fuori Fide, con riferimento facoltativo alle paghe. La vista `leave_balance_summary` calcola il disponibile
+come accreditato + riporto − utilizzato fuori Fide − richieste approvate in Fide con inizio nell'anno selezionato.
+Le richieste pendenti sono mostrate separatamente. Nessun calcolo automatico di maturazione per CCNL; non si importa
+un residuo netto che abbia già sottratto le stesse richieste. Le richieste a cavallo d'anno sono attribuite all'anno
+di inizio: per una ripartizione corretta occorre registrarle separatamente per anno. Nell'app i saldi non caricati
+sono distinti da zero e gli errori di lettura sono visibili. Realtime su `leave_balances` applica le RLS esistenti;
+il lavoratore legge i propri saldi, il responsabile quelli della squadra, solo HR/titolare può caricarli.
+
 Cosa si tratta e cosa no: allegato 1 dell'[accordo art. 28](legal/DPA_GDPR_Art28.md). Misure di sicurezza:
 allegato 2. Stato effettivo dei controlli: [security/AUDIT-2026-10-07.md](security/AUDIT-2026-10-07.md).
 

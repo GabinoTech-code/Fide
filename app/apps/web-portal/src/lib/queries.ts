@@ -204,7 +204,7 @@ export function useLeaveTypes() {
       rows<LeaveType>(
         supabase
           .from('leave_types')
-          .select('id, code, name, unit, requires_protocol, active')
+          .select('id, code, name, unit, requires_protocol, active, tracks_balance')
           .eq('company_id', companyId)
           .eq('active', true)
           .order('code'),

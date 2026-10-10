@@ -2,15 +2,15 @@ import { router } from 'expo-router';
 import { Text, View } from 'react-native';
 import { formerAccessUntil } from '@fide/shared';
 import { useT, type AppKey } from '../../i18n/app';
-import { buildNotices, formatDuration, workday, type Notice } from '../../lib/dashboard';
+import { buildNotices, formatDuration, workday, type Notice as DashboardNotice } from '../../lib/dashboard';
 import { useBalances, useDocuments, useLeaveTypes, useMyCorrections, useMyLeave, useOutbox, useTodayPunches } from '../../lib/data';
 import { useClock, useLiveQueries } from '../../lib/refresh';
 import { useSession } from '../../lib/session';
 import { Colors } from '../../theme/colors';
-import { Body, Button, Card, Fonts, Header, ListItem, QuickAction, Row, Screen, SectionTitle, Small } from '../../ui/kit';
+import { Body, Button, Card, Fonts, Header, ListItem, Notice, QuickAction, Row, Screen, SectionTitle, Small } from '../../ui/kit';
 
 export default function Home() {
-  const { t, time, date, format } = useT();
+  const { t, time, date, format, lang } = useT();
   const { membership } = useSession();
   const punches = useTodayPunches();
   const { queue } = useOutbox();
@@ -19,7 +19,7 @@ export default function Home() {
   const docs = useDocuments();
   const leave = useMyLeave();
   const corrections = useMyCorrections();
-  const refresh = useLiveQueries(punches, balances, docs, leave, corrections);
+  const refresh = useLiveQueries(punches, balances, types, docs, leave, corrections);
 
   const pending = queue.filter((q) => !q.rejected);
   const dayPunches = [
@@ -61,9 +61,8 @@ export default function Home() {
         ? t('home.statusOut', { time: time(day.since!) })
         : t('home.statusNone');
   const notices = buildNotices({ documents: docs.data ?? [], leave: leave.data ?? [], corrections: corrections.data ?? [] }, now);
-  const typeName = (id: string) => types.data?.find((x) => x.id === id)?.name;
   // A request the employee made shows the decision; an entry HR recorded for them says so instead.
-  const noticeTitle = (n: Exclude<Notice, { kind: 'document' }>) =>
+  const noticeTitle = (n: Exclude<DashboardNotice, { kind: 'document' }>) =>
     n.kind === 'leave'
       ? `${n.label} · ${n.byHr ? t('requests.byHr') : t(`status.${n.status}` as AppKey)}`
       : n.byHr
@@ -93,21 +92,36 @@ export default function Home() {
         />
       </Card>
 
-      {(balances.data ?? []).length ? (
+      <SectionTitle>{t('balances.title')}</SectionTitle>
+      <Small>{t('balances.source')}</Small>
+      {balances.isError || types.isError ? <Notice kind="danger">{t('balances.error')}</Notice> : balances.isPending || types.isPending ? <Small>{t('balances.loading')}</Small> : (
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
-          {balances.data!.map((b) => (
-            <Card key={b.leave_type_id} style={{ flexGrow: 1, flexBasis: '45%', gap: 4 }}>
-              <Small>{typeName(b.leave_type_id) ?? b.code}</Small>
-              <Text style={{ fontFamily: Fonts.display, fontSize: 26, color: Colors.textPrimary }}>
-                {Number(b.remaining).toLocaleString()}{' '}
-                <Text style={{ fontFamily: Fonts.textMedium, fontSize: 14, color: Colors.textSecondary }}>
-                  {t(b.unit === 'hours' ? 'unit.hoursShort' : 'unit.days')}
-                </Text>
-              </Text>
-            </Card>
-          ))}
+          {(types.data ?? []).filter((item) => item.tracks_balance).map((type) => {
+            const b = balances.data?.find((item) => item.leave_type_id === type.id);
+            const amount = (value: number) => Number(value).toLocaleString(lang, { maximumFractionDigits: 2 });
+            return (
+              <Card key={type.id} style={{ flexGrow: 1, flexBasis: '45%', gap: 4 }}>
+                <Small>{type.name}</Small>
+                {b ? (
+                  <>
+                    <Text style={{ fontFamily: Fonts.display, fontSize: 26, color: Colors.textPrimary }}>
+                      {amount(b.remaining)}{' '}
+                      <Text style={{ fontFamily: Fonts.textMedium, fontSize: 14, color: Colors.textSecondary }}>
+                        {t(b.unit === 'hours' ? 'unit.hoursShort' : 'unit.days')}
+                      </Text>
+                    </Text>
+                    <Small>{t('balances.available')}</Small>
+                    <Small>{t('balances.credited')}: {amount(b.entitled)}</Small>
+                    <Small>{t('balances.carried')}: {amount(b.carried_over)}</Small>
+                    <Small>{t('balances.used')}: {amount(Number(b.used) + Number(b.used_external))}</Small>
+                    <Small>{t('balances.pending')}: {amount(b.pending)}</Small>
+                  </>
+                ) : <Body muted>{t('balances.missing')}</Body>}
+              </Card>
+            );
+          })}
         </View>
-      ) : null}
+      )}
 
       <View style={{ flexDirection: 'row', gap: 10 }}>
         <QuickAction icon="vacaciones" label={t('home.quick.leave')} onPress={() => router.navigate('/(tabs)/richieste?mode=leave')} />

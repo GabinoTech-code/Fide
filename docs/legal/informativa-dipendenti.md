@@ -26,6 +26,8 @@ art. 88 GDPR e art. 4 L. 300/1970).
 - Nome, e-mail, codice fiscale, matricola, sede.
 - Per ogni timbratura: data e ora, entrata o uscita, sede, metodo, ricevuta.
 - Le richieste che invii (per la malattia, solo il numero di protocollo del certificato: mai la diagnosi).
+- Saldi annuali di ferie e permessi inseriti da HR: accreditato, riporto e totale già utilizzato fuori Fide.
+  L'app mostra il disponibile dopo le richieste approvate, senza calcolare automaticamente la maturazione contrattuale.
 - Quali documenti ti sono stati consegnati e quando li hai aperti, come prova di consegna.
 
 **Cosa non trattiamo**:

@@ -77,7 +77,7 @@ bien que funciona.
 | --- | --- | --- | --- | --- |
 | — | Tipos italianos: ferie, ROL, ex festività, 104, malattia | F, J | ✅ | — |
 | K23 | El resto de los permisos de ley: congedo parentale, matrimonio, lutto, donazione sangue, allattamento, permessi studio, sindacali, elettorali e infortunio | J | ❌ | B2, junto con V7 |
-| — | Saldos con **maturazione** mensual y residuo del año anterior | Z, F, J | ❌ (V1) | B2 |
+| — | Saldos con **maturazione** mensual y residuo del año anterior | Z, F, J | Parcial: carga manual y desglose en app ✅; cálculo mensual automático pendiente. Estado y pruebas en V1 de la auditoría funcional. | B2 |
 | — | Calendario de ausencias del equipo y de la empresa | Z, F, J | ❌ (V5) | B2 |
 | — | Solicitudes por horas o medias jornadas, con selector de fechas | Z, F | 🟡 (V6) | B2 |
 | — | Aprobación por el responsable de su equipo | Z, F, J | 🟡 la BD lo permite, faltan las pantallas (R1) | B2 |

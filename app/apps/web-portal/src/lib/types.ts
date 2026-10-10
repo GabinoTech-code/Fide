@@ -142,6 +142,7 @@ export interface LeaveType {
   unit: 'days' | 'hours';
   requires_protocol: boolean;
   active: boolean;
+  tracks_balance: boolean;
 }
 
 export type GdprKind = 'access' | 'portability' | 'erasure' | 'rectification' | 'objection';

@@ -10,6 +10,11 @@ Fide registra entrate e uscite dei lavoratori, gestisce ferie e permessi e conse
 quelli dell'allegato 1 dell'[accordo art. 28](DPA_GDPR_Art28.md). La DPIA è consigliata perché riguarda
 lavoratori (interessati vulnerabili rispetto al datore) e una registrazione sistematica delle presenze.
 
+Per i saldi di ferie e permessi HR carica totali annuali verificati con le paghe (accreditato, riporto,
+utilizzato fuori Fide). Non sono estratti dai cedolini cifrati dal server. La visibilità segue le RLS delle assenze:
+propri saldi al lavoratore, squadra al responsabile, azienda a HR/titolare. Nessun dettaglio ulteriore delle assenze
+esterne viene richiesto; il riferimento facoltativo non deve contenere diagnosi o altri dati sanitari.
+
 ## 2. Statuto dei lavoratori, art. 4
 
 - **Timbratura con QR del chiosco** (modalità predefinita). È uno *strumento di registrazione degli accessi e delle
