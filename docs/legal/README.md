@@ -20,7 +20,7 @@ dell'uso con clienti di dimensioni medio-grandi.
 | Registro dei trattamenti | Modelli pronti (CSV) |
 | Server nell'UE | Database Supabase in regione UE (Irlanda). Sito e portale: Hetzner, Finlandia (UE) |
 | Nessuna geolocalizzazione continua (art. 4 L. 300/1970) | QR come modalità predefinita; posizione disattivata per sede, letta una sola volta e mai inviata |
-| Nessuna biometria | Nessuna impronta né riconoscimento facciale: basta lo sblocco del telefono con PIN, verificato dal sistema operativo |
+| Nessuna raccolta di dati biometrici, biometria non obbligatoria | Conferma locale del sistema operativo con PIN oppure impronta/Face ID se configurati; Fide riceve solo l’esito. [Decisione tecnica](../adr/0005-local-authentication.md) |
 | Nessuna IA che decide sulle persone | Il servizio non contiene IA |
 | Terminale chiosco in comodato d'uso, come prototipo | Clausola nell'accordo di pilota |
 | Privacy policy dell'app e del sito | Sito: bozza in /privacy.html. App: da pubblicare prima degli store |

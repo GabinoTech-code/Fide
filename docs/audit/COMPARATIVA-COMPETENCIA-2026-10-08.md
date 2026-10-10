@@ -164,7 +164,7 @@ bien que funciona.
 1. **Nóminas cifradas de extremo a extremo.** Ni nosotros ni el servidor podemos leerlas. Zucchetti anuncia documentos "incluso criptografiados", pero no dice que lo sean de extremo a extremo.
 2. **Fichajes firmados** con recibo del servidor: si alguien los altera después, se nota. El QR caduca a los 30 segundos y solo vale una vez, así que una foto no sirve.
 3. **Ubicación sin coordenadas.** Solo guardamos "dentro" o "fuera". ZTimesheet envía la posición al servidor, y Factorial anuncia que la empresa conoce el lugar de cada entrada y salida.
-4. **Sin biometría**, mientras que Sesame vende reconocimiento facial y lectores de huella.
+4. **Sin recopilar datos biométricos ni exigir biometría**; se mantiene la confirmación local del sistema con alternativa de PIN. [Decisión y alcance](../adr/0005-local-authentication.md).
 5. **9 idiomas** para plantillas extranjeras: árabe, albanés, ucraniano, rumano, chino, entre otros.
 6. **Sin licencias por módulo ni por trabajador habilitado.** En Zucchetti, cada app exige el HR Portal y su propia licencia.
 

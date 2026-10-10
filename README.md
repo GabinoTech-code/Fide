@@ -13,8 +13,9 @@ telefono del dipendente, ferie e permessi. In **fase pilota**.
 - **Cedolini cifrati nel browser dell'HR** (XChaCha20-Poly1305, chiave sigillata con X25519 per il telefono del
   dipendente); il server vede solo file cifrati. Il portale verifica il codice di sicurezza delle chiavi prima di
   cifrare. Il dipendente li apre o ne salva una copia nel telefono: la copia salvata è sua e non è più cifrata.
-- **Nessuna password**: codice via e-mail e passkey. **Nessun dato biometrico**: le chiavi si usano dopo il normale
-  sblocco del telefono, verificato dal sistema operativo.
+- **Nessuna password**: codice via e-mail e passkey. **Nessuna raccolta di dati biometrici**: conferma locale del
+  sistema operativo con PIN oppure impronta/Face ID se configurati, senza obbligo di attivare la biometria.
+  [Dettagli e limiti](docs/adr/0005-local-authentication.md).
 - **Isolamento tra aziende** con Row Level Security, verificato da test automatici.
 - **Nessuna IA** e nessuna decisione automatizzata sulle persone.
 
