@@ -25,3 +25,11 @@ condition = "AND"
 regexTarget = "line"
 paths = ['^app/apps/mobile/google-services\.json$']
 regexes = ['^\s*"current_key": "AIza[0-9A-Za-z_-]{35}"[,]?\s*$']
+
+[[rules]]
+id = "generic-api-key"
+[[rules.allowlists]]
+condition = "AND"
+regexTarget = "line"
+paths = ['^app/apps/mobile/google-services\.json$']
+regexes = ['^\s*"current_key": "AIza[0-9A-Za-z_-]{35}"[,]?\s*$']

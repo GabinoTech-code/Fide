@@ -148,3 +148,7 @@ Fonti: [Expo SDK 57 Notifications](https://docs.expo.dev/versions/v57.0.0/sdk/no
 [FCM v1](https://docs.expo.dev/push-notifications/fcm-credentials/),
 [Expo tickets/ricevute e sicurezza](https://docs.expo.dev/push-notifications/sending-notifications/),
 [Apple APNs](https://developer.apple.com/documentation/usernotifications/establishing-a-token-based-connection-to-apns).
+
+La chiave API Firebase client inclusa in `google-services.json` è pubblica e non autorizza l’invio server FCM.
+La allowlist gitleaks copre solo il campo `current_key` nel percorso esatto del JSON client, mantenendo la scansione
+per tutte le credenziali private. [Firebase: API keys](https://firebase.google.com/docs/projects/api-keys).
