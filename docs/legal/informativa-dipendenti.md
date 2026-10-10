@@ -90,3 +90,12 @@ Puoi chiedere accesso, rettifica, cancellazione, limitazione, opposizione e port
 conservate per gli obblighi di legge. Per tutto il resto scrivi a [contatto privacy]. Ti rispondiamo entro un mese
 (prorogabile di altri due nei casi complessi, spiegandoti il motivo) e vedi la risposta anche nell'app. Puoi proporre reclamo al
 Garante per la protezione dei dati personali (www.garanteprivacy.it).
+
+## Riferimenti lavorativi nell’app
+
+HR può inserire mansione, categoria, livello, tipo di contratto, riferimento CCNL, ore settimanali e decorrenza.
+Sono riferimenti operativi, non il contratto firmato, e non attivano il calcolo automatico della maturazione.
+Puoi consultarne la storia nei tuoi dati ed esportarla. La mansione non concede permessi di accesso.
+Li vedono solo il lavoratore interessato e HR/titolare, non il capo turno per il solo fatto di essere responsabile.
+Queste copie operative vengono eliminate da un processo giornaliero dopo 12 mesi dalla cessazione o quando
+il profilo è cancellato; i contratti e i documenti soggetti a obblighi di conservazione seguono i loro termini.

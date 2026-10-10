@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { MEMBER_CHANGE_QUERY_KEYS, releasedTeam } from './roleChange';
+import { MEMBER_CHANGE_QUERY_KEYS, releasedTeam, isLastActiveOwner } from './roleChange';
 import { QueryClient } from '@tanstack/react-query';
 import type { MemberRole } from './types';
 
@@ -11,6 +11,12 @@ const team = [
 ];
 
 describe('role change explanation', () => {
+  it('keeps the last active owner, ignoring suspended owners and other companies', () => {
+    const owner = { company_id: 'a', role: 'company_owner' as const, status: 'active' as const };
+    expect(isLastActiveOwner(owner, [owner, { ...owner, company_id: 'b' }, { ...owner, status: 'suspended' }])).toBe(true);
+    expect(isLastActiveOwner(owner, [owner, owner])).toBe(false);
+    expect(isLastActiveOwner(owner, [])).toBe(true);
+  });
   it('invalidates the signed-in membership as well as employee data after a change', async () => {
     const client = new QueryClient();
     const keys = [['memberships', 'owner-user'], ['members', 'company-a']];

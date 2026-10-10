@@ -30,7 +30,7 @@ Las rutas siguientes son evidencia dentro del repositorio; los tests prueban com
 | Acceso, invitación y passkeys | Existe | `session.tsx`, `invite/[token].tsx`, `LoginPage.tsx`; revisar en cada release los recorridos de sesión y recuperación. | T0 |
 | Roles titular/HR/responsable/trabajador | Existe | `MemberPanel.tsx`, `roleChange.ts`, `managers.test.ts`; guía y confirmación de cambios en PR #37. | Mejorar T1 |
 | Responsable sobre su equipo | Existe en portal | `App.tsx` habilita presencias y solicitudes con RLS. La app del trabajador no tiene bandeja de aprobación de equipo. | T3 |
-| Mansione, categoría, livello, CCNL y contrato | Falta | `members` guarda rol de acceso, sede y responsable, pero no esos datos laborales. Capo turno como cargo no equivale al rol manager. | T1 |
+| Mansione, categoría, livello, CCNL y contrato | ✅ Referencias versionadas HECHAS | `employment_terms`, `MemberEmployment.tsx`, consulta móvil y exportación propia. Historial, sustitución de versiones de hoy/futuras, cancelación futura y aislamiento en `employment.test.ts`. Falta catálogo configurable, horarios y reglas de acumulación. Capo turno como cargo no equivale al rol manager. | T1 |
 | Organización por departamentos/equipos | Parcial | Hay empresa, sede y un responsable por empleado; faltan estructura de equipos y delegaciones temporales. | T1 / T6 |
 | Horarios personales y cambios con fecha | Falta | No hay entidad de horarios ni asignaciones laborales vigentes por intervalo. | T1 |
 | QR, geovalla mínima y cola offline | Existe | `timbra.tsx`, `outbox.ts`, `punch-sync.test.ts`, `attendance.test.ts`. | Mantener T0 |
@@ -38,6 +38,7 @@ Las rutas siguientes son evidencia dentro del repositorio; los tests prueban com
 | Turnos nocturnos y fronteras de mes | Parcial | El informe maneja intervalos, pero no un plan laboral que defina la jornada esperada. | T2 |
 | Cartellino histórico del trabajador | Falta | `useTodayPunches()` y la pantalla de fichaje consultan hoy; el CSV de HR no sustituye el historial en la app. | T2 |
 | Anomalías | Parcial | Flags y solicitudes de corrección existen; faltan tolerancias por horario y una bandeja de resolución. | T2 |
+| Gestión de cientos de trabajadores | Incompleta, prioritaria | `useTodayPunches` y consultas de empleados/solicitudes no paginan. El inicio de hoy usa el huso del navegador. Añadir consultas paginadas con totales fiables, fecha de Roma, filtros por sede/equipo/persona/estado y bandeja de incidencias. No presentar un subconjunto como total. | T0 / T2 |
 | Historial y motivo de decisiones | Existe | `RequestsPage.tsx`, `requestHistory.ts`, `richieste.tsx`: pendientes e historial, motivo y fecha. | Mantener T0 |
 | Fechas y solicitud por horas | Existe con límites | Calendario móvil y cantidad por horas; medias jornadas y cantidad por día no siguen todavía horarios personales. | T1 / T3 |
 | Calendario italiano para solicitudes | Parcial | `italy/calendar.ts`: laborables y festivos nacionales. No incorpora jornada de seis días, turno dominical o festivo patronal de la sede. | T1 |

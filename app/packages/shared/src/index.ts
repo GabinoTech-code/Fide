@@ -3,6 +3,7 @@ export * from './protocol';
 export * from './brand';
 export * from './security-headers';
 export * from './lifecycle';
+export * from './employment';
 
 // B2B Company & Organization Types
 export type SupportedCountry = 'IT' | 'ES';

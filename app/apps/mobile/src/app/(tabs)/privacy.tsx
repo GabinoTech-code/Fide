@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Alert, Share, View } from 'react-native';
 import { router } from 'expo-router';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { employmentState, romeDate } from '@fide/shared';
 import { useT, type AppKey } from '../../i18n/app';
 import { LANGUAGES } from '../../i18n/types';
 import { clearLocalPunches } from '../../lib/outboxSqlite';
@@ -11,7 +12,7 @@ import { useSession } from '../../lib/session';
 import { supabase } from '../../lib/supabase';
 import { AccessLine } from '../../components/AccessLine';
 import { DiagnosticsModal } from '../../components/modals/DiagnosticsModal';
-import { useAccessEvents, useDocuments } from '../../lib/data';
+import { useAccessEvents, useDocuments, useEmploymentTerms } from '../../lib/data';
 import { Colors } from '../../theme/colors';
 import { Badge, Body, Button, Card, Chip, ChipGrid, Header, Mono, Notice, Row, Screen, SectionTitle, Small, Strong } from '../../ui/kit';
 
@@ -75,7 +76,8 @@ export default function Privacy() {
   });
   const events = useAccessEvents();
   const docs = useDocuments();
-  const refresh = useLiveQueries(identity, requests, events);
+  const employment = useEmploymentTerms();
+  const refresh = useLiveQueries(identity, requests, events, employment);
   const titles = new Map((docs.data ?? []).map((d) => [d.id, d.title]));
 
   async function exportData() {
@@ -139,6 +141,22 @@ export default function Privacy() {
         <Body>{membership?.full_name}</Body>
         <Mono>{identity.data?.email}</Mono>
         <Mono>{identity.data?.codice_fiscale}</Mono>
+      </Card>
+
+      <Card>
+        <Strong size={15}>{t('employment.title')}</Strong>
+        <Small>{t('employment.hint')}</Small>
+        {employment.isPending ? <Small>{t('common.loading')}</Small> : null}
+        {employment.isError ? <Notice>{t('common.error')}</Notice> : null}
+        {employment.isSuccess && !employment.data.length ? <Small>{t('employment.empty')}</Small> : null}
+        {(employment.data ?? []).map((row) => <View key={row.id} style={{ gap: 4, paddingVertical: 8 }}>
+          <Strong>{t(`employment.${employmentState(row, employment.data ?? [], romeDate(new Date()))}`)} · {date(row.effective_from)}</Strong>
+          <Body>{t('employment.job_title')}: {row.job_title}</Body>
+          <Small>{t('employment.category')}: {row.category ?? '—'} · {t('employment.level')}: {row.level ?? '—'}</Small>
+          <Body>{t('employment.contract_type')}: {row.contract_type}</Body>
+          <Small>{t('employment.weekly_hours')}: {Number(row.weekly_hours)}</Small>
+          <Small>{t('employment.ccnl_reference')}: {row.ccnl_reference ?? '—'}</Small>
+        </View>)}
       </Card>
 
       <Card>

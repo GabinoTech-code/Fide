@@ -1,6 +1,20 @@
 import type { AppMessages } from './index';
 
 export const en: AppMessages = {
+  "employment.title": "Employment details",
+  "employment.hint": "References entered by HR: not a signed contract and do not activate balance accrual. Job titles do not grant access permissions.",
+  "employment.job_title": "Job title",
+  "employment.category": "Category",
+  "employment.level": "Level",
+  "employment.contract_type": "Contract type",
+  "employment.ccnl_reference": "CCNL reference",
+  "employment.weekly_hours": "Weekly hours",
+  "employment.effective_from": "Effective from",
+  "employment.empty": "HR has not entered employment details yet.",
+  "employment.current": "Current",
+  "employment.past": "Historical",
+  "employment.future": "Scheduled",
+  "employment.voided": "Voided / replaced",
   'common.loading': 'Loading…',
   'common.retry': 'Try again',
   'common.cancel': 'Cancel',

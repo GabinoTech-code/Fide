@@ -1,6 +1,20 @@
 import type { AppMessages } from './index';
 
 export const zh: AppMessages = {
+  "employment.title": "工作资料",
+  "employment.hint": "人事部门录入的参考信息：不是已签署的合同，也不会启用余额累计计算。职位名称不会授予访问权限。",
+  "employment.job_title": "职位",
+  "employment.category": "类别",
+  "employment.level": "级别",
+  "employment.contract_type": "合同类型",
+  "employment.ccnl_reference": "CCNL参考",
+  "employment.weekly_hours": "每周工时",
+  "employment.effective_from": "生效日期",
+  "employment.empty": "人事部门尚未录入工作资料。",
+  "employment.current": "当前有效",
+  "employment.past": "历史记录",
+  "employment.future": "计划生效",
+  "employment.voided": "已取消／已替换",
   'common.loading': '加载中…',
   'common.retry': '重试',
   'common.cancel': '取消',

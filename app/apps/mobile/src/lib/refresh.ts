@@ -58,6 +58,7 @@ export function useLiveQueries(...queries: Refetchable[]) {
 
 /** Tables in the supabase_realtime publication and the queries each one feeds. */
 const LIVE_TABLES: Record<string, string[]> = {
+  employment_terms: ['employment'],
   leave_balances: ['balances'],
   leave_requests: ['my_leave', 'balances'],
   punch_corrections: ['my_corrections'],

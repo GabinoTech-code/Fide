@@ -1,6 +1,20 @@
 import type { AppMessages } from './index';
 
 export const sq: AppMessages = {
+  "employment.title": "Të dhënat e punës",
+  "employment.hint": "Referenca të vendosura nga HR: nuk janë kontratë e nënshkruar dhe nuk aktivizojnë llogaritjen e gjendjes. Pozicioni nuk jep leje hyrjeje.",
+  "employment.job_title": "Pozicioni",
+  "employment.category": "Kategoria",
+  "employment.level": "Niveli",
+  "employment.contract_type": "Lloji i kontratës",
+  "employment.ccnl_reference": "Referenca CCNL",
+  "employment.weekly_hours": "Orët javore",
+  "employment.effective_from": "Në fuqi nga",
+  "employment.empty": "HR ende nuk ka vendosur të dhënat e punës.",
+  "employment.current": "Në fuqi",
+  "employment.past": "Historik",
+  "employment.future": "I planifikuar",
+  "employment.voided": "I anuluar / zëvendësuar",
   'common.loading': 'Duke u ngarkuar…',
   'common.retry': 'Provo përsëri',
   'common.cancel': 'Anulo',

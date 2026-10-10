@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useState } from 'react';
 import { AppState } from 'react-native';
 import { romeDate, romeWallTimeToIso } from '@fide/shared';
+import type { EmploymentTerms } from '@fide/shared';
 import { listDocuments } from './documents';
 import type { QueuedPunch } from './outbox';
 import { sqliteOutbox } from './outboxSqlite';
@@ -37,6 +38,17 @@ async function rows<T>(q: PromiseLike<{ data: unknown; error: unknown }>): Promi
   const { data, error } = await q;
   if (error) throw error;
   return (data ?? []) as T[];
+}
+
+export function useEmploymentTerms() {
+  const { membership } = useSession();
+  return useQuery({
+    queryKey: ['employment', membership?.id],
+    enabled: Boolean(membership),
+    queryFn: () => rows<EmploymentTerms>(supabase.from('employment_terms')
+      .select('id,effective_from,job_title,category,level,contract_type,ccnl_reference,weekly_hours,voided_at')
+      .eq('member_id', membership!.id).order('effective_from', { ascending: false }).order('created_at', { ascending: false })),
+  });
 }
 
 export function useSites() {
