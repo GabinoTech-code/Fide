@@ -5,6 +5,8 @@ import { useEffect } from 'react';
 import { useAuth } from '../auth/AuthProvider';
 import type { AuditMember } from './auditAttribution';
 import { supabase } from './supabase';
+import { romeDate } from '@fide/shared';
+import { collectById, presenceWindow } from './presenceView';
 import type { AuditEntry, BatchDocument, GdprRequest, Kiosk, LeaveRequest, LeaveType, Member, PayrollBatch, Punch, PunchCorrection, Site } from './types';
 
 function useCompanyId(): string {
@@ -23,16 +25,20 @@ export function useMembers() {
   return useQuery({
     queryKey: ['members', companyId],
     enabled: Boolean(companyId),
-    queryFn: () =>
-      rows<Member>(
-        supabase
+    queryFn: async () => {
+      const members = await collectById<Member>((after) => {
+        let query = supabase
           .from('members')
           .select(
             'id, company_id, auth_user_id, role, status, full_name, site_id, manager_member_id, employee_number, preferred_language, terminated_on, status_changed_at, member_identities(email, codice_fiscale), device_keys(id, status, fingerprint, x25519_public_key, ed25519_public_key, created_at)',
           )
           .eq('company_id', companyId)
-          .order('full_name'),
-      ),
+          .order('id').limit(500);
+        if (after) query = query.gt('id', after);
+        return query.overrideTypes<Member[], { merge: false }>();
+      });
+      return members.sort((a, b) => a.full_name.localeCompare(b.full_name));
+    },
   });
 }
 
@@ -73,12 +79,10 @@ export function useKiosks() {
 }
 
 /** Today's punches (Europe/Rome), kept live through Realtime. */
-export function useTodayPunches() {
+export function useTodayPunches(day = romeDate(new Date())) {
   const companyId = useCompanyId();
   const queryClient = useQueryClient();
-  const startOfDay = new Date();
-  startOfDay.setHours(0, 0, 0, 0);
-  const since = startOfDay.toISOString();
+  const { from, to } = presenceWindow(day);
 
   useEffect(() => {
     if (!companyId) return;
@@ -94,17 +98,30 @@ export function useTodayPunches() {
   }, [companyId, queryClient]);
 
   return useQuery({
-    queryKey: ['punches', companyId, since.slice(0, 10)],
+    queryKey: ['punches', companyId, day],
     enabled: Boolean(companyId),
-    queryFn: () =>
-      rows<Punch>(
-        supabase
+    refetchInterval: 60_000,
+    queryFn: async () => {
+      // Use server-stamped receipt time, not the operator's potentially wrong clock.
+      const latest = await rows<{ received_at: string }>(supabase.from('punches').select('received_at')
+        .eq('company_id', companyId).gte('device_ts', from).lt('device_ts', to)
+        .order('received_at', { ascending: false }).limit(1));
+      const asOf = latest[0]?.received_at;
+      if (!asOf) return [];
+      const punches = await collectById<Punch>((after) => {
+        let query = supabase
           .from('punches')
           .select('id, member_id, punch_type, method, site_id, device_ts, received_at, receipt_code, flags')
           .eq('company_id', companyId)
-          .gte('device_ts', since)
-          .order('device_ts', { ascending: false }),
-      ),
+          .gte('device_ts', from)
+          .lt('device_ts', to)
+          .lte('received_at', asOf)
+          .order('id').limit(500);
+        if (after) query = query.gt('id', after);
+        return query;
+      });
+      return punches.sort((a, b) => b.device_ts.localeCompare(a.device_ts) || b.id.localeCompare(a.id));
+    },
   });
 }
 
