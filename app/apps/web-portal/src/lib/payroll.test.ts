@@ -114,6 +114,15 @@ describe('planRecipients', () => {
     expect(needsReview(plan, new Set()).map((r) => r.memberId)).toEqual(['a']);
     expect(allReviewPagesChecked(needsReview(plan, new Set()), {})).toBe(false);
     expect(allReviewPagesChecked(needsReview(plan, new Set()), { 1: 'a' })).toBe(true);
+
+    const reassigned = planRecipients({
+      split: split([], [{ page: 1, kind: 'unassigned' }], 1),
+      members: [member('a', { cf: 'A', keys }), member('b', { cf: 'B', keys: generateDeviceKeys(s) })],
+      published: [],
+      pinned: {},
+      manual: { 1: 'b' },
+    });
+    expect(allReviewPagesChecked(needsReview(reassigned, new Set()), { 1: 'a' })).toBe(false);
   });
 
   it('still sends to a former employee during the 12-month window, not after', () => {
