@@ -86,6 +86,7 @@ Prioridades:
 | --- | --- | --- | --- |
 | G1 | **Solicitudes RGPD sin bandeja.** El trabajador puede pedir la cancelación desde la app, pero HR no las ve: `resolve_gdpr_request` existe, sin pantalla. Hay que responder en un mes (art. 12). ✅ **HECHO** (página Privacy del portal y lista en la app; `20261009090400_gdpr_inbox.sql`, test `hr-actions.test.ts`). | Portal | **P0** |
 | G2 | Purga automática de datos al terminar los plazos de conservación. | BD | P2 |
+| G3 | El registro guarda `actor_auth_user_id`, pero la pantalla no identificaba quién actuó ni el empleado afectado al crear/revocar una clave. ✅ **HECHO** (portal resuelve actor y sujeto con membresías visibles; los valores modificados y UUID no se muestran; `auditAttribution.test.ts`). | Portal | P1 |
 
 ## 7. Avisos
 

@@ -3,6 +3,7 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { useAuth } from '../auth/AuthProvider';
+import type { AuditMember } from './auditAttribution';
 import { supabase } from './supabase';
 import type { AuditEntry, BatchDocument, GdprRequest, Kiosk, LeaveRequest, LeaveType, Member, PayrollBatch, Punch, PunchCorrection, Site } from './types';
 
@@ -29,6 +30,23 @@ export function useMembers() {
           .select(
             'id, company_id, auth_user_id, role, status, full_name, site_id, manager_member_id, employee_number, preferred_language, terminated_on, status_changed_at, member_identities(email, codice_fiscale), device_keys(id, status, fingerprint, x25519_public_key, ed25519_public_key, created_at)',
           )
+          .eq('company_id', companyId)
+          .order('full_name'),
+      ),
+  });
+}
+
+/** Minimal same-company identity data used only to label audit events. */
+export function useAuditAttributionMembers() {
+  const companyId = useCompanyId();
+  return useQuery({
+    queryKey: ['audit-attribution-members', companyId],
+    enabled: Boolean(companyId),
+    queryFn: () =>
+      rows<AuditMember>(
+        supabase
+          .from('members')
+          .select('id, company_id, auth_user_id, full_name, device_keys(id)')
           .eq('company_id', companyId)
           .order('full_name'),
       ),
