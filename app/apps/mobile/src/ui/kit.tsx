@@ -62,14 +62,33 @@ export function Screen({
 }
 
 /** Screen header: eyebrow, title and the round privacy button of the prototype. */
-export function Header({ eyebrow, title, privacy = true, privacyLabel }: { eyebrow?: string; title: string; privacy?: boolean; privacyLabel?: string }) {
+export function Header({
+  eyebrow,
+  title,
+  privacy = true,
+  privacyLabel,
+  onClose,
+  closeLabel,
+}: {
+  eyebrow?: string;
+  title: string;
+  privacy?: boolean;
+  privacyLabel?: string;
+  /** Replaces the privacy button with a close button (on the My data screen). */
+  onClose?: () => void;
+  closeLabel?: string;
+}) {
   return (
     <View style={styles.header}>
       <View style={{ flex: 1, gap: 2 }}>
         {eyebrow ? <Eyebrow>{eyebrow}</Eyebrow> : null}
         <Title>{title}</Title>
       </View>
-      {privacy ? (
+      {onClose ? (
+        <Pressable accessibilityRole="button" accessibilityLabel={closeLabel} onPress={onClose} style={({ pressed }) => [styles.roundButton, pressed && { opacity: 0.8 }]}>
+          <Text style={styles.close}>×</Text>
+        </Pressable>
+      ) : privacy ? (
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={privacyLabel}
@@ -349,6 +368,7 @@ const styles = StyleSheet.create({
   screen: { paddingHorizontal: 20, paddingTop: 20, paddingBottom: 32, gap: 16 },
   screenDark: { paddingHorizontal: 28, paddingTop: 48, paddingBottom: 40, gap: 18, flexGrow: 1 },
   header: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: -4 },
+  close: { fontFamily: Fonts.text, fontSize: 26, lineHeight: 28, color: Colors.textPrimary },
   roundButton: { width: 44, height: 44, borderRadius: 22, borderWidth: 1, borderColor: Colors.chipBorder, backgroundColor: Colors.cardBg, alignItems: 'center', justifyContent: 'center' },
   title: { fontFamily: Fonts.display, fontSize: 26, letterSpacing: -0.5, color: Colors.textPrimary },
   eyebrow: { fontFamily: Fonts.text, fontSize: 12, letterSpacing: 1.2, textTransform: 'uppercase', color: Colors.textSecondary },

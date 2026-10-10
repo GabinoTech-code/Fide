@@ -42,7 +42,9 @@ export default function Requests() {
   }
 
   const leaveTypes = types.data ?? [];
-  const selected = choice ?? leaveTypes[0]?.id ?? null;
+  // Ferie first: the request most people make; then any day-based type.
+  const fallback = leaveTypes.find((x) => x.code === 'FERIE') ?? leaveTypes.find((x) => x.unit === 'days') ?? leaveTypes[0];
+  const selected = choice ?? fallback?.id ?? null;
   const isCorrection = selected === CORRECTION;
   const type = leaveTypes.find((x) => x.id === selected) ?? null;
   const hoursType = type?.unit === 'hours';
@@ -147,7 +149,7 @@ export default function Requests() {
       byHr: Boolean(c.entered_by),
       note: c.decision_note,
     })),
-  ].sort((a, b) => b.sort.localeCompare(a.sort));
+  ].sort((a, b) => Number(b.status === 'pending') - Number(a.status === 'pending') || b.sort.localeCompare(a.sort));
 
   return (
     <Screen refresh={refresh}>

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Alert, Share, View } from 'react-native';
+import { router } from 'expo-router';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useT, type AppKey } from '../../i18n/app';
 import { LANGUAGES } from '../../i18n/types';
@@ -98,7 +99,12 @@ export default function Privacy() {
 
   return (
     <Screen refresh={refresh}>
-      <Header eyebrow={t('privacy.eyebrow')} title={t('privacy.title')} privacy={false} />
+      <Header
+        eyebrow={t('privacy.eyebrow')}
+        title={t('privacy.title')}
+        closeLabel={t('docs.close')}
+        onClose={() => (router.canGoBack() ? router.back() : router.navigate('/(tabs)'))}
+      />
       {message ? <Notice>{message}</Notice> : null}
 
       <Card>

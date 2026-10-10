@@ -28,7 +28,8 @@ export default function TabsLayout() {
       <Tabs.Screen name="timbra" options={{ ...hidden, title: t('tabs.punch'), tabBarIcon: ({ color }) => <BrandIcon name="fichar" size={22} color={color} /> }} />
       <Tabs.Screen name="richieste" options={{ ...hidden, title: t('tabs.requests'), tabBarIcon: ({ color }) => <BrandIcon name="solicitudes" size={22} color={color} /> }} />
       <Tabs.Screen name="documenti" options={{ title: t('tabs.documents'), tabBarIcon: ({ color }) => <BrandIcon name="docs" size={22} color={color} /> }} />
-      <Tabs.Screen name="privacy" options={{ title: t('tabs.privacy'), tabBarIcon: ({ color }) => <BrandIcon name="misdatos" size={22} color={color} /> }} />
+      {/* My data opens from the shield button in every header, as in the prototype: no tab of its own. */}
+      <Tabs.Screen name="privacy" options={{ href: null, title: t('tabs.privacy') }} />
     </Tabs>
   );
 }
