@@ -1,5 +1,8 @@
 # Comparativa con la competencia · 8 de octubre de 2026
 
+> Antecedente histórico de la comparativa inicial. El [estado y plan vigentes del 10 de octubre](COMPARATIVA-Y-PLAN-2026-10-10.md)
+> revisan las funciones contra el código actual y fuentes oficiales. Las tablas siguientes contienen estados y afirmaciones de aquella revisión que no deben usarse como inventario actual.
+
 Qué ofrecen Zucchetti y las demás apps de presencias y RR. HH. que se usan en Italia, qué tiene Fide de cada cosa y qué
 hacemos con lo que falta. Complementa la [auditoría funcional](AUDITORIA-FUNCIONAL-2026-10-08.md): si un hueco ya
 figura allí, se cita su número (E1, V1…); los nuevos van numerados de K1 a K50.

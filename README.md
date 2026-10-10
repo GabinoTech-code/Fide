@@ -23,6 +23,8 @@ telefono del dipendente, ferie e permessi. In **fase pilota**.
 
 Limiti attuali e controlli effettivi: [docs/security/AUDIT-2026-10-07.md](docs/security/AUDIT-2026-10-07.md).
 
+Confronto funzionale e piano di costruzione aggiornato: [comparativa del 10 ottobre](docs/audit/COMPARATIVA-Y-PLAN-2026-10-10.md).
+
 ## Struttura
 
 | Percorso | Contenuto |
