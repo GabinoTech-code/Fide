@@ -258,4 +258,10 @@ export const en: AppMessages = {
   "balances.used": "Used",
   "balances.pending": "Pending",
   "balances.missing": "HR has not entered this balance yet",
+  "push.enable": "Enable notifications",
+  "push.disable": "Disable notifications",
+  "push.explain": "Optional generic alerts, without names or personal content. They stop when employment ends or the phone is revoked.",
+  "push.error": "Notifications could not be updated. Check your connection and try again.",
+  "push.denied": "Notifications are not allowed. You can allow them in your phone settings.",
+  "push.settings": "Open settings",
 };

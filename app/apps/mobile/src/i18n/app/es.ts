@@ -258,4 +258,10 @@ export const es: AppMessages = {
   "balances.used": "Utilizado",
   "balances.pending": "Pendiente",
   "balances.missing": "HR todavía no ha cargado el saldo",
+  "push.enable": "Activar notificaciones",
+  "push.disable": "Desactivar notificaciones",
+  "push.explain": "Avisos opcionales y genéricos, sin nombres ni contenido personal. Se interrumpen al finalizar la relación laboral o revocar el móvil.",
+  "push.error": "No se pudieron actualizar las notificaciones. Comprueba la conexión y reintenta.",
+  "push.denied": "Notificaciones sin permiso. Puedes permitirlas en los ajustes del móvil.",
+  "push.settings": "Abrir ajustes",
 };

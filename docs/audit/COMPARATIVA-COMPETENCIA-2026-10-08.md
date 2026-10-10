@@ -43,7 +43,7 @@ bien que funciona.
 | K1 | **Pausas**: inicio y fin, retribuida o no, automática. Son obligatorias si la jornada supera 6 h (art. 8 D.Lgs. 66/2003). | S, F | ❌ solo entrada y salida | B2 |
 | K2 | **Causal al fichar**: smart working, trasferta, servizio esterno, salida por permiso | Z | ❌ | B2 |
 | K3 | Fichar desde el navegador (personal de oficina, smart working) | Z (terminal virtual), J, F | ❌ | B2 |
-| K4 | Recordatorio de "no has fichado" y aviso al responsable cuando alguien ficha fuera de la sede | F, J | ❌ no hay push (N1) | B2 |
+| K4 | Recordatorio de "no has fichado" y aviso al responsable cuando alguien ficha fuera de la sede | F, J | ❌ faltan los eventos de recordatorio/aviso fuera de sede; canal push implementado (N1) | B2 |
 | K5 | NFC: acercar el móvil a una etiqueta | Z (People Smart), TS, S | ❌ | B3. Con etiquetas NTAG 424 DNA, que dan un código distinto en cada lectura, como nuestro QR. Una etiqueta normal se copia. |
 | K6 | Baliza Bluetooth en la pared | Z (ZBeacon) | ❌ | B3, dentro del terminal propio (ESP32) |
 | K7 | Terminal físico con badge | Z, J | 🟡 terminal ESP32 en diseño | B3 |
@@ -109,7 +109,7 @@ bien que funciona.
 | # | Función | Quién | Fide | Decisión |
 | --- | --- | --- | --- | --- |
 | K33 | **Tablón** de noticias y avisos de la empresa | Z, F, TS, S | ❌ | B2, junto con K29 |
-| — | Notificaciones push y por email | todos | ❌ (N1) | B2 |
+| — | Notificaciones push y por email | todos | ✅ HECHO: email y push genérico opcional (`push.test.ts` en DB y móvil); activación y prueba real pendientes, ver `deploy/README.md` | B2 |
 | K34 | **Peticiones a la oficina de personal** con su estado: certificado de servicios, cambio de IBAN, anticipo del TFR… | Z (ventanilla virtual y tickets), J (chat), S (chat con RR. HH.) | ❌ | B2 como formulario; el chat, en B3 |
 | K35 | **Whistleblowing**: canal de denuncias del D.Lgs. 24/2023, obligatorio a partir de 50 trabajadores | F, P, TS | ❌ | B3, de mucho valor: el cifrado de extremo a extremo encaja perfecto |
 | K36 | Encuestas anónimas y eNPS | S | ❌ | B3 |
@@ -180,7 +180,7 @@ verificar). Cada punto es una oportunidad que no cuesta funciones nuevas, solo h
 | --- | --- | --- |
 | 3,1★ en Google Play y 2,3★ en App Store Italia | App sencilla, en 9 idiomas | — |
 | Acceso complicado: URL del servidor, código de entorno, matrícula y contraseña | Invitación por enlace y código por email, sin contraseña | ✅ (passkeys en producción: C2) |
-| Hay que abrir la app para ver las circulares nuevas | Avisos push y por email | ❌ (N1) |
+| Hay que abrir la app para ver las circulares nuevas | Avisos push y por email | Canal ✅ HECHO (N1, `push.test.ts`); circulares pendientes (K33) |
 | Google Play declara datos «no cifrados» y que no se pueden eliminar | Cifrado de extremo a extremo y derechos RGPD desde la app | ✅ (la bandeja de HR falta: G1) |
 | Fichaje «sospechoso» sin GPS o con mala conexión | Fichaje firmado sin conexión y QR del kiosco | ✅ |
 | Cierres al arrancar, PDF que no se guardan, desincronía entre app y web | Pruebas en dispositivo real antes del piloto | Pendiente (C4) |

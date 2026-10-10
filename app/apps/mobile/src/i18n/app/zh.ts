@@ -256,4 +256,10 @@ export const zh: AppMessages = {
   "balances.used": "已使用",
   "balances.pending": "待审批",
   "balances.missing": "人事部门尚未录入余额",
+  "push.enable": "启用通知",
+  "push.disable": "停用通知",
+  "push.explain": "可选的通用提醒，不含姓名或个人内容。雇佣关系结束或手机授权被撤销后停止发送。",
+  "push.error": "无法更新通知。请检查网络连接后重试。",
+  "push.denied": "通知未获授权。可在手机设置中允许通知。",
+  "push.settings": "打开设置",
 };

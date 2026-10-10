@@ -62,3 +62,11 @@ npm run typecheck && npm run lint && npm test
 
 Le migrazioni si applicano al progetto ospitato con il workflow manuale **Supabase deploy** (`.github/workflows/supabase-deploy.yml`).
 Dettagli in [supabase/README.md](supabase/README.md) e [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+
+
+Gli avvisi push facoltativi sono generici («Ci sono novità in Fide»): non contengono nomi, contenuti dei documenti,
+importi o tipi di assenza. Expo/APNs/FCM ricevono token e messaggio, con metadati tecnici del trasporto;
+nessun tracciamento di lettura. Token cancellati al logout/revoca/sospensione/cessazione o dopo 30 giorni inattivi.
+[Trattamento e rollout](docs/legal/DPIA_GDPR_Art35.md#avvisi-push-facoltativi-rollout-da-completare),
+[setup e prova su telefono](deploy/README.md#notifiche-push). Firebase Android pubblico in `app/apps/mobile`;
+credenziali private FCM/APNs e token Expo mai nelle app client o nel repository.

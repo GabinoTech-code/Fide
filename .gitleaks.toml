@@ -14,3 +14,22 @@ regexes = [
   # low-entropy token; this keeps that commit scannable without rewriting history.
   '''Qm9uZ2lvcm5vLUZpZGUtaW52aXRvLXRva2VuLTMyYg''',
 ]
+
+# Firebase Android client API key is embedded in every installed APK by design.
+# Only this public current_key field in this exact config path is allowlisted.
+# Service account keys, APNs private keys and all other files stay scanned.
+[[rules]]
+id = "gcp-api-key"
+[[rules.allowlists]]
+condition = "AND"
+regexTarget = "line"
+paths = ['^app/apps/mobile/google-services\.json$']
+regexes = ['^\s*"current_key": "AIza[0-9A-Za-z_-]{35}"[,]?\s*$']
+
+[[rules]]
+id = "generic-api-key"
+[[rules.allowlists]]
+condition = "AND"
+regexTarget = "line"
+paths = ['^app/apps/mobile/google-services\.json$']
+regexes = ['^\s*"current_key": "AIza[0-9A-Za-z_-]{35}"[,]?\s*$']

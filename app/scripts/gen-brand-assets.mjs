@@ -32,6 +32,7 @@ png(
   `<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024"><rect width="1024" height="1024" fill="${c.slate}"/></svg>`,
 );
 png(mobile('android-icon-monochrome.png'), logoSvg({ size: 1024, color: '#FFFFFF', scale: adaptive }));
+png(mobile('notification-icon.png'), logoSvg({ size: 96, color: '#FFFFFF', scale: 0.85, hands: false }));
 png(mobile('splash-icon.png'), logoSvg({ size: 1024, color: c.mint, scale: 0.8 }));
 png(mobile('favicon.png'), logoSvg({ size: 48, color: c.mint, background: c.slate, radius: 11, scale: 34 / 48, hands: false, strokeWidth: logo.faviconStroke[48] }));
 

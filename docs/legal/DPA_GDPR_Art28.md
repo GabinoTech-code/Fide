@@ -130,4 +130,12 @@ Il Titolare ____________________  Il Responsabile ____________________
 | Supabase, Inc. | Database, autenticazione, archivio dei file cifrati, funzioni server | Tutti i dati dell'allegato 1 | Regione UE (Irlanda). Società statunitense: garanzie per eventuali accessi extra-UE secondo il DPA del fornitore [verificare: clausole contrattuali tipo / Data Privacy Framework]. |
 | Brevo (Sendinblue SAS) | Invio delle e-mail di invito, dei codici di accesso e degli avvisi di servizio (nuovo documento, richiesta gestita, richiesta privacy) | E-mail, nome, nome dell'azienda; negli avvisi all'HR il nome del richiedente | Francia (UE) |
 | Hetzner Online GmbH | Server del portale e del sito (file statici, nessun dato del database) | Indirizzi IP e dati tecnici delle richieste (log del server web) | Finlandia (UE); società tedesca |
-| *Solo quando attivate:* Expo (650 Industries, Inc.), Apple, Google | Notifiche push («nuovo documento disponibile», senza contenuti personali) | Identificativo del dispositivo per le notifiche | USA [verificare garanzie al momento dell'attivazione] |
+| *Solo quando attivate:* Expo (650 Industries, Inc.), Apple, Google | Notifiche push facoltative («Ci sono novità in Fide», senza dati degli eventi) | Token push pseudonimo e testo generico, metadati tecnici del trasporto secondo le condizioni dei fornitori | USA [verificare garanzie al momento dell'attivazione] |
+
+
+Conservazione push lato Fide: token eliminati dopo 30 giorni senza rinnovo o al logout/revoca/sospensione/cessazione;
+coda privata con destinatario e token, tentativi, codici di errore tecnici e ticket del fornitore eliminata dopo
+30 giorni. Nessun dato di lettura. Vedere [DPIA](DPIA_GDPR_Art35.md#avvisi-push-facoltativi-rollout-da-completare).
+Lo stato pubblico «USA [verificare garanzie]» richiede ancora verifica prima del rollout: la
+[privacy policy Expo](https://expo.dev/privacy) descrive raccolta di token, metadati tecnici e trasferimenti;
+non costituisce da sola un accordo art. 28 sottoscritto dal cliente né prova delle garanzie di ogni fornitore.

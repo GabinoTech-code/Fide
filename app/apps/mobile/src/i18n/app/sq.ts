@@ -258,4 +258,10 @@ export const sq: AppMessages = {
   "balances.used": "Përdorur",
   "balances.pending": "Në pritje",
   "balances.missing": "HR ende nuk e ka vendosur gjendjen",
+  "push.enable": "Aktivizo njoftimet",
+  "push.disable": "Çaktivizo njoftimet",
+  "push.explain": "Njoftime opsionale dhe të përgjithshme, pa emra apo përmbajtje personale. Ndalen kur mbaron punësimi ose revokohet telefoni.",
+  "push.error": "Njoftimet nuk u përditësuan. Kontrollo lidhjen dhe provo sërish.",
+  "push.denied": "Njoftimet nuk lejohen. Mund t’i lejosh te cilësimet e telefonit.",
+  "push.settings": "Hap cilësimet",
 };

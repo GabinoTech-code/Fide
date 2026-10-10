@@ -69,3 +69,29 @@ esterne viene richiesto; il riferimento facoltativo non deve contenere diagnosi 
 - Consultazione delle rappresentanze sindacali, se presenti, e accordo o autorizzazione solo se attiva la posizione.
 - Tempi di conservazione e alternativa per chi non usa il telefono.
 - Esito della valutazione e data del riesame (consigliato ogni 12 mesi o a ogni cambiamento del servizio).
+
+
+## Avvisi push facoltativi (rollout da completare)
+
+Se attivati volontariamente nella home e autorizzati dal sistema operativo, gli avvisi dicono solo «Ci sono novità
+in Fide. Apri l’app per vederle», nella lingua del destinatario. Non contengono nomi, aziende, documenti, importi,
+tipi di assenza o identificativi degli eventi. Il token push viene associato sul server all’utente e alla chiave
+attiva del telefono, con piattaforma, data di creazione e ultimo rinnovo per cancellare registrazioni obsolete.
+Expo (650 Industries, Inc.), Apple (APNs) e Google (FCM) trattano il token e il messaggio generico e possono trattare
+metadati tecnici del trasporto secondo le proprie condizioni. Non sono destinatari dei documenti o delle chiavi
+private del lavoratore. Questi servizi possono comportare trasferimenti extra-UE: prima dell’attivazione per il
+pilota il titolare e Fide devono documentare accordi, garanzie e fornitori effettivi. La sola autorizzazione del
+telefono non sostituisce la base giuridica e la valutazione dei trasferimenti.
+
+Puoi disattivarli nella home; se manca rete l’app segnala che la modifica non è riuscita. Il logout rimuove il token
+prima di uscire. Token eliminati alla revoca del telefono, sospensione o cessazione; gli ex dipendenti conservano
+l’accesso ai documenti e gli avvisi e-mail previsti. Token inattivi da 30 giorni e coda tecnica dopo 30 giorni sono
+eliminati dal cron. Ticket Expo controllati dopo 15 minuti e chiusi entro 24 ore; nessuna registrazione di lettura.
+Avvisi già accettati dal fornitore non richiamabili (TTL 5 minuti). Disattivando il permesso dal sistema,
+riaprire la home per sincronizzare la rimozione lato server.
+
+Rischi aggiuntivi: correlazione del token con uso di un’app di lavoro, notifiche già in transito dopo revoca,
+compromissione di una chiave APNs condivisa, trasferimenti extra-UE e affidabilità non garantita. Mitigazioni:
+opt-in, payload generico privo di evento o URL, RLS, binding alla chiave attiva, cancellazione dei token,
+TTL breve, token Expo solo server e Enhanced Push Security. La ricezione del push non è usata per valutare persone.
+Conservazione tecnica limitata a 30 giorni senza log di lettura. Test: `push.test.ts` (mobile e DB).

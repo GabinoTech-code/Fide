@@ -257,4 +257,10 @@ export const it = {
   "balances.used": "Utilizzato",
   "balances.pending": "In attesa",
   "balances.missing": "Saldo non ancora caricato da HR",
+  "push.enable": "Attiva notifiche",
+  "push.disable": "Disattiva notifiche",
+  "push.explain": "Avvisi facoltativi e generici, senza nomi o contenuti personali. Si interrompono alla fine del rapporto o se il telefono viene revocato.",
+  "push.error": "Non è stato possibile aggiornare le notifiche. Controlla la connessione e riprova.",
+  "push.denied": "Notifiche non autorizzate. Puoi consentirle nelle impostazioni del telefono.",
+  "push.settings": "Apri impostazioni",
 } as const;
