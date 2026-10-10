@@ -44,6 +44,8 @@ export interface Recipient {
   manualPages: number[];
   /** Pages where the employee's name was not found: HR checks them before sending. */
   pagesWithoutName: number[];
+  /** Pages with missing name or a manual recipient assignment. */
+  pagesRequiringReview: number[];
   key: { id: string; x25519PublicKey: string } | null;
   trust: TrustState | null;
   existing: PublishedDoc | null;
@@ -124,6 +126,7 @@ export function planRecipients(input: {
       continuationPages: g.continuation.sort((a, b) => a - b),
       manualPages: g.manual.sort((a, b) => a - b),
       pagesWithoutName: g.noName.sort((a, b) => a - b),
+      pagesRequiringReview: [...new Set([...g.noName, ...g.manual])].sort((a, b) => a - b),
       key: active ? { id: active.id, x25519PublicKey: active.x25519_public_key } : null,
       trust,
       existing,
@@ -276,5 +279,10 @@ export function defaultPeriod(today = new Date()): string {
 
 /** Recipients about to be sent whose pages HR must look at first (name not found on them). */
 export function needsReview(recipients: Recipient[], resend: ReadonlySet<string>): Recipient[] {
-  return recipients.filter((r) => willSend(r, resend) && r.pagesWithoutName.length > 0);
+  return recipients.filter((r) => willSend(r, resend) && r.pagesRequiringReview.length > 0);
+}
+
+/** Every uncertain source page must be checked individually before encryption. */
+export function allReviewPagesChecked(recipients: Recipient[], checkedPages: Readonly<Record<number, string>>): boolean {
+  return recipients.every((r) => r.pagesRequiringReview.every((page) => checkedPages[page] === r.memberId));
 }

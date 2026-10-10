@@ -477,6 +477,7 @@ export const it = {
   // Payslips: name cross-check
   'payroll.nameMissing': 'Nome del dipendente non trovato nelle pagine {pages}: controlla che siano sue.',
   'payroll.reviewTitle': 'Controlla prima di inviare',
-  'payroll.reviewBody': 'Il codice fiscale indica questi destinatari, ma il loro nome non compare su alcune pagine: {names}. Apri il PDF e verifica che quelle pagine siano davvero loro. Un cedolino alla persona sbagliata è una violazione di dati personali.',
-  'payroll.reviewConfirm': 'Ho controllato le pagine segnalate: sono dei destinatari indicati.',
+  'payroll.reviewBody': 'Apri ogni pagina segnalata del PDF e verifica che appartenga alla persona indicata. Le assegnazioni manuali e le pagine senza il nome richiedono una verifica individuale.',
+  'payroll.reviewOpenPage': 'Apri pagina {page} del PDF',
+  'payroll.reviewPageConfirm': 'Confermo che la pagina {page} appartiene a {name}.',
 } as const;

@@ -1,7 +1,7 @@
 // Payslips: HR drops the bulk PDF from the payroll software; this browser splits
 // it per employee, encrypts each part to the employee's phone and uploads
 // ciphertext only (lib/payroll.ts). Fide never sees a payslip in clear.
-import { Fragment, useMemo, useRef, useState, type FormEvent } from 'react';
+import { Fragment, useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { splitPayroll, type SplitResult } from '@fide/payroll-parser';
 import { useAuth } from '../auth/AuthProvider';
@@ -10,6 +10,7 @@ import { useI18n, type MessageKey } from '../lib/i18n';
 import { loadPinnedDevices, pinDevices, type PinnedDevices } from '../lib/deviceTrust';
 import {
   assignableMembers,
+  allReviewPagesChecked,
   cutPdf,
   defaultPeriod,
   encryptForRecipient,
@@ -113,8 +114,8 @@ function PayrollWorkspace({ companyId }: { companyId: string }) {
   const [analysis, setAnalysis] = useState<Analysis | null>(null);
   const [analyzing, setAnalyzing] = useState(false);
   const [manual, setManual] = useState<Record<number, string>>({});
-  // Pages where an employee's name is missing hold the send until HR has looked at them.
-  const [reviewed, setReviewed] = useState(false);
+  // Each uncertain source page is checked against the exact recipient selected for it.
+  const [reviewedPages, setReviewedPages] = useState<Record<number, string>>({});
   const [resend, setResend] = useState<ReadonlySet<string>>(new Set());
   const [trust, setTrust] = useState(() => loadPinnedDevices(companyId));
   const [verifying, setVerifying] = useState<Recipient | null>(null);
@@ -132,6 +133,14 @@ function PayrollWorkspace({ companyId }: { companyId: string }) {
   );
   const sending = recipients.filter((r) => willSend(r, resend));
   const toReview = needsReview(recipients, resend);
+  const sourcePdfUrl = useMemo(
+    () => (analysis ? URL.createObjectURL(new Blob([analysis.source.slice().buffer as ArrayBuffer], { type: 'application/pdf' })) : null),
+    [analysis],
+  );
+  useEffect(() => () => {
+    if (sourcePdfUrl) URL.revokeObjectURL(sourcePdfUrl);
+  }, [sourcePdfUrl]);
+  const reviewComplete = allReviewPagesChecked(toReview, reviewedPages);
   const skipped = analysis ? unassignedPages(analysis.split, manual) : [];
   const assignable = useMemo(() => assignableMembers(members), [members]);
 
@@ -143,7 +152,7 @@ function PayrollWorkspace({ companyId }: { companyId: string }) {
     setAnalysis(null);
     setPending(null);
     setManual({});
-    setReviewed(false);
+    setReviewedPages({});
     setResend(new Set());
     setFile(null);
     setError(null);
@@ -184,7 +193,7 @@ function PayrollWorkspace({ companyId }: { companyId: string }) {
         title: title.trim() || defaultTitle,
       });
       setManual({});
-      setReviewed(false);
+      setReviewedPages({});
       setResend(new Set());
     } catch (err) {
       setError(err);
@@ -430,13 +439,25 @@ function PayrollWorkspace({ companyId }: { companyId: string }) {
           {toReview.length && !pending ? (
             <div className="notice notice-warn stack" style={{ gap: 8 }} role="alert">
               <strong>{t('payroll.reviewTitle')}</strong>
-              <span className="small">
-                {t('payroll.reviewBody', { names: toReview.map((r) => `${r.fullName} (${pageRanges(r.pagesWithoutName)})`).join(', ') })}
-              </span>
-              <label className="row" style={{ gap: 8 }}>
-                <input type="checkbox" checked={reviewed} onChange={(e) => setReviewed(e.target.checked)} />
-                {t('payroll.reviewConfirm')}
-              </label>
+              <span className="small">{t('payroll.reviewBody')}</span>
+              {toReview.flatMap((r) => r.pagesRequiringReview.map((page) => (
+                <label className="row small" key={`${r.memberId}-${page}`} style={{ gap: 8 }}>
+                  <input
+                    type="checkbox"
+                    checked={reviewedPages[page] === r.memberId}
+                    onChange={(e) => setReviewedPages((current) => {
+                      const next = { ...current };
+                      if (e.target.checked) next[page] = r.memberId;
+                      else delete next[page];
+                      return next;
+                    })}
+                  />
+                  <a href={`${sourcePdfUrl}#page=${page}`} target="_blank" rel="noopener noreferrer">
+                    {t('payroll.reviewOpenPage', { page })}
+                  </a>
+                  <span>{t('payroll.reviewPageConfirm', { page, name: r.fullName })}</span>
+                </label>
+              )))}
             </div>
           ) : null}
 
@@ -453,7 +474,7 @@ function PayrollWorkspace({ companyId }: { companyId: string }) {
             <span className="spacer" />
             <button
               className="btn btn-primary"
-              disabled={Boolean(work) || (!pending && (sending.length === 0 || (toReview.length > 0 && !reviewed)))}
+              disabled={Boolean(work) || (!pending && (sending.length === 0 || !reviewComplete))}
               onClick={publish}
             >
               {pending ? t('payroll.retry') : t('payroll.publish', { n: sending.length })}
