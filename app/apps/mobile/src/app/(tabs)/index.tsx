@@ -2,7 +2,7 @@ import { router } from 'expo-router';
 import { Text, View } from 'react-native';
 import { formerAccessUntil } from '@fide/shared';
 import { useT, type AppKey } from '../../i18n/app';
-import { buildNotices, formatDuration, workday } from '../../lib/dashboard';
+import { buildNotices, formatDuration, workday, type Notice } from '../../lib/dashboard';
 import { useBalances, useDocuments, useLeaveTypes, useMyCorrections, useMyLeave, useOutbox, useTodayPunches } from '../../lib/data';
 import { useClock, useLiveQueries } from '../../lib/refresh';
 import { useSession } from '../../lib/session';
@@ -62,6 +62,13 @@ export default function Home() {
         : t('home.statusNone');
   const notices = buildNotices({ documents: docs.data ?? [], leave: leave.data ?? [], corrections: corrections.data ?? [] }, now);
   const typeName = (id: string) => types.data?.find((x) => x.id === id)?.name;
+  // A request the employee made shows the decision; an entry HR recorded for them says so instead.
+  const noticeTitle = (n: Exclude<Notice, { kind: 'document' }>) =>
+    n.kind === 'leave'
+      ? `${n.label} · ${n.byHr ? t('requests.byHr') : t(`status.${n.status}` as AppKey)}`
+      : n.byHr
+        ? `${t(n.punchType === 'in' ? 'punch.nextIn' : 'punch.nextOut')} · ${t('punch.byHr')}`
+        : `${t('requests.newCorrection')} · ${t(`status.${n.status}` as AppKey)}`;
 
   return (
     <Screen refresh={refresh}>
@@ -126,8 +133,8 @@ export default function Home() {
             <ListItem
               key={`${n.kind}-${n.id}`}
               icon={n.kind === 'leave' ? 'vacaciones' : 'olvidado'}
-              tone={n.status === 'approved' ? 'mint' : 'danger'}
-              title={`${n.kind === 'leave' ? n.label : t('requests.newCorrection')} · ${t(`status.${n.status}` as AppKey)}`}
+              tone={n.byHr ? 'neutral' : n.status === 'approved' ? 'mint' : 'danger'}
+              title={noticeTitle(n)}
               subtitle={t('home.notice.decidedSub', { when: when(n.at) })}
               onPress={() => router.navigate('/(tabs)/richieste')}
             />
