@@ -53,7 +53,7 @@ Las rutas siguientes son evidencia dentro del repositorio; los tests prueban com
 | Trabajador adjunta documento a HR | Falta | No hay flujo de subida ni claves receptoras de HR; el cifrado actual tiene como receptor al trabajador. | T6 |
 | Circulares, tablón y acuse explícito | Falta | Los avisos de la home son derivados de solicitudes/documentos; no son noticias publicadas por HR ni acuses de conformidad. | T6 |
 | Firma documental | Falta | Firmar un fichaje no implementa firma de contrato ni demuestra FEA/FEQ. | T6 con revisión específica |
-| Email y push | Parcial | `notify-dispatch` envía email. El diagnóstico de push y `push_tokens` no constituyen un servicio de push operativo. | T6 |
+| Email y push | Parcial | ✅ HECHO código de email y push genérico opcional; tests en `app/packages/db-tests/src/push.test.ts` y `app/apps/mobile/src/lib/push.test.ts`. Pendientes credenciales Android/Expo, revisión de proveedores, despliegue y prueba real; ver `deploy/README.md`. | T6 |
 | Vencimientos y onboarding/offboarding | Parcial | Baja, suspensión y revocación existen; faltan tareas de alta/baja, contratos y recordatorios de formación/DPI. | T7 |
 | Gastos, recibos y trasferte | Falta | No hay entidad, aprobación ni adjuntos para gastos. | T7 |
 | Peticiones a HR y cambios de datos | Parcial | Bandeja RGPD existe; no sustituye un trámite de cambio de datos laborales o una petición administrativa general. | T7 |

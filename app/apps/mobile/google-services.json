@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "121763759547",
+    "project_id": "fide-work-7c68c",
+    "storage_bucket": "fide-work-7c68c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:121763759547:android:77e6ee76d947435117709e",
+        "android_client_info": {
+          "package_name": "it.fidework.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyASAP14uAoJL_72cg-mY4TJH2welvS8OJ0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

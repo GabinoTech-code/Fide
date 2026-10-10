@@ -258,4 +258,10 @@ export const ro: AppMessages = {
   "balances.used": "Utilizat",
   "balances.pending": "În așteptare",
   "balances.missing": "HR nu a introdus încă soldul",
+  "push.enable": "Activează notificările",
+  "push.disable": "Dezactivează notificările",
+  "push.explain": "Alerte opționale și generale, fără nume sau conținut personal. Se opresc la încetarea raportului de muncă sau la revocarea telefonului.",
+  "push.error": "Notificările nu au putut fi actualizate. Verifică conexiunea și încearcă din nou.",
+  "push.denied": "Notificările nu sunt permise. Le poți permite în setările telefonului.",
+  "push.settings": "Deschide setările",
 };

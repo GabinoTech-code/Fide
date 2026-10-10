@@ -1,4 +1,4 @@
-> **Obsoleto.** Este documento (2026-10-04) describía controles que no existían. Ver [AUDIT-2026-10-07.md](AUDIT-2026-10-07.md).
+> **Obsoleto.** Este documento (2026-10-04) describía controles que no existían. Ver [AUDIT-2026-10-07.md](AUDIT-2026-10-07.md). La sección B no describe la implementación actual: las push son avisos genéricos sin datos personales de eventos, no blobs cifrados ni una extensión iOS; estado actual en [ARCHITECTURE.md](../ARCHITECTURE.md#avvisi-push-discreti).
 
 # Fide — Rapporto di Audit di Sicurezza e Verifica Crittografica
 ### Piattaforma Zero-Knowledge HR & Presenze Privacy-First

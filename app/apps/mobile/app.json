@@ -52,7 +52,8 @@
             "DEFAULT"
           ]
         }
-      ]
+      ],
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -102,7 +103,9 @@
       [
         "expo-notifications",
         {
-          "color": "#1D6F42"
+          "color": "#1D6F42",
+          "icon": "./assets/notification-icon.png",
+          "defaultChannel": "default"
         }
       ],
       "expo-sqlite",

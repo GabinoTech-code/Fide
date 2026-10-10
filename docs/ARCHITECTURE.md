@@ -109,5 +109,33 @@ allegato 2. Stato effettivo dei controlli: [security/AUDIT-2026-10-07.md](securi
 
 ## Fuori dal pilota
 
-NFC, assistente IA, notifiche push (per ora solo e-mail), firma del mittente sui cedolini, trasferimento delle chiavi tra
+NFC, assistente IA, firma del mittente sui cedolini, trasferimento delle chiavi tra
 telefoni, Spagna, SSO.
+
+
+## Avvisi push discreti
+
+Il telefono registra un Expo push token con `register_push_token` solo dopo l’attivazione volontaria nella home
+ed il permesso del sistema. Il server deriva utente e appartenenza dalla sessione e verifica membro e chiave attivi.
+Un token non può essere trasferito ad un’altra persona o chiave conoscendone il valore. La registrazione si rinnova
+all’apertura della home, al ritorno in primo piano e al cambio del token nativo. Il logout rimuove il token prima di
+chiudere la sessione e richiede una nuova attivazione volontaria al successivo login; se la rete impedisce la rimozione, il logout segnala l’errore e non dichiara successo.
+
+Gli stessi eventi degli avvisi e-mail alimentano `private.push_outbox`, indipendente dalla coda e-mail. Il dispatcher
+ricontrolla membro e chiave attivi e usa Expo → APNs/FCM, con token di accesso server `FIDE_EXPO_ACCESS_TOKEN`.
+Il payload contiene solo titolo «Fide», testo generico tradotto, canale e TTL di 5 minuti: nessun evento, URL,
+identificativo di azienda/persona/documento, nome, importo o tipo di assenza. Nessun cifrato di documento viaggia
+via push. I token sono dati personali pseudonimi, non dati anonimi. Non esiste una Notification Service Extension.
+
+I ticket Expo vengono verificati dopo 15 minuti; `DeviceNotRegistered` elimina token e coda collegata. Massimo
+5 tentativi di invio, avvisi scaduti dopo 24 ore, ticket senza ricevuta chiusi dopo 24 ore, coda eliminata dopo
+30 giorni. Token inutilizzati da 30 giorni eliminati dal cron. Sospensione, cessazione, scollegamento dell’identità
+e revoca della chiave eliminano subito token e invii ancora in coda. I push già accettati dal fornitore non possono
+essere richiamati. Non si registra se il lavoratore legge o apre l’avviso; una ricevuta Expo conferma la consegna
+al fornitore, non la lettura o la ricezione sul telefono. Retry dopo un guasto fra invio e salvataggio del ticket può
+produrre un duplicato generico. Gli ex dipendenti conservano documenti e avvisi e-mail, senza push.
+
+Android usa l’icona bianca su trasparente `notification-icon.png`, generata dal logo canonico, e accento verde
+`#1D6F42`; iOS usa l’icona app. Layout, colori effettivi e visibilità dipendono dalle impostazioni del sistema.
+Prove: `app/packages/db-tests/src/push.test.ts`, `app/apps/mobile/src/lib/push.test.ts`.
+Configurazione e prova reale: [deploy/README.md](../deploy/README.md#notifiche-push).

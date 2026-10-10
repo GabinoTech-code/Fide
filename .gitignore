@@ -35,3 +35,7 @@ Thumbs.db
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Push authentication private keys and service credentials
+*.p8
+*service-account*.json

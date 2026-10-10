@@ -5,6 +5,7 @@ import type { Session } from '@supabase/supabase-js';
 import * as SecureStore from 'expo-secure-store';
 import { signInWithPasskey as passkeySignIn } from './passkey';
 import { supabase } from './supabase';
+import { unregisterPush } from './push';
 import { keyIsActive, loadKeys, type StoredKeys } from './vault';
 
 export interface Membership {
@@ -149,6 +150,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         setKeyState('ok');
       },
       async signOut() {
+        // Fail visibly if the server cannot remove this phone's push capability.
+        if (keys) await unregisterPush(keys.deviceKeyId);
         await supabase.auth.signOut();
         setMemberships([]);
         setKeysState(null);

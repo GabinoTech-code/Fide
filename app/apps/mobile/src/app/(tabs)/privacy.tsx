@@ -109,8 +109,12 @@ export default function Privacy() {
   }
 
   async function logout() {
-    await clearLocalPunches(false);
-    await signOut();
+    try {
+      await clearLocalPunches(false);
+      await signOut();
+    } catch {
+      Alert.alert(t('common.error'), t('push.error'));
+    }
   }
 
   return (

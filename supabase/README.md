@@ -86,3 +86,19 @@ Proyecto `saehchpgnbcciqimrqsj`, región `eu-west-1` (Irlanda).
 
   La privada solo existe como secreto `FIDE_RECEIPT_PRIVATE_KEY` del entorno `production` y de las funciones. Si
   se cambia, los recibos antiguos siguen siendo verificables solo con la clave pública antigua: guárdala aquí.
+
+
+## Push (Android e iOS)
+
+Migrazione `20261010230000_push_notifications.sql`: `push_tokens` legato alla chiave attiva del dispositivo;
+RPC autenticate `register_push_token(uuid,text,text)` e `unregister_push_token(uuid)`. L’accesso diretto in
+scrittura è revocato; lettura/cancellazione restano vincolate al proprio utente con RLS.
+`private.push_outbox` è privata e senza policy client. `svc_push_claim` e `svc_push_done` sono solo service_role.
+Il trigger della coda e-mail crea consegne push separate; nessun errore push interferisce con l’e-mail.
+Il cron esistente richiama `notify-dispatch` anche per push/ricevute e pulisce token inattivi/coda scaduta.
+Invio di massimo 20 consegne concorrenti per minuto, timeout HTTP di 5 secondi, lease di 5 minuti;
+TTL 300 secondi sul telefono. Il segreto Expo viene passato dal workflow, mai al client o nei log.
+Senza `FIDE_EXPO_ACCESS_TOKEN` il dispatcher non reclama né invia push; non consuma i retry per un setup incompleto.
+I vecchi token senza legame al dispositivo vengono eliminati dalla migrazione; la app li registra nuovamente
+solo dopo l’attivazione volontaria. Dati e conservazione: [architettura](../docs/ARCHITECTURE.md#avvisi-push-discreti).
+Test isolamento, revoca, cessazione, scadenza e trasporto: `app/packages/db-tests/src/push.test.ts`.

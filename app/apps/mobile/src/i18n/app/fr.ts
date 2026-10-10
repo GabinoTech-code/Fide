@@ -258,4 +258,10 @@ export const fr: AppMessages = {
   "balances.used": "Utilisé",
   "balances.pending": "En attente",
   "balances.missing": "RH n’a pas encore saisi ce solde",
+  "push.enable": "Activer les notifications",
+  "push.disable": "Désactiver les notifications",
+  "push.explain": "Alertes facultatives et génériques, sans noms ni contenu personnel. Elles cessent à la fin de l’emploi ou si le téléphone est révoqué.",
+  "push.error": "Impossible de mettre à jour les notifications. Vérifiez la connexion et réessayez.",
+  "push.denied": "Notifications non autorisées. Vous pouvez les autoriser dans les réglages du téléphone.",
+  "push.settings": "Ouvrir les réglages",
 };

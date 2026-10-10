@@ -63,6 +63,8 @@ describe('authenticated', () => {
       expect(fns.map((r) => r.fn)).toEqual(
         [
           'add_member(uuid,text,text,text,uuid,uuid,text,member_role,text)',
+          'register_push_token(uuid,text,text)',
+          'unregister_push_token(uuid)',
           'b64_len(text)',
           'cancel_leave_request(uuid)',
           'cancel_punch_correction(uuid)',

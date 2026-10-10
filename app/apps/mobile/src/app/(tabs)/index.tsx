@@ -1,4 +1,5 @@
 import { router } from 'expo-router';
+import { PushSettings } from '../../components/common/PushSettings';
 import { Text, View } from 'react-native';
 import { formerAccessUntil } from '@fide/shared';
 import { useT, type AppKey } from '../../i18n/app';
@@ -72,6 +73,7 @@ export default function Home() {
   return (
     <Screen refresh={refresh}>
       <Header eyebrow={today} title={t('home.greeting', { name: firstName })} privacyLabel={t('tabs.privacy')} />
+      <PushSettings />
 
       <Card dark>
         <Row style={{ justifyContent: 'space-between', flexWrap: 'nowrap' }}>

@@ -55,6 +55,7 @@ jobs:
         env:
           FIDE_RECEIPT_PRIVATE_KEY: ${{ secrets.FIDE_RECEIPT_PRIVATE_KEY }}
           BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+          FIDE_EXPO_ACCESS_TOKEN: ${{ secrets.FIDE_EXPO_ACCESS_TOKEN }}
           FIDE_ALLOWED_ORIGINS: ${{ vars.FIDE_ALLOWED_ORIGINS }}
           FIDE_SITE_URL: ${{ vars.FIDE_SITE_URL }}
           FIDE_MAIL_FROM: ${{ vars.FIDE_MAIL_FROM }}
@@ -70,7 +71,7 @@ jobs:
           echo "::add-mask::$FIDE_DISPATCH_TOKEN"
           echo "FIDE_DISPATCH_TOKEN=$FIDE_DISPATCH_TOKEN" >> "$GITHUB_ENV"
           FIDE_PORTAL_URL="${FIDE_PORTAL_URL:-https://app.fide-work.it}"
-          for v in FIDE_RECEIPT_PRIVATE_KEY FIDE_ALLOWED_ORIGINS FIDE_SITE_URL FIDE_MAIL_FROM BREVO_API_KEY FIDE_PORTAL_URL FIDE_DISPATCH_TOKEN; do
+          for v in FIDE_RECEIPT_PRIVATE_KEY FIDE_ALLOWED_ORIGINS FIDE_SITE_URL FIDE_MAIL_FROM BREVO_API_KEY FIDE_PORTAL_URL FIDE_DISPATCH_TOKEN FIDE_EXPO_ACCESS_TOKEN; do
             if [ -n "${!v}" ]; then printf '%s=%s\n' "$v" "${!v}" >> "$env_file"; fi
           done
           supabase secrets set --env-file "$env_file"

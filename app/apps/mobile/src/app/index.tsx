@@ -1,5 +1,5 @@
 // Entry gate: sends each user to the one screen their state allows.
-import { ActivityIndicator, View } from 'react-native';
+import { ActivityIndicator, Alert, View } from 'react-native';
 import { Redirect } from 'expo-router';
 import { useT } from '../i18n/app';
 import { configured } from '../lib/env';
@@ -10,6 +10,10 @@ import { Body, Button, Card, Screen, Title } from '../ui/kit';
 export default function Gate() {
   const { t } = useT();
   const { ready, session, membership, keyState, pendingInvite, signOut } = useSession();
+  const logout = async () => {
+    try { await signOut(); }
+    catch { Alert.alert(t('common.error'), t('push.error')); }
+  };
 
   if (!configured) {
     return (
@@ -36,7 +40,7 @@ export default function Gate() {
           <Body muted>{t('nocompany.body')}</Body>
           <Body muted>{t('nocompany.suspended')}</Body>
         </Card>
-        <Button kind="secondary" label={t('common.signOut')} onPress={signOut} />
+        <Button kind="secondary" label={t('common.signOut')} onPress={logout} />
       </Screen>
     );
   }
@@ -49,7 +53,7 @@ export default function Gate() {
           <Card>
             <Body muted>{t('former.noPhone', { company: membership.companies?.legal_name ?? '' })}</Body>
           </Card>
-          <Button kind="secondary" label={t('common.signOut')} onPress={signOut} />
+          <Button kind="secondary" label={t('common.signOut')} onPress={logout} />
         </Screen>
       );
     }

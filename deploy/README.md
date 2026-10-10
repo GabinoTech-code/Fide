@@ -118,3 +118,33 @@ curl -sI https://app.fide-work.it/kiosk | grep -iE '^HTTP'                      
 curl -sI https://fide-work.it/_headers | grep -iE '^HTTP'                                   # 404
 curl -sI https://aegis-link.it | grep -iE '^HTTP'                                           # AegisLink sigue igual
 ```
+
+
+## Notifiche push
+
+Implementazione pronta per il rilascio; non considerarla attiva finché non sono completati setup e prova reale.
+
+1. Android: il `google-services.json` pubblico in `app/apps/mobile` deve corrispondere a `it.fidework.app`.
+   In EAS, progetto Fide → Credentials → Android → FCM V1, caricare la chiave **privata** di account di servizio
+   del medesimo progetto Firebase. Questa chiave non è `google-services.json` e non va mai nel repository.
+2. iOS: associare in EAS a `it.fidework.app` una chiave APNs valida del proprio team. Una chiave Team Scoped
+   può servire più app: token e bundle ID separano i destinatari. La revoca della chiave condivisa interrompe
+   tutte le app che la usano. File `.p8` solo nell’archivio privato dell’operatore e in EAS.
+3. Abilitare **Enhanced Push Security** per Fide in Expo, generare un token Expo con accesso al progetto e salvarlo
+   nel secret `FIDE_EXPO_ACCESS_TOKEN` dell’environment GitHub `production`. Non copiarlo in variabili pubbliche.
+4. Prima del rollout con lavoratori reali, completare gli accordi e le garanzie dei fornitori push indicate nel
+   [DPA](../docs/legal/DPA_GDPR_Art28.md) e aggiornare/consegnare l’informativa del cliente pilota.
+5. Dopo approvazione e merge della PR: eseguire il workflow `Supabase deploy`, che applica migrazione e funzione
+   e imposta il secret server. Fare nuove build Android e iOS: icona e Firebase sono configurazione nativa.
+6. Su due telefoni reali: attivare gli avvisi dalla home, autorizzare il sistema, chiudere/minimizzare la app e
+   pubblicare un documento o decidere una richiesta tramite il portale. Verificare il testo generico nella lingua
+   del destinatario, nome/icona Fide, apertura della app e aggiornamento dei dati. Il push non è una conferma
+   di consegna o lettura. Verificare che l’e-mail continui ad arrivare anche disattivando il push.
+7. Provare disattivazione nella home, logout, permesso tolto dal sistema (riaprire la home per sincronizzarlo),
+   revoca del telefono, sospensione e cessazione. Nuovi eventi non devono produrre altri push al vecchio token.
+   Messaggi già accettati da Expo/APNs/FCM possono arrivare entro il TTL: non sono revocabili retroattivamente.
+
+Fonti: [Expo SDK 57 Notifications](https://docs.expo.dev/versions/v57.0.0/sdk/notifications/),
+[FCM v1](https://docs.expo.dev/push-notifications/fcm-credentials/),
+[Expo tickets/ricevute e sicurezza](https://docs.expo.dev/push-notifications/sending-notifications/),
+[Apple APNs](https://developer.apple.com/documentation/usernotifications/establishing-a-token-based-connection-to-apns).

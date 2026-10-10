@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Stack } from 'expo-router';
+import { router, Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useFonts } from 'expo-font';
@@ -12,6 +12,7 @@ import { AppI18nProvider } from '../i18n/app';
 import { cleanupDecrypted } from '../lib/documents';
 import { wireAppFocus } from '../lib/refresh';
 import { SessionProvider } from '../lib/session';
+import { observePushResponses } from '../lib/push';
 import { Colors } from '../theme/colors';
 
 SplashScreen.preventAutoHideAsync().catch(() => undefined);
@@ -39,6 +40,10 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (fontsLoaded || fontError) SplashScreen.hideAsync().catch(() => undefined);
+  }, [fontsLoaded, fontError]);
+
+  useEffect(() => {
+    if (fontsLoaded || fontError) return observePushResponses(() => router.replace('/'));
   }, [fontsLoaded, fontError]);
 
   if (!fontsLoaded && !fontError) return null;
