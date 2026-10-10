@@ -57,11 +57,18 @@ della posizione), chiede lo sblocco del telefono, firma il payload canonico `FID
 salva con `svc_record_punch()` e restituisce una ricevuta firmata dal server. Le anomalie diventano segnalazioni,
 non rifiuti silenziosi.
 
-**Cedolini.** Nel browser dell'HR: pdf.js estrae il testo, il parser assegna le pagine per codice fiscale, pdf-lib
-crea un PDF per dipendente, ognuno viene cifrato (formato `fide-doc-v1`) per la chiave del telefono del destinatario
+**Cedolini.** Nel browser dell'HR: pdf.js estrae il testo, il parser assegna le pagine per codice fiscale (le
+pagine senza codice vanno a chi precede; quelle con più dipendenti, con un codice sconosciuto o senza padrone restano
+da assegnare a mano) e controlla che il nome del dipendente compaia su ogni sua pagina: se manca, l'invio resta
+bloccato finché l'HR non conferma di averle verificate. pdf-lib crea un PDF per dipendente, ognuno viene cifrato (formato `fide-doc-v1`) per la chiave del telefono del destinatario
 dopo la verifica del codice di sicurezza, poi `create_payroll_batch()`, upload e `publish_payroll_batch()`.
 Sul telefono: `document-url` dà un URL firmato di 60 secondi e registra il download, l'app decifra dopo lo sblocco
-e cancella il file temporaneo.
+e cancella il file temporaneo, oppure salva una copia dove sceglie il dipendente.
+
+**Ruoli.** Titolare e HR usano tutto il portale (solo il titolare nomina HR e titolari). Il responsabile (`manager`)
+entra nel portale con Presenze e Richieste della sua squadra, assegnata nel campo «Responsabile» di ogni dipendente:
+la RLS gli mostra solo quelle righe e il trigger `members_manager_role` accetta come responsabile solo chi ha un ruolo
+che può approvare. Il dipendente usa solo l'app.
 
 **Avvisi via e-mail.** Dei trigger mettono in una coda privata (`private.notification_outbox`) chi va avvisato e
 di cosa: richiesta nuova (HR e responsabile), decisione, richiesta privacy (solo HR), risposta, documento nuovo. Ogni

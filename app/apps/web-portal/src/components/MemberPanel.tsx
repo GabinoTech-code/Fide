@@ -54,6 +54,55 @@ function useRefresh() {
     );
 }
 
+const APPROVER_ROLES: Member['role'][] = ['manager', 'hr_admin', 'company_owner'];
+
+/**
+ * The member's role, saved on its own (set_member_role). HR names team
+ * managers; only an owner hands out HR or owner powers (the RPC checks too).
+ */
+function RoleField({ member }: { member: Member }) {
+  const { t } = useI18n();
+  const { active } = useAuth();
+  const refresh = useRefresh();
+  const [role, setRole] = useState(member.role);
+  const [error, setError] = useState<unknown>(null);
+  const [busy, setBusy] = useState(false);
+  const owner = active?.role === 'company_owner';
+  const options: Member['role'][] = owner ? ['employee', 'manager', 'hr_admin', 'company_owner'] : ['employee', 'manager'];
+  const locked = !owner && (member.role === 'hr_admin' || member.role === 'company_owner');
+
+  const save = async () => {
+    setBusy(true);
+    setError(null);
+    const { error } = await supabase.rpc('set_member_role', { p_member_id: member.id, p_role: role });
+    setBusy(false);
+    if (error) return setError(error);
+    await refresh();
+  };
+
+  return (
+    <div className="field">
+      {t('member.role')}
+      <div className="row" style={{ gap: 8 }}>
+        <select value={role} onChange={(e) => setRole(e.target.value as Member['role'])} disabled={locked} aria-label={t('member.role')} style={{ flex: 1 }}>
+          {(locked ? [member.role] : options).map((r) => (
+            <option key={r} value={r}>
+              {t(`role.${r}` as MessageKey)}
+            </option>
+          ))}
+        </select>
+        {role !== member.role ? (
+          <button type="button" className="btn btn-sm" onClick={save} disabled={busy}>
+            {t('member.roleSave')}
+          </button>
+        ) : null}
+      </div>
+      <small className="muted">{t(role === 'manager' ? 'member.roleManagerHint' : 'member.roleHint')}</small>
+      <ErrorNotice error={error} />
+    </div>
+  );
+}
+
 function DataTab({ member }: { member: Member }) {
   const { t, locale } = useI18n();
   const { data: sites = [] } = useSites();
@@ -76,7 +125,10 @@ function DataTab({ member }: { member: Member }) {
   const cfInvalid = cf.length > 0 && !isValidCodiceFiscale(cf);
   const emailEditable = member.status === 'invited';
   const languageName = useMemo(() => new Intl.DisplayNames([locale], { type: 'language' }), [locale]);
-  const managers = members.filter((m) => m.id !== member.id && m.status === 'active');
+  // Only people who can approve may lead a team (members_manager_role trigger).
+  const managers = members.filter(
+    (m) => m.id !== member.id && m.status === 'active' && APPROVER_ROLES.includes(m.role),
+  );
   const set = (k: keyof typeof form) => (e: { target: { value: string } }) => {
     setSaved(false);
     setForm((f) => ({ ...f, [k]: e.target.value }));
@@ -153,6 +205,7 @@ function DataTab({ member }: { member: Member }) {
           </select>
         </label>
       </div>
+      <RoleField member={member} />
       <label className="field">
         {t('member.language')}
         <select value={form.language} onChange={set('language')}>

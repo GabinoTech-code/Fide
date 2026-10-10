@@ -467,4 +467,17 @@ export const en: Messages = {
   'requests.decidedBy': 'Decided by',
   'requests.byHr': 'Recorded by HR',
   'requests.historyLimit': 'The latest 300 requests of each type are shown.',
+
+  // Roles: team managers in the portal
+  'member.role': 'Role',
+  'member.roleSave': 'Change role',
+  'member.roleHint': 'The owner appoints HR; HR appoints team managers.',
+  'member.roleManagerHint': 'A team manager signs in to the portal and sees the presence and requests of their team, and approves them. No payslips, personal data or privacy. The team is set in each employee’s “Manager” field.',
+  'access.managerScope': 'You see your team only.',
+
+  // Payslips: name cross-check
+  'payroll.nameMissing': 'Employee name not found on pages {pages}: check they are theirs.',
+  'payroll.reviewTitle': 'Check before sending',
+  'payroll.reviewBody': 'The codice fiscale points to these recipients, but their name is missing on some pages: {names}. Open the PDF and check those pages really are theirs. A payslip sent to the wrong person is a personal data breach.',
+  'payroll.reviewConfirm': 'I checked the flagged pages: they belong to the recipients shown.',
 };

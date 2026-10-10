@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { findCodiciFiscali, splitPayroll, type KnownEmployee } from './index';
+import { findCodiciFiscali, pageHasName, splitPayroll, type KnownEmployee } from './index';
 
 const marco: KnownEmployee = { memberId: 'm-marco', codiceFiscale: 'CLMMRC88M03D612C' };
 const anna: KnownEmployee = { memberId: 'm-anna', codiceFiscale: 'GLLNNA95S48A944C' };
@@ -29,8 +29,8 @@ describe('splitPayroll', () => {
     );
     expect(result.issues).toEqual([]);
     expect(result.documents).toEqual([
-      { memberId: 'm-marco', codiceFiscale: marco.codiceFiscale, pages: [1, 2], continuationPages: [2] },
-      { memberId: 'm-anna', codiceFiscale: anna.codiceFiscale, pages: [3], continuationPages: [] },
+      { memberId: 'm-marco', codiceFiscale: marco.codiceFiscale, pages: [1, 2], continuationPages: [2], pagesWithoutName: [] },
+      { memberId: 'm-anna', codiceFiscale: anna.codiceFiscale, pages: [3], continuationPages: [], pagesWithoutName: [] },
     ]);
   });
 
@@ -65,5 +65,35 @@ describe('splitPayroll', () => {
   it('can require a CF on every page', () => {
     const result = splitPayroll([page(marco.codiceFiscale), 'segue'], [marco], { continuationPages: false });
     expect(result.issues).toEqual([{ page: 2, kind: 'unassigned' }]);
+  });
+});
+
+describe('name cross-check', () => {
+  const marcoN: KnownEmployee = { ...marco, fullName: 'Marco Colombo' };
+  const annaN: KnownEmployee = { ...anna, fullName: 'Anna Galli' };
+
+  it('finds the name in any order, ignoring case, accents and glued words', () => {
+    expect(pageHasName('DIPENDENTE: COLOMBO MARCO', 'Marco Colombo')).toBe(true);
+    expect(pageHasName('Sig. Nicolo De Santis', 'Nicolò De Santis')).toBe(true);
+    expect(pageHasName('COLOMBOMARCO', 'Marco Colombo')).toBe(true);
+    expect(pageHasName('DIPENDENTE: COLOMBO LUCA', 'Marco Colombo')).toBe(false);
+  });
+
+  it('flags a continuation page that carries another person’s name', () => {
+    // Page 2 has no readable CF but is Anna's payslip: it must not slip into Marco's silently.
+    const result = splitPayroll(
+      [page(marcoN.codiceFiscale, 'COLOMBO MARCO'), 'CEDOLINO GALLI ANNA (CF illeggibile)', page(annaN.codiceFiscale, 'GALLI ANNA')],
+      [marcoN, annaN],
+      { employerCodes: [employer] },
+    );
+    const marcoDoc = result.documents.find((d) => d.memberId === 'm-marco')!;
+    expect(marcoDoc.continuationPages).toEqual([2]);
+    expect(marcoDoc.pagesWithoutName).toEqual([2]);
+    expect(result.documents.find((d) => d.memberId === 'm-anna')!.pagesWithoutName).toEqual([]);
+  });
+
+  it('flags a matched page without the registered name (wrong CF typed in Fide?)', () => {
+    const result = splitPayroll([page(marcoN.codiceFiscale, 'BIANCHI PAOLO')], [marcoN], { employerCodes: [employer] });
+    expect(result.documents[0]!.pagesWithoutName).toEqual([1]);
   });
 });

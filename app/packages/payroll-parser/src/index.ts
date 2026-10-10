@@ -7,6 +7,8 @@ import { CODICE_FISCALE_SCAN_PATTERN, isValidCodiceFiscale } from '@fide/shared'
 export interface KnownEmployee {
   memberId: string;
   codiceFiscale: string;
+  /** As registered in Fide: a second check that the pages really are this person's. */
+  fullName?: string;
 }
 
 export interface EmployeeDocument {
@@ -16,6 +18,13 @@ export interface EmployeeDocument {
   pages: number[];
   /** Pages assigned only because they follow a matched page (no CF printed on them). */
   continuationPages: number[];
+  /**
+   * Pages where the employee's registered name does not appear (every word of
+   * it, in any order, ignoring case and accents). HR must look at them before
+   * sending: a continuation page that is really the next person's payslip
+   * carries the next person's name. Empty when no name was given.
+   */
+  pagesWithoutName: number[];
 }
 
 export type PageIssue =
@@ -55,6 +64,23 @@ export function findCodiciFiscali(text: string): string[] {
   return [...found];
 }
 
+const fold = (s: string) =>
+  s
+    .normalize('NFD')
+    .replace(/\p{Diacritic}/gu, '')
+    .toUpperCase()
+    .replace(/[^A-Z0-9]+/g, ' ')
+    .trim();
+
+/** Whether every word of the name (2+ letters) is on the page, as a word or glued (pdf.js may drop spaces). */
+export function pageHasName(text: string, fullName: string): boolean {
+  const words = fold(fullName).split(' ').filter((w) => w.length >= 2);
+  if (!words.length) return true;
+  const page = ` ${fold(text)} `;
+  const glued = page.replace(/ /g, '');
+  return words.every((w) => page.includes(` ${w} `) || glued.includes(w));
+}
+
 export function splitPayroll(pageTexts: string[], employees: KnownEmployee[], options: SplitOptions = {}): SplitResult {
   const byCf = new Map(employees.map((e) => [e.codiceFiscale.toUpperCase(), e]));
   const employer = new Set((options.employerCodes ?? []).map((c) => c.toUpperCase()));
@@ -74,10 +100,11 @@ export function splitPayroll(pageTexts: string[], employees: KnownEmployee[], op
       const employee = byCf.get(known[0])!;
       let doc = docs.get(employee.memberId);
       if (!doc) {
-        doc = { memberId: employee.memberId, codiceFiscale: employee.codiceFiscale, pages: [], continuationPages: [] };
+        doc = { memberId: employee.memberId, codiceFiscale: employee.codiceFiscale, pages: [], continuationPages: [], pagesWithoutName: [] };
         docs.set(employee.memberId, doc);
       }
       doc.pages.push(page);
+      if (employee.fullName && !pageHasName(text, employee.fullName)) doc.pagesWithoutName.push(page);
       previous = doc;
       return;
     }
@@ -89,6 +116,8 @@ export function splitPayroll(pageTexts: string[], employees: KnownEmployee[], op
     } else if (allowContinuation && previous) {
       previous.pages.push(page);
       previous.continuationPages.push(page);
+      const owner = byCf.get(previous.codiceFiscale.toUpperCase());
+      if (owner?.fullName && !pageHasName(text, owner.fullName)) previous.pagesWithoutName.push(page);
       return;
     } else {
       issues.push({ page, kind: 'unassigned' });

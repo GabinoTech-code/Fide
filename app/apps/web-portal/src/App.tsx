@@ -36,7 +36,7 @@ function Message({ title, body, action }: { title: string; body: string; action?
 
 function Portal() {
   const { t } = useI18n();
-  const { ready, session, memberships, membershipsLoading, isHr, signOut } = useAuth();
+  const { ready, session, memberships, membershipsLoading, isHr, isManager, signOut } = useAuth();
   const [registering, setRegistering] = useState(false);
 
   if (!ready || (session && membershipsLoading)) {
@@ -62,7 +62,7 @@ function Portal() {
       />
     );
   }
-  if (!isHr) {
+  if (!isHr && !isManager) {
     return (
       <Message
         title={t('access.employeeTitle')}
@@ -80,6 +80,18 @@ function Portal() {
     <Routes>
       <Route element={<Layout />}>
         <Route index element={<PresencePage />} />
+        <Route path="richieste" element={<RequestsPage />} />
+        {/* A team manager sees presence and requests of their team (RLS); the rest is HR's. */}
+        {isHr ? hrRoutes(t) : null}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Route>
+    </Routes>
+  );
+}
+
+function hrRoutes(t: ReturnType<typeof useI18n>['t']) {
+  return (
+    <>
         <Route path="dipendenti" element={<EmployeesPage />} />
         <Route path="sedi" element={<SitesPage />} />
         <Route
@@ -90,13 +102,10 @@ function Portal() {
             </Suspense>
           }
         />
-        <Route path="richieste" element={<RequestsPage />} />
         <Route path="privacy" element={<PrivacyPage />} />
         <Route path="registro" element={<AuditPage />} />
         <Route path="impostazioni" element={<SettingsPage />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Route>
-    </Routes>
+    </>
   );
 }
 

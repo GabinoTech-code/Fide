@@ -466,4 +466,17 @@ export const it = {
   'requests.decidedBy': 'Deciso da',
   'requests.byHr': 'Registrata da HR',
   'requests.historyLimit': 'Sono mostrate le ultime 300 richieste di ogni tipo.',
+
+  // Roles: team managers in the portal
+  'member.role': 'Ruolo',
+  'member.roleSave': 'Cambia ruolo',
+  'member.roleHint': 'Il titolare nomina l’ufficio HR; l’HR nomina i responsabili.',
+  'member.roleManagerHint': 'Il responsabile entra nel portale e vede presenze e richieste della sua squadra, e le approva. Non vede cedolini, dati personali né privacy. La squadra si assegna nel campo «Responsabile» di ogni dipendente.',
+  'access.managerScope': 'Vedi solo la tua squadra.',
+
+  // Payslips: name cross-check
+  'payroll.nameMissing': 'Nome del dipendente non trovato nelle pagine {pages}: controlla che siano sue.',
+  'payroll.reviewTitle': 'Controlla prima di inviare',
+  'payroll.reviewBody': 'Il codice fiscale indica questi destinatari, ma il loro nome non compare su alcune pagine: {names}. Apri il PDF e verifica che quelle pagine siano davvero loro. Un cedolino alla persona sbagliata è una violazione di dati personali.',
+  'payroll.reviewConfirm': 'Ho controllato le pagine segnalate: sono dei destinatari indicati.',
 } as const;
