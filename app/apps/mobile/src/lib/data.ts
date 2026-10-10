@@ -2,6 +2,7 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useState } from 'react';
 import { AppState } from 'react-native';
+import { romeDate, romeWallTimeToIso } from '@fide/shared';
 import { listDocuments } from './documents';
 import type { QueuedPunch } from './outbox';
 import { sqliteOutbox } from './outboxSqlite';
@@ -27,10 +28,9 @@ export interface ServerPunch {
   flags: string[];
 }
 
+/** Midnight in Italy today, as a UTC instant. */
 export function startOfToday(): string {
-  const d = new Date();
-  d.setHours(0, 0, 0, 0);
-  return d.toISOString();
+  return romeWallTimeToIso(romeDate(new Date()), 0, 0);
 }
 
 async function rows<T>(q: PromiseLike<{ data: unknown; error: unknown }>): Promise<T[]> {

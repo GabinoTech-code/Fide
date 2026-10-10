@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { useQueryClient } from '@tanstack/react-query';
-import { italianWorkingDays } from '@fide/shared';
+import { italianWorkingDays, romeDate, romeWallTimeToIso } from '@fide/shared';
 import { useT, type AppKey } from '../../i18n/app';
 import { useBalances, useLeaveTypes, useMyCorrections, useMyLeave, type RequestStatus } from '../../lib/data';
 import { useLiveQueries } from '../../lib/refresh';
@@ -82,7 +82,8 @@ export default function Requests() {
     if (isCorrection) {
       const m = form.time.match(TIME);
       if (!range.from || !m) return setMessage({ kind: 'danger', text: t('requests.invalidTime') });
-      const when = new Date(`${range.from}T${m[1]!.padStart(2, '0')}:${m[2]}:00`);
+      // 08:30 means 08:30 in Italy, whatever the phone's zone.
+      const when = new Date(romeWallTimeToIso(range.from, Number(m[1]), Number(m[2])));
       if (inFuture(when)) return setMessage({ kind: 'danger', text: t('requests.invalidDate') });
       if (form.reason.trim().length < 3) return setMessage({ kind: 'danger', text: t('requests.reasonRequired') });
       insert = supabase.from('punch_corrections').insert({
@@ -142,9 +143,9 @@ export default function Requests() {
       key: `c-${c.id}`,
       table: 'correction' as const,
       id: c.id,
-      sort: c.requested_ts.slice(0, 10),
+      sort: romeDate(c.requested_ts),
       title: `${t('requests.newCorrection')} · ${t(c.punch_type === 'in' ? 'requests.in' : 'requests.out')}`,
-      detail: `${short(c.requested_ts.slice(0, 10))} · ${time(c.requested_ts)} · ${c.reason}`,
+      detail: `${short(romeDate(c.requested_ts))} · ${time(c.requested_ts)} · ${c.reason}`,
       status: c.status,
       byHr: Boolean(c.entered_by),
       note: c.decision_note,

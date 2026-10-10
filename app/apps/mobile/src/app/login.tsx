@@ -73,7 +73,6 @@ export default function Login() {
             />
             <Button
               kind="mint"
-              icon="passkey"
               label={t('login.sendCode')}
               busy={busy}
               disabled={!email.includes('@')}

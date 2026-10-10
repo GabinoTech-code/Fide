@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { COMPANY_TIME_ZONE } from '@fide/shared';
 import { LANGUAGES, type SupportedLanguage } from '../types';
 import { ar } from './ar';
 import { en } from './en';
@@ -66,9 +67,10 @@ export function AppI18nProvider({ children }: { children: ReactNode }) {
       lang,
       setLang,
       t: (key, vars) => translate(lang, key, vars),
-      time: (v) => new Date(v).toLocaleTimeString(tag, { hour: '2-digit', minute: '2-digit' }),
-      date: (v) => new Date(v).toLocaleDateString(tag, { day: 'numeric', month: 'short', year: 'numeric' }),
-      format: (v, options) => new Date(v).toLocaleString(tag, options),
+      // Company time (Europe/Rome), the clock the HR portal shows, whatever the phone's zone.
+      time: (v) => new Date(v).toLocaleTimeString(tag, { hour: '2-digit', minute: '2-digit', timeZone: COMPANY_TIME_ZONE }),
+      date: (v) => new Date(v).toLocaleDateString(tag, { day: 'numeric', month: 'short', year: 'numeric', timeZone: COMPANY_TIME_ZONE }),
+      format: (v, options) => new Date(v).toLocaleString(tag, { ...options, timeZone: COMPANY_TIME_ZONE }),
       rtl: LANGUAGES.find((l) => l.code === lang)?.direction === 'rtl',
     };
   }, [lang, setLang]);

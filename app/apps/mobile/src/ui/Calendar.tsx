@@ -2,7 +2,7 @@
 // range (first tap = start, second tap = end). Plain JS, no native module.
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { isItalianWorkingDay } from '@fide/shared';
+import { isItalianWorkingDay, romeDate } from '@fide/shared';
 import { useT } from '../i18n/app';
 import { Colors } from '../theme/colors';
 import { Fonts } from './kit';
@@ -15,9 +15,9 @@ export interface Range {
 const pad = (n: number) => String(n).padStart(2, '0');
 const iso = (y: number, m: number, d: number) => `${y}-${pad(m + 1)}-${pad(d)}`;
 
+/** Today in Italy, whatever the phone's time zone. */
 export function todayIso(): string {
-  const d = new Date();
-  return iso(d.getFullYear(), d.getMonth(), d.getDate());
+  return romeDate(new Date());
 }
 
 export function Calendar({
