@@ -17,6 +17,8 @@ telefono del dipendente, ferie e permessi. In **fase pilota**.
   sistema operativo con PIN oppure impronta/Face ID se configurati, senza obbligo di attivare la biometria.
   [Dettagli e limiti](docs/adr/0005-local-authentication.md).
 - **Isolamento tra aziende** con Row Level Security, verificato da test automatici.
+- **Saldi ferie e permessi**: HR carica accreditato, riporto e utilizzato fuori Fide; il lavoratore vede il disponibile
+  e le richieste pendenti. La maturazione contrattuale non viene calcolata automaticamente.
 - **Nessuna IA** e nessuna decisione automatizzata sulle persone.
 
 Limiti attuali e controlli effettivi: [docs/security/AUDIT-2026-10-07.md](docs/security/AUDIT-2026-10-07.md).

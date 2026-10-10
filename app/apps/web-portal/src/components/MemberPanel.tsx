@@ -14,8 +14,9 @@ import { APPROVER_ROLES, MEMBER_CHANGE_QUERY_KEYS, releasedTeam } from '../lib/r
 import { supabase } from '../lib/supabase';
 import type { Member, MemberStatus } from '../lib/types';
 import { ErrorNotice, Modal } from './ui';
+import { MemberBalances } from './MemberBalances';
 
-type Tab = 'data' | 'status' | 'entries';
+type Tab = 'data' | 'status' | 'entries' | 'balances';
 
 export function MemberPanel({ member, onClose }: { member: Member; onClose: () => void }) {
   const { t } = useI18n();
@@ -27,7 +28,7 @@ export function MemberPanel({ member, onClose }: { member: Member; onClose: () =
   return (
     <Modal title={member.full_name} onClose={onClose} wide>
       <div className="tabs" role="tablist">
-        {(['data', 'status', 'entries'] as const).map((k) => (
+        {(['data', 'status', 'entries', 'balances'] as const).map((k) => (
           <button
             key={k}
             role="tab"
@@ -43,6 +44,7 @@ export function MemberPanel({ member, onClose }: { member: Member; onClose: () =
       {tab === 'data' ? <DataTab member={member} /> : null}
       {tab === 'status' ? <StatusTab member={member} isSelf={isSelf} /> : null}
       {tab === 'entries' && canRecord ? <EntriesTab member={member} /> : null}
+      {tab === 'balances' ? <MemberBalances member={member} /> : null}
     </Modal>
   );
 }
